@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">WeAnimals</string>
+    <string name="greeting">BOA TARDE, RENATA</string>
+    <string name="home_title">O que você viu hoje?</string>
+    <string name="emergency_label">EMERGÊNCIA</string>
+    <string name="emergency_title">Encontrou um animal em risco?</string>
+    <string name="report_now">Denunciar agora</string>
+    <string name="report_action_feedback">A tela de denúncia será aberta em breve.</string>
+    <string name="near_you">Perto de você</string>
+    <string name="view_map">ver mapa</string>
+    <string name="reports">Suas denúncias</string>
+    <string name="first_report_title">Filhote — Rua Aimberê</string>
+    <string name="first_report_protocol">Protocolo #4471</string>
+    <string name="new_status">Novo</string>
+    <string name="second_report_title">Cão idoso — Vila Marlene</string>
+    <string name="second_report_protocol">Protocolo #4462</string>
+    <string name="in_progress_status">Em curso</string>
+    <string name="nav_home">Início</string>
+    <string name="nav_map">Mapa</string>
+    <string name="nav_community">Comunidade</string>
+    <string name="nav_adoption">Adoção</string>
+    <string name="nav_profile">Perfil</string>
+    <string name="heart_icon">♡</string>
+</resources>

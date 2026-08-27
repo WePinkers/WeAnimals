@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="background">#FFF9F5EB</color>
+    <color name="surface">#FFFFFFFF</color>
+    <color name="ink">#FF12271F</color>
+    <color name="muted">#FF5A625B</color>
+    <color name="terracotta">#FFAD5E3B</color>
+    <color name="terracotta_dark">#FF994D31</color>
+    <color name="terracotta_decor">#FFC17450</color>
+    <color name="border">#FFE1D7C4</color>
+    <color name="soft_cream">#FFF4EFE4</color>
+    <color name="soft_red">#FFF7DADC</color>
+    <color name="soft_gold">#FFF5E4B9</color>
+    <color name="gold">#FFD49B31</color>
+    <color name="red">#FFB73538</color>
+    <color name="map_background">#FFF0EDE1</color>
+    <color name="map_grid">#FFDFDCCD</color>
+</resources>

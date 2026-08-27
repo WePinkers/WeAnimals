@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/map_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_map_preview"
+    android:clipToOutline="true"
+    android:contentDescription="Mapa com ocorrências próximas">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/pin_red_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.20" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/pin_gold_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.46" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/pin_green_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.79" />
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="20dp"
+        android:alpha="0.75"
+        android:background="@color/map_grid"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="40dp"
+        android:alpha="0.75"
+        android:background="@color/map_grid"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="60dp"
+        android:alpha="0.75"
+        android:background="@color/map_grid"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="80dp"
+        android:alpha="0.75"
+        android:background="@color/map_grid"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="100dp"
+        android:alpha="0.75"
+        android:background="@color/map_grid"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="120dp"
+        android:alpha="0.75"
+        android:background="@color/map_grid"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="140dp"
+        android:alpha="0.75"
+        android:background="@color/map_grid"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="160dp"
+        android:alpha="0.75"
+        android:background="@color/map_grid"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="180dp"
+        android:alpha="0.75"
+        android:background="@color/map_grid"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="200dp"
+        android:alpha="0.75"
+        android:background="@color/map_grid"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="220dp"
+        android:alpha="0.75"
+        android:background="@color/map_grid"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="240dp"
+        android:alpha="0.75"
+        android:background="@color/map_grid"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="20dp"
+        android:alpha="0.75"
+        android:background="@color/map_grid"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="40dp"
+        android:alpha="0.75"
+        android:background="@color/map_grid"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="60dp"
+        android:alpha="0.75"
+        android:background="@color/map_grid"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="80dp"
+        android:alpha="0.75"
+        android:background="@color/map_grid"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:layout_width="17dp"
+        android:layout_height="21dp"
+        android:layout_marginTop="17dp"
+        android:contentDescription="Ocorrência"
+        android:src="@drawable/ic_map_pin"
+        android:tint="@color/red"
+        android:translationX="-8dp"
+        app:layout_constraintStart_toStartOf="@id/pin_red_guideline"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:layout_width="17dp"
+        android:layout_height="21dp"
+        android:layout_marginTop="47dp"
+        android:contentDescription="Ocorrência"
+        android:src="@drawable/ic_map_pin"
+        android:tint="@color/gold"
+        android:translationX="-8dp"
+        app:layout_constraintStart_toStartOf="@id/pin_gold_guideline"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:layout_width="17dp"
+        android:layout_height="21dp"
+        android:layout_marginTop="27dp"
+        android:contentDescription="Ocorrência"
+        android:src="@drawable/ic_map_pin"
+        android:tint="@color/ink"
+        android:translationX="-8dp"
+        app:layout_constraintStart_toStartOf="@id/pin_green_guideline"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:layout_width="121dp"
+        android:layout_height="18dp"
+        android:layout_marginStart="11dp"
+        android:layout_marginBottom="9dp"
+        android:background="@drawable/bg_map_chip"
+        android:fontFamily="monospace"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:text="6 ocorrências em 2km"
+        android:textColor="@color/muted"
+        android:textSize="8sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
