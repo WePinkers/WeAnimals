@@ -1,11 +1,15 @@
-🐾 WeAnimals
+ 🐾 WeAnimals
 
-Tecnologia aplicada à prevenção e ao enfrentamento do abandono de animais.
+### Plataforma digital para prevenção e enfrentamento do abandono animal
 
-O WeAnimals é uma plataforma desenvolvida para auxiliar na proteção de animais em situação de vulnerabilidade, conectando adotantes, população, ONGs e protetores independentes.
+🎓 **Projeto de TCC — Engenharia de Software**
 
-A plataforma reúne recursos para adoção responsável, denúncias, animais perdidos e encontrados, acompanhamento de casos e informações sobre saúde animal.
+O **WeAnimals** é uma plataforma desenvolvida para apoiar a **proteção e o bem-estar de animais domésticos**, conectando população, adotantes, ONGs e protetores independentes.
 
-Um dos principais diferenciais é o sistema de compatibilidade entre adotante e animal, que utiliza informações dos perfis para recomendar possíveis combinações e contribuir para a redução de adoções malsucedidas e do reabandono.
+A solução reúne funcionalidades de **adoção responsável, denúncias, animais perdidos e encontrados, acompanhamento de casos e informações de saúde animal**.
 
-🐶 Conectando pessoas e animais para construir uma rede de proteção mais eficiente.
+Um dos principais diferenciais é o **sistema de compatibilidade entre adotante e animal**, utilizando o cruzamento de perfis para recomendar possíveis combinações e contribuir para a redução de adoções malsucedidas e do reabandono.
+
+**🔧 Tecnologias:** Kotlin
+
+**👥 Projeto acadêmico desenvolvido em equipe.**
