@@ -202,8 +202,9 @@
         android:includeFontPadding="false"
         android:text="6 ocorrências em 2km"
         android:textColor="@color/muted"
-        android:textSize="8sp"
+        android:textSize="@dimen/text_size_map_chip"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+

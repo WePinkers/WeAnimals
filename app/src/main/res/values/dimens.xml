@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Typography scale shared by the home and report screens. -->
+    <dimen name="text_size_eyebrow">11sp</dimen>
+    <dimen name="text_size_screen_title">22sp</dimen>
+    <dimen name="text_size_report_title">17sp</dimen>
+    <dimen name="text_size_emergency_label">9sp</dimen>
+    <dimen name="text_size_emergency_title">18sp</dimen>
+    <dimen name="text_size_button">12sp</dimen>
+    <dimen name="text_size_section_title">12sp</dimen>
+    <dimen name="text_size_link">10sp</dimen>
+    <dimen name="text_size_card_title">13sp</dimen>
+    <dimen name="text_size_card_protocol">10sp</dimen>
+    <dimen name="text_size_badge">9sp</dimen>
+    <dimen name="text_size_map_chip">8sp</dimen>
+    <dimen name="text_size_navigation">9sp</dimen>
+    <dimen name="text_size_report_label">9sp</dimen>
+    <dimen name="text_size_report_body">12sp</dimen>
+    <dimen name="text_size_report_chip">11sp</dimen>
+    <dimen name="text_size_location_title">11sp</dimen>
+    <dimen name="text_size_location_address">9sp</dimen>
+    <dimen name="text_size_report_icon">23sp</dimen>
+</resources>

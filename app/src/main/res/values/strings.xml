@@ -21,4 +21,27 @@
     <string name="nav_adoption">Adoção</string>
     <string name="nav_profile">Perfil</string>
     <string name="heart_icon">♡</string>
+    
+    <!-- Report Screen -->
+    <string name="report_title">Nova denúncia</string>
+    <string name="add_photo">Toque para adicionar foto</string>
+    <string name="animal_type">TIPO DE ANIMAL</string>
+    <string name="dog">Cão</string>
+    <string name="cat">Gato</string>
+    <string name="other">Outro</string>
+    <string name="urgency_level">NÍVEL DE URGÊNCIA</string>
+    <string name="urgency_low">Baixa</string>
+    <string name="urgency_medium">Média</string>
+    <string name="urgency_high">Alta</string>
+    <string name="what_is_happening">O QUE ESTÁ ACONTECENDO</string>
+    <string name="report_description">Cão preso em terreno baldio, sem água há pelo menos um dia...</string>
+    <string name="current_location">Localização atual detectada</string>
+    <string name="location_address">Rua Voluntários, 88 — Zona Norte</string>
+    <string name="submit_report">Enviar denúncia</string>
+    <string name="back">Voltar</string>
+    <string name="photo_section_label">FOTO DO ANIMAL OU LOCAL</string>
+    <string name="photo_added">Foto adicionada</string>
+    <string name="photo_selected_description">Foto selecionada do animal ou local</string>
+    <string name="description_required">Descreva o que está acontecendo.</string>
+    <string name="triage_coming_soon">Dados preenchidos. A triagem será aberta em breve.</string>
 </resources>

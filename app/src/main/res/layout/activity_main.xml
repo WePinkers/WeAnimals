@@ -34,7 +34,7 @@
                 android:letterSpacing="0.14"
                 android:text="@string/greeting"
                 android:textColor="@color/muted"
-                android:textSize="10sp" />
+                android:textSize="@dimen/text_size_eyebrow" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -44,7 +44,7 @@
                 android:includeFontPadding="false"
                 android:text="@string/home_title"
                 android:textColor="@color/ink"
-                android:textSize="22sp"
+                android:textSize="@dimen/text_size_screen_title"
                 android:textStyle="bold" />
 
             <FrameLayout
@@ -71,11 +71,11 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="sans"
+                        android:fontFamily="sans-serif"
                         android:includeFontPadding="false"
                         android:text="@string/emergency_label"
                         android:textColor="@color/white"
-                        android:textSize="9sp"
+                        android:textSize="@dimen/text_size_emergency_label"
                         android:textStyle="bold" />
 
                     <TextView
@@ -87,7 +87,7 @@
                         android:maxLines="2"
                         android:text="@string/emergency_title"
                         android:textColor="@color/white"
-                        android:textSize="18sp"
+                        android:textSize="@dimen/text_size_emergency_title"
                         android:textStyle="bold" />
 
                     <com.google.android.material.button.MaterialButton
@@ -105,7 +105,7 @@
                         android:text="@string/report_now"
                         android:textAllCaps="false"
                         android:textColor="@color/terracotta_dark"
-                        android:textSize="12sp"
+                        android:textSize="@dimen/text_size_button"
                         android:textStyle="bold"
                         app:backgroundTint="@color/white"
                         app:cornerRadius="22dp"
@@ -129,11 +129,11 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:fontFamily="sans"
+                    android:fontFamily="sans-serif"
                     android:includeFontPadding="false"
                     android:text="@string/near_you"
                     android:textColor="@color/ink"
-                    android:textSize="12sp"
+                    android:textSize="@dimen/text_size_section_title"
                     android:textStyle="bold" />
 
                 <TextView
@@ -142,7 +142,7 @@
                     android:layout_height="wrap_content"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:clickable="true"
-                    android:fontFamily="sans"
+                    android:fontFamily="sans-serif"
                     android:focusable="true"
                     android:includeFontPadding="false"
                     android:minHeight="36dp"
@@ -152,7 +152,7 @@
                     android:paddingBottom="8dp"
                     android:text="@string/view_map"
                     android:textColor="@color/ink"
-                    android:textSize="10sp"
+                    android:textSize="@dimen/text_size_link"
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -168,11 +168,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:fontFamily="sans"
+                android:fontFamily="sans-serif"
                 android:includeFontPadding="false"
                 android:text="@string/reports"
                 android:textColor="@color/ink"
-                android:textSize="12sp"
+                android:textSize="@dimen/text_size_section_title"
                 android:textStyle="bold" />
 
             <FrameLayout
@@ -199,12 +199,12 @@
                         android:layout_width="36dp"
                         android:layout_height="36dp"
                         android:background="@drawable/bg_icon_box"
-                        android:fontFamily="sans"
+                        android:fontFamily="sans-serif"
                         android:gravity="center"
                         android:includeFontPadding="false"
                         android:text="@string/heart_icon"
                         android:textColor="@color/terracotta"
-                        android:textSize="23sp" />
+                        android:textSize="@dimen/text_size_report_icon" />
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -216,23 +216,23 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:fontFamily="sans"
+                            android:fontFamily="sans-serif"
                             android:includeFontPadding="false"
                             android:maxLines="2"
                             android:text="@string/first_report_title"
                             android:textColor="@color/ink"
-                            android:textSize="13sp"
+                            android:textSize="@dimen/text_size_card_title"
                             android:textStyle="bold" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
-                            android:fontFamily="sans"
+                            android:fontFamily="sans-serif"
                             android:includeFontPadding="false"
                             android:text="@string/first_report_protocol"
                             android:textColor="@color/muted"
-                            android:textSize="10sp" />
+                            android:textSize="@dimen/text_size_card_protocol" />
                     </LinearLayout>
 
                     <TextView
@@ -247,7 +247,7 @@
                         android:paddingEnd="7dp"
                         android:text="@string/new_status"
                         android:textColor="@color/terracotta_dark"
-                        android:textSize="9sp" />
+                        android:textSize="@dimen/text_size_badge" />
                 </LinearLayout>
             </FrameLayout>
 
@@ -289,23 +289,23 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:fontFamily="sans"
+                            android:fontFamily="sans-serif"
                             android:includeFontPadding="false"
                             android:maxLines="2"
                             android:text="@string/second_report_title"
                             android:textColor="@color/ink"
-                            android:textSize="13sp"
+                            android:textSize="@dimen/text_size_card_title"
                             android:textStyle="bold" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
-                            android:fontFamily="sans"
+                            android:fontFamily="sans-serif"
                             android:includeFontPadding="false"
                             android:text="@string/second_report_protocol"
                             android:textColor="@color/muted"
-                            android:textSize="10sp" />
+                            android:textSize="@dimen/text_size_card_protocol" />
                     </LinearLayout>
 
                     <TextView
@@ -320,7 +320,7 @@
                         android:paddingEnd="7dp"
                         android:text="@string/in_progress_status"
                         android:textColor="@color/terracotta_dark"
-                        android:textSize="8sp" />
+                        android:textSize="@dimen/text_size_map_chip" />
                 </LinearLayout>
             </FrameLayout>
         </LinearLayout>
@@ -355,11 +355,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:fontFamily="sans"
+                android:fontFamily="sans-serif"
                 android:includeFontPadding="false"
                 android:text="@string/nav_home"
                 android:textColor="@color/ink"
-                android:textSize="9sp"
+                android:textSize="@dimen/text_size_navigation"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -381,11 +381,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:fontFamily="sans"
+                android:fontFamily="sans-serif"
                 android:includeFontPadding="false"
                 android:text="@string/nav_map"
                 android:textColor="@color/muted"
-                android:textSize="9sp" />
+                android:textSize="@dimen/text_size_navigation" />
         </LinearLayout>
 
         <LinearLayout
@@ -406,11 +406,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:fontFamily="sans"
+                android:fontFamily="sans-serif"
                 android:includeFontPadding="false"
                 android:text="@string/nav_community"
                 android:textColor="@color/muted"
-                android:textSize="9sp" />
+                android:textSize="@dimen/text_size_navigation" />
         </LinearLayout>
 
         <LinearLayout
@@ -431,11 +431,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:fontFamily="sans"
+                android:fontFamily="sans-serif"
                 android:includeFontPadding="false"
                 android:text="@string/nav_adoption"
                 android:textColor="@color/muted"
-                android:textSize="9sp" />
+                android:textSize="@dimen/text_size_navigation" />
         </LinearLayout>
 
         <LinearLayout
@@ -456,11 +456,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:fontFamily="sans"
+                android:fontFamily="sans-serif"
                 android:includeFontPadding="false"
                 android:text="@string/nav_profile"
                 android:textColor="@color/muted"
-                android:textSize="9sp" />
+                android:textSize="@dimen/text_size_navigation" />
         </LinearLayout>
     </LinearLayout>
 </FrameLayout>
+

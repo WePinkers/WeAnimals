@@ -1,7 +1,7 @@
 package com.example.weanimals
 
+import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import com.example.weanimals.databinding.ActivityMainBinding
@@ -26,11 +26,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupInteractions() {
         binding.reportNowButton.setOnClickListener {
-            Toast.makeText(
-                this,
-                R.string.report_action_feedback,
-                Toast.LENGTH_SHORT
-            ).show()
+            val intent = Intent(this, ReportActivity::class.java)
+            startActivity(intent)
         }
 
         binding.viewMapButton.setOnClickListener {

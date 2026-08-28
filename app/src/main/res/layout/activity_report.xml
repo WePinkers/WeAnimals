@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/report_scroll"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:fillViewport="true"
+    android:overScrollMode="never"
+    android:scrollbars="none"
+    tools:context=".ReportActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="18dp"
+        android:paddingTop="16dp"
+        android:paddingEnd="18dp"
+        android:paddingBottom="24dp">
+
+        <LinearLayout
+            android:id="@+id/report_header"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/back_button"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/bg_back_button"
+                android:contentDescription="@string/back"
+                android:padding="7dp"
+                android:src="@drawable/ic_arrow_back"
+                android:tint="@color/ink" />
+
+            <TextView
+                android:id="@+id/report_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:fontFamily="serif"
+                android:includeFontPadding="false"
+                android:text="@string/report_title"
+                android:textColor="@color/ink"
+                android:textSize="@dimen/text_size_report_title"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <View
+            android:id="@+id/header_divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/border" />
+
+        <TextView
+            android:id="@+id/photo_section_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:fontFamily="monospace"
+            android:includeFontPadding="false"
+            android:letterSpacing="0.08"
+            android:text="@string/photo_section_label"
+            android:textColor="@color/muted"
+            android:textSize="@dimen/text_size_report_label" />
+
+        <FrameLayout
+            android:id="@+id/photo_dropzone"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_photo_dropzone"
+            android:clickable="true"
+            android:clipToOutline="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            android:padding="12dp">
+
+            <ImageView
+                android:id="@+id/photo_preview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/photo_selected_description"
+                android:scaleType="centerCrop"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/photo_icon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:contentDescription=""
+                    android:src="@drawable/ic_camera"
+                    android:tint="@color/terracotta" />
+
+                <TextView
+                    android:id="@+id/photo_prompt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:fontFamily="sans-serif"
+                    android:includeFontPadding="false"
+                    android:text="@string/add_photo"
+                    android:textColor="@color/ink"
+                    android:textSize="@dimen/text_size_report_body" />
+            </LinearLayout>
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/animal_type_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:fontFamily="monospace"
+            android:includeFontPadding="false"
+            android:letterSpacing="0.08"
+            android:text="@string/animal_type"
+            android:textColor="@color/muted"
+            android:textSize="@dimen/text_size_report_label" />
+
+        <LinearLayout
+            android:id="@+id/animal_type_group"
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:layout_marginTop="8dp"
+            android:gravity="start|center_vertical"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/dog_button"
+                android:layout_width="48dp"
+                android:layout_height="30dp"
+                android:backgroundTint="@color/ink"
+                android:fontFamily="sans-serif"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:paddingStart="5dp"
+                android:paddingEnd="5dp"
+                android:text="@string/dog"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_report_chip"
+                app:cornerRadius="18dp"
+                app:strokeColor="@color/ink"
+                app:strokeWidth="1dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/cat_button"
+                android:layout_width="51dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="6dp"
+                android:backgroundTint="@color/surface"
+                android:fontFamily="sans-serif"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:paddingStart="5dp"
+                android:paddingEnd="5dp"
+                android:text="@string/cat"
+                android:textAllCaps="false"
+                android:textColor="@color/muted"
+                android:textSize="@dimen/text_size_report_chip"
+                app:cornerRadius="18dp"
+                app:strokeColor="@color/border"
+                app:strokeWidth="1dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/other_button"
+                android:layout_width="57dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="6dp"
+                android:backgroundTint="@color/surface"
+                android:fontFamily="sans-serif"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:paddingStart="5dp"
+                android:paddingEnd="5dp"
+                android:text="@string/other"
+                android:textAllCaps="false"
+                android:textColor="@color/muted"
+                android:textSize="@dimen/text_size_report_chip"
+                app:cornerRadius="18dp"
+                app:strokeColor="@color/border"
+                app:strokeWidth="1dp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/urgency_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:fontFamily="monospace"
+            android:includeFontPadding="false"
+            android:letterSpacing="0.08"
+            android:text="@string/urgency_level"
+            android:textColor="@color/muted"
+            android:textSize="@dimen/text_size_report_label" />
+
+        <LinearLayout
+            android:id="@+id/urgency_group"
+            android:layout_width="match_parent"
+            android:layout_height="36dp"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/urgency_low_button"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/surface"
+                android:fontFamily="sans-serif"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:text="@string/urgency_low"
+                android:textAllCaps="false"
+                android:textColor="@color/muted"
+                android:textSize="@dimen/text_size_report_chip"
+                android:textStyle="bold"
+                app:cornerRadius="18dp"
+                app:strokeColor="@color/border"
+                app:strokeWidth="1dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/urgency_medium_button"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/surface"
+                android:fontFamily="sans-serif"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:text="@string/urgency_medium"
+                android:textAllCaps="false"
+                android:textColor="@color/muted"
+                android:textSize="@dimen/text_size_report_chip"
+                android:textStyle="bold"
+                app:cornerRadius="18dp"
+                app:strokeColor="@color/border"
+                app:strokeWidth="1dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/urgency_high_button"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/soft_red"
+                android:fontFamily="sans-serif"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:text="@string/urgency_high"
+                android:textAllCaps="false"
+                android:textColor="@color/red"
+                android:textSize="@dimen/text_size_report_chip"
+                android:textStyle="bold"
+                app:cornerRadius="18dp"
+                app:strokeColor="@color/red"
+                app:strokeWidth="1dp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/description_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:fontFamily="monospace"
+            android:includeFontPadding="false"
+            android:letterSpacing="0.08"
+            android:text="@string/what_is_happening"
+            android:textColor="@color/muted"
+            android:textSize="@dimen/text_size_report_label" />
+
+        <EditText
+            android:id="@+id/description_edit"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_report_card"
+            android:fontFamily="sans-serif"
+            android:gravity="top|start"
+            android:hint="@string/report_description"
+            android:includeFontPadding="false"
+            android:inputType="textCapSentences|textMultiLine"
+            android:maxLines="2"
+            android:paddingStart="12dp"
+            android:paddingTop="11dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="8dp"
+            android:textColor="@color/muted"
+            android:textColorHint="@color/muted"
+            android:textSize="@dimen/text_size_report_body" />
+
+        <FrameLayout
+            android:id="@+id/location_card"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_report_card"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp">
+
+            <ImageView
+                android:id="@+id/location_icon"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="start|center_vertical"
+                android:contentDescription=""
+                android:src="@drawable/ic_location_pin"
+                android:tint="@color/terracotta" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="36dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/location_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif"
+                    android:includeFontPadding="false"
+                    android:text="@string/current_location"
+                    android:textColor="@color/ink"
+                    android:textSize="@dimen/text_size_location_title"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/location_address"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="1dp"
+                    android:fontFamily="sans-serif"
+                    android:includeFontPadding="false"
+                    android:text="@string/location_address"
+                    android:textColor="@color/ink"
+                    android:textSize="@dimen/text_size_location_address" />
+            </LinearLayout>
+        </FrameLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/submit_button"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="16dp"
+            android:backgroundTint="@color/terracotta"
+            android:fontFamily="sans-serif"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:minHeight="0dp"
+            android:text="@string/submit_report"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_button"
+            android:textStyle="bold"
+            app:cornerRadius="14dp"
+            app:icon="@drawable/ic_check"
+            app:iconGravity="textStart"
+            app:iconPadding="8dp"
+            app:iconTint="@color/white" />
+
+    </LinearLayout>
+</ScrollView>
+
