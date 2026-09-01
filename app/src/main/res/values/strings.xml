@@ -21,4 +21,22 @@
     <string name="nav_adoption">Adoção</string>
     <string name="nav_profile">Perfil</string>
     <string name="heart_icon">♡</string>
+
+    <!-- Profile Screen -->
+    <string name="profile_name">Renata Ferreira</string>
+    <string name="profile_info">Vila Marlene • membro desde mar 2025</string>
+    <string name="profile_stat_reports">denúncias</string>
+    <string name="profile_stat_rescues">resgates</string>
+    <string name="profile_stat_campaigns">campanhas</string>
+    <string name="profile_reliability_label">CONFIABILIDADE</string>
+    <string name="profile_reliability_level">Nível ouro</string>
+    <string name="profile_reliability_percentage">94%</string>
+    <string name="profile_reliability_details">6 denúncias confirmadas • 0 descartadas • calculado com base no histórico validado pelas ONGs</string>
+    <string name="profile_activity_label">ATIVIDADE</string>
+    <string name="profile_activity_my_reports">Minhas denúncias</string>
+    <string name="profile_activity_my_reports_desc">6 protocolos, 4 concluídos</string>
+    <string name="profile_activity_campaigns">Campanhas confirmadas</string>
+    <string name="profile_activity_campaigns_desc">2 inscrições ativas</string>
+    <string name="profile_activity_favorites">Animais favoritados</string>
+    <string name="profile_avatar_letter">R</string>
 </resources>
