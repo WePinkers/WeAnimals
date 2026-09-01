@@ -39,4 +39,7 @@
     <string name="profile_activity_campaigns_desc">2 inscrições ativas</string>
     <string name="profile_activity_favorites">Animais favoritados</string>
     <string name="profile_avatar_letter">R</string>
+    <string name="profile_stat_reports_count">6</string>
+    <string name="profile_stat_rescues_count">3</string>
+    <string name="profile_stat_campaigns_count">12</string>
 </resources>

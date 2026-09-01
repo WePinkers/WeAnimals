@@ -5,12 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    tools:ignore="UnusedResources">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        tools:ignore="BaselineAlignedChildLayout">
 
         <!-- Header Section -->
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -78,7 +80,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                tools:ignore="UselessParent">
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -93,7 +96,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="serif"
-                        android:text="6"
+                        android:text="@string/profile_stat_reports_count"
                         android:textColor="@color/ink"
                         android:textSize="28sp"
                         android:textStyle="bold" />
@@ -119,7 +122,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="serif"
-                        android:text="3"
+                        android:text="@string/profile_stat_rescues_count"
                         android:textColor="@color/ink"
                         android:textSize="28sp"
                         android:textStyle="bold" />
@@ -145,7 +148,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="serif"
-                        android:text="12"
+                        android:text="@string/profile_stat_campaigns_count"
                         android:textColor="@color/ink"
                         android:textSize="28sp"
                         android:textStyle="bold" />
@@ -193,7 +196,8 @@
                         android:text="@string/profile_reliability_level"
                         android:textColor="@color/white"
                         android:textSize="10sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        tools:ignore="SmallSp" />
                 </RelativeLayout>
 
                 <TextView
