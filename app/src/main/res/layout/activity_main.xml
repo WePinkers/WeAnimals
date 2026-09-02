@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    tools:context=".MainActivity">
+    tools:context=".home.presentation.MainActivity">
 
     <ScrollView
         android:id="@+id/content_scroll"
@@ -175,154 +175,30 @@
                 android:textSize="@dimen/text_size_section_title"
                 android:textStyle="bold" />
 
-            <FrameLayout
+            <LinearLayout
+                android:id="@+id/reports_container"
                 android:layout_width="match_parent"
-                android:layout_height="68dp"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/bg_report_card">
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
 
-                <View
-                    android:layout_width="4dp"
-                    android:layout_height="44dp"
-                    android:layout_gravity="start|center_vertical"
-                    android:background="@color/red" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingStart="12dp"
-                    android:paddingEnd="11dp">
-
-                    <TextView
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
-                        android:background="@drawable/bg_icon_box"
-                        android:fontFamily="sans-serif"
-                        android:gravity="center"
-                        android:includeFontPadding="false"
-                        android:text="@string/heart_icon"
-                        android:textColor="@color/terracotta"
-                        android:textSize="@dimen/text_size_report_icon" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="sans-serif"
-                            android:includeFontPadding="false"
-                            android:maxLines="2"
-                            android:text="@string/first_report_title"
-                            android:textColor="@color/ink"
-                            android:textSize="@dimen/text_size_card_title"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:fontFamily="sans-serif"
-                            android:includeFontPadding="false"
-                            android:text="@string/first_report_protocol"
-                            android:textColor="@color/muted"
-                            android:textSize="@dimen/text_size_card_protocol" />
-                    </LinearLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="24dp"
-                        android:background="@drawable/bg_new_badge"
-                        android:fontFamily="monospace"
-                        android:gravity="center"
-                        android:includeFontPadding="false"
-                        android:minWidth="39dp"
-                        android:paddingStart="7dp"
-                        android:paddingEnd="7dp"
-                        android:text="@string/new_status"
-                        android:textColor="@color/terracotta_dark"
-                        android:textSize="@dimen/text_size_badge" />
-                </LinearLayout>
-            </FrameLayout>
-
-            <FrameLayout
+            <TextView
+                android:id="@+id/reports_empty"
                 android:layout_width="match_parent"
-                android:layout_height="72dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:background="@drawable/bg_report_card">
+                android:background="@drawable/bg_report_card"
+                android:fontFamily="sans-serif"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:paddingStart="16dp"
+                android:paddingTop="18dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="18dp"
+                android:text="@string/no_reports"
+                android:textColor="@color/muted"
+                android:textSize="@dimen/text_size_report_body"
+                android:visibility="gone" />
 
-                <View
-                    android:layout_width="4dp"
-                    android:layout_height="44dp"
-                    android:layout_gravity="start|center_vertical"
-                    android:background="@color/gold" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingStart="12dp"
-                    android:paddingEnd="11dp">
-
-                    <ImageView
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
-                        android:background="@drawable/bg_icon_box"
-                        android:contentDescription=""
-                        android:padding="6dp"
-                        android:src="@drawable/ic_paw" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="sans-serif"
-                            android:includeFontPadding="false"
-                            android:maxLines="2"
-                            android:text="@string/second_report_title"
-                            android:textColor="@color/ink"
-                            android:textSize="@dimen/text_size_card_title"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:fontFamily="sans-serif"
-                            android:includeFontPadding="false"
-                            android:text="@string/second_report_protocol"
-                            android:textColor="@color/muted"
-                            android:textSize="@dimen/text_size_card_protocol" />
-                    </LinearLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="24dp"
-                        android:background="@drawable/bg_progress_badge"
-                        android:fontFamily="monospace"
-                        android:gravity="center"
-                        android:includeFontPadding="false"
-                        android:minWidth="48dp"
-                        android:paddingStart="7dp"
-                        android:paddingEnd="7dp"
-                        android:text="@string/in_progress_status"
-                        android:textColor="@color/terracotta_dark"
-                        android:textSize="@dimen/text_size_map_chip" />
-                </LinearLayout>
-            </FrameLayout>
         </LinearLayout>
     </ScrollView>
 
@@ -464,4 +340,3 @@
         </LinearLayout>
     </LinearLayout>
 </FrameLayout>
-

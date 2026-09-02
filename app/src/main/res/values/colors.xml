@@ -18,6 +18,8 @@
     <color name="low_urgency">#FF31805B</color>
     <color name="low_urgency_light">#FFE1EFE7</color>
     <color name="medium_urgency_light">#FFFFF0CF</color>
+    <color name="status_pending">#FFE2DAC7</color>
     <color name="map_background">#FFF0EDE1</color>
     <color name="map_grid">#FFDFDCCD</color>
+    <color name="triage_background">#FFF8ECE9</color>
 </resources>

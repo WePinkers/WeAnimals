@@ -1,0 +1,31 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function ownsReport(data) {
+      return signedIn() && data.userId == request.auth.uid;
+    }
+
+    match /reports/{reportId} {
+      allow create: if ownsReport(request.resource.data)
+        && request.resource.data.protocolNumber is int
+        && request.resource.data.status == 'new';
+
+      allow read: if ownsReport(resource.data);
+
+      allow update: if ownsReport(resource.data)
+        && request.resource.data.userId == resource.data.userId
+        && request.resource.data.protocolNumber == resource.data.protocolNumber;
+
+      allow delete: if false;
+    }
+
+    match /metadata/reports_counter {
+      allow read, write: if signedIn();
+    }
+  }
+}

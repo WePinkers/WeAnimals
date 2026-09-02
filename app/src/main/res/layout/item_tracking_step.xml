@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="58dp">
+
+    <View
+        android:id="@+id/tracking_step_connector"
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="20dp"
+        android:background="@color/status_pending" />
+
+    <TextView
+        android:id="@+id/tracking_step_marker"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:fontFamily="sans-serif"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:textSize="@dimen/text_size_tracking_marker"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tracking_step_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
+            android:includeFontPadding="false"
+            android:textColor="@color/ink"
+            android:textSize="@dimen/text_size_tracking_step"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tracking_step_subtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:fontFamily="sans-serif"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:textColor="@color/muted"
+            android:textSize="@dimen/text_size_tracking_subtitle" />
+    </LinearLayout>
+</FrameLayout>

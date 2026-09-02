@@ -2,17 +2,22 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:name=".WeAnimalsApplication"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.WeAnimals">
         <activity
-            android:name=".MainActivity"
+            android:name=".home.presentation.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,7 +26,19 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ReportActivity"
+            android:name=".report.presentation.ReportActivity"
+            android:exported="false" />
+        <activity
+            android:name=".report.presentation.sent.ReportSentActivity"
+            android:exported="false" />
+        <activity
+            android:name=".locationsearch.presentation.LocationSearchActivity"
+            android:exported="false" />
+        <activity
+            android:name=".triage.presentation.TriageActivity"
+            android:exported="false" />
+        <activity
+            android:name=".tracking.presentation.TrackingActivity"
             android:exported="false" />
     </application>
 

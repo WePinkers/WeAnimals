@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "673010529981",
+    "project_id": "weanimals-642a9",
+    "storage_bucket": "weanimals-642a9.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:673010529981:android:02a240a1259d602f36e9d4",
+        "android_client_info": {
+          "package_name": "com.example.weanimals"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDu7QZ7k3RdnmHNYL9Nop0oAJsZbCge5OY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

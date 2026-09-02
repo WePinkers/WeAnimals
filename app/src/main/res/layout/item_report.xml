@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/report_card"
+    android:layout_width="match_parent"
+    android:layout_height="72dp"
+    android:layout_marginTop="10dp"
+    android:background="@drawable/bg_report_card"
+    >
+
+    <View
+        android:id="@+id/report_accent"
+        android:layout_width="4dp"
+        android:layout_height="44dp"
+        android:layout_gravity="start|center_vertical"
+        android:background="@color/red" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="12dp"
+        android:paddingEnd="11dp">
+
+        <ImageView
+            android:id="@+id/report_icon"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="@drawable/bg_icon_box"
+            android:contentDescription=""
+            android:padding="6dp"
+            android:src="@drawable/ic_paw"
+            android:tint="@color/terracotta" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/report_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif"
+                android:includeFontPadding="false"
+                android:maxLines="2"
+                android:textColor="@color/ink"
+                android:textSize="@dimen/text_size_card_title"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/report_protocol"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:fontFamily="sans-serif"
+                android:includeFontPadding="false"
+                android:textColor="@color/muted"
+                android:textSize="@dimen/text_size_card_protocol" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/report_status"
+            android:layout_width="wrap_content"
+            android:layout_height="24dp"
+            android:fontFamily="monospace"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:minWidth="48dp"
+            android:paddingStart="7dp"
+            android:paddingEnd="7dp"
+            android:textColor="@color/terracotta_dark"
+            android:textSize="@dimen/text_size_badge" />
+    </LinearLayout>
+</FrameLayout>

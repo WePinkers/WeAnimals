@@ -9,7 +9,7 @@
     android:fillViewport="true"
     android:overScrollMode="never"
     android:scrollbars="none"
-    tools:context=".ReportActivity">
+    tools:context=".report.presentation.ReportActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -328,6 +328,9 @@
             android:layout_height="52dp"
             android:layout_marginTop="16dp"
             android:background="@drawable/bg_report_card"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
             android:paddingStart="12dp"
             android:paddingEnd="12dp">
 
@@ -365,14 +368,14 @@
                     android:layout_marginTop="1dp"
                     android:fontFamily="sans-serif"
                     android:includeFontPadding="false"
-                    android:text="@string/location_address"
+                    android:text="@string/location_loading"
                     android:textColor="@color/ink"
                     android:textSize="@dimen/text_size_location_address" />
             </LinearLayout>
         </FrameLayout>
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/submit_button"
+            android:id="@+id/continue_screening_button"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_marginTop="16dp"
@@ -381,7 +384,7 @@
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:minHeight="0dp"
-            android:text="@string/submit_report"
+            android:text="@string/continue_screening"
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="@dimen/text_size_button"
