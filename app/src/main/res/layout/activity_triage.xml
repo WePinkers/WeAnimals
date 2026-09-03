@@ -1,14 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    android:fillViewport="true"
-    android:overScrollMode="never"
-    android:scrollbars="none"
-    tools:context=".triage.presentation.TriageActivity">
+    android:orientation="vertical"
+    tools:context=".reporting.triage.presentation.TriageActivity">
+
+    <include
+        android:id="@+id/triage_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        layout="@layout/view_screen_header" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true"
+        android:overScrollMode="never"
+        android:scrollbars="none">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,40 +30,6 @@
         android:paddingTop="16dp"
         android:paddingEnd="18dp"
         android:paddingBottom="24dp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <ImageButton
-                android:id="@+id/back_button"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:background="@drawable/bg_back_button"
-                android:contentDescription="@string/back"
-                android:padding="7dp"
-                android:src="@drawable/ic_arrow_back"
-                android:tint="@color/ink" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:fontFamily="serif"
-                android:includeFontPadding="false"
-                android:text="@string/triage_title"
-                android:textColor="@color/ink"
-                android:textSize="@dimen/text_size_report_title"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="8dp"
-            android:background="@color/border" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -420,4 +398,5 @@
             app:iconPadding="8dp"
             app:iconTint="@color/white" />
     </LinearLayout>
-</ScrollView>
+    </ScrollView>
+</LinearLayout>

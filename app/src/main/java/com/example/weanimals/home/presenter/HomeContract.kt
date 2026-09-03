@@ -1,6 +1,6 @@
 package com.example.weanimals.home.presenter
 
-import com.example.weanimals.report.domain.Report
+import com.example.weanimals.reporting.report.domain.Report
 
 interface HomeContract {
     interface View {

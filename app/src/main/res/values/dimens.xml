@@ -48,4 +48,26 @@
     <dimen name="text_size_tracking_subtitle">10sp</dimen>
     <dimen name="text_size_tracking_card_title">11sp</dimen>
     <dimen name="text_size_tracking_card_body">10sp</dimen>
+    <dimen name="text_size_details_title">17sp</dimen>
+    <dimen name="text_size_details_protocol">9sp</dimen>
+    <dimen name="text_size_details_meta">8sp</dimen>
+    <dimen name="text_size_details_label">9sp</dimen>
+    <dimen name="text_size_details_photo">11sp</dimen>
+    <dimen name="text_size_details_chip">11sp</dimen>
+    <dimen name="text_size_details_body">11sp</dimen>
+    <dimen name="text_size_details_location_title">11sp</dimen>
+    <dimen name="text_size_details_location_subtitle">9sp</dimen>
+    <dimen name="text_size_details_question">11sp</dimen>
+    <dimen name="text_size_details_classification_label">9sp</dimen>
+    <dimen name="text_size_details_classification_title">14sp</dimen>
+    <dimen name="text_size_details_classification_body">10sp</dimen>
+    <dimen name="text_size_details_state">14sp</dimen>
+    <dimen name="text_size_chat_avatar">15sp</dimen>
+    <dimen name="text_size_chat_agent">12sp</dimen>
+    <dimen name="text_size_chat_protocol">9sp</dimen>
+    <dimen name="text_size_chat_message">11sp</dimen>
+    <dimen name="text_size_chat_time">8sp</dimen>
+    <dimen name="text_size_chat_state">13sp</dimen>
+    <dimen name="text_size_chat_error">10sp</dimen>
+    <dimen name="text_size_chat_input">11sp</dimen>
 </resources>

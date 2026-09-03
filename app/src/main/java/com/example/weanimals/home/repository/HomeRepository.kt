@@ -1,6 +1,6 @@
 package com.example.weanimals.home.repository
 
-import com.example.weanimals.report.domain.Report
+import com.example.weanimals.reporting.report.domain.Report
 import kotlinx.coroutines.flow.Flow
 
 interface HomeRepository {

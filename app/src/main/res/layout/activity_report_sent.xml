@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    tools:context=".report.presentation.sent.ReportSentActivity">
+    tools:context=".reporting.report.presentation.sent.ReportSentActivity">
 
     <ScrollView
         android:id="@+id/sent_scroll"

@@ -1,6 +1,6 @@
 package com.example.weanimals.home.repository
 
-import com.example.weanimals.report.repository.ReportRepository
+import com.example.weanimals.reporting.report.repository.ReportRepository
 
 /** Home's read adapter. The Firebase details remain hidden behind the report repository. */
 class FirebaseHomeRepository(

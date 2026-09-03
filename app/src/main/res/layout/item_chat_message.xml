@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/chat_message_root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp">
+
+    <LinearLayout
+        android:id="@+id/incoming_message_group"
+        android:layout_width="220dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/incoming_message_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_chat_incoming"
+            android:fontFamily="sans-serif"
+            android:includeFontPadding="false"
+            android:paddingStart="12dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="10dp"
+            android:textColor="@color/ink"
+            android:textSize="@dimen/text_size_chat_message" />
+
+        <TextView
+            android:id="@+id/incoming_message_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:fontFamily="sans-serif"
+            android:includeFontPadding="false"
+            android:textColor="@color/muted"
+            android:textSize="@dimen/text_size_chat_time" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/outgoing_message_group"
+        android:layout_width="220dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/outgoing_message_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:background="@drawable/bg_chat_outgoing"
+            android:fontFamily="sans-serif"
+            android:includeFontPadding="false"
+            android:paddingStart="12dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="10dp"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_chat_message" />
+
+        <TextView
+            android:id="@+id/outgoing_message_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="3dp"
+            android:fontFamily="sans-serif"
+            android:includeFontPadding="false"
+            android:textColor="@color/muted"
+            android:textSize="@dimen/text_size_chat_time" />
+    </LinearLayout>
+</FrameLayout>

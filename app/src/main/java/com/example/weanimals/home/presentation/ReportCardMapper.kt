@@ -1,8 +1,8 @@
 package com.example.weanimals.home.presentation
 
 import com.example.weanimals.R
-import com.example.weanimals.report.domain.Report
-import com.example.weanimals.report.domain.ReportStatus
+import com.example.weanimals.reporting.report.domain.Report
+import com.example.weanimals.reporting.report.domain.ReportStatus
 
 data class ReportCardUiModel(
     val animalNameRes: Int,

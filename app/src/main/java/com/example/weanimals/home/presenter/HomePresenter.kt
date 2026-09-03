@@ -3,7 +3,7 @@ package com.example.weanimals.home.presenter
 import com.example.weanimals.core.base.BasePresenter
 import com.example.weanimals.home.interactor.MarkReportAsViewedInteractor
 import com.example.weanimals.home.interactor.ObserveUserReportsInteractor
-import com.example.weanimals.report.domain.Report
+import com.example.weanimals.reporting.report.domain.Report
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
@@ -50,7 +50,7 @@ class HomePresenter(
         lastReports?.let { reports -> withView { it.showReports(reports) } }
         withView { it.openReport(report) }
 
-        if (report.status == com.example.weanimals.report.domain.ReportStatus.NEW
+        if (report.status == com.example.weanimals.reporting.report.domain.ReportStatus.NEW
             && !report.isViewed
         ) {
             presenterScope.launch {

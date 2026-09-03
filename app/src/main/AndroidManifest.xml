@@ -17,7 +17,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.WeAnimals">
         <activity
-            android:name=".home.presentation.MainActivity"
+            android:name=".home.presentation.HomeActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,20 +26,27 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".report.presentation.ReportActivity"
+            android:name=".reporting.report.presentation.ReportActivity"
             android:exported="false" />
         <activity
-            android:name=".report.presentation.sent.ReportSentActivity"
+            android:name=".reporting.report.presentation.sent.ReportSentActivity"
             android:exported="false" />
         <activity
-            android:name=".locationsearch.presentation.LocationSearchActivity"
+            android:name=".reporting.locationsearch.presentation.LocationSearchActivity"
             android:exported="false" />
         <activity
-            android:name=".triage.presentation.TriageActivity"
+            android:name=".reporting.triage.presentation.TriageActivity"
             android:exported="false" />
         <activity
-            android:name=".tracking.presentation.TrackingActivity"
+            android:name=".reporting.tracking.presentation.TrackingActivity"
             android:exported="false" />
+        <activity
+            android:name=".reporting.details.presentation.ReportDetailsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".reporting.chat.presentation.CaseChatActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
     </application>
 
 </manifest>

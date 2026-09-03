@@ -10,6 +10,16 @@ service cloud.firestore {
       return signedIn() && data.userId == request.auth.uid;
     }
 
+    function ownsReportById(reportId) {
+      return signedIn()
+        && exists(/databases/$(database)/documents/reports/$(reportId))
+        && ownsReport(get(/databases/$(database)/documents/reports/$(reportId)).data);
+    }
+
+    function isTeamMember() {
+      return signedIn() && request.auth.token.teamMember == true;
+    }
+
     match /reports/{reportId} {
       allow create: if ownsReport(request.resource.data)
         && request.resource.data.protocolNumber is int
@@ -22,6 +32,30 @@ service cloud.firestore {
         && request.resource.data.protocolNumber == resource.data.protocolNumber;
 
       allow delete: if false;
+
+      match /messages/{messageId} {
+        allow read: if ownsReportById(reportId) || isTeamMember();
+
+        allow create: if (
+          ownsReportById(reportId)
+          && request.resource.data.reportId == reportId
+          && request.resource.data.senderId == request.auth.uid
+          && request.resource.data.senderRole == 'user'
+          && request.resource.data.text is string
+          && request.resource.data.text.size() > 0
+          && request.resource.data.text.size() <= 1000
+        ) || (
+          isTeamMember()
+          && request.resource.data.reportId == reportId
+          && request.resource.data.senderId == request.auth.uid
+          && request.resource.data.senderRole == 'team'
+          && request.resource.data.text is string
+          && request.resource.data.text.size() > 0
+          && request.resource.data.text.size() <= 1000
+        );
+
+        allow update, delete: if false;
+      }
     }
 
     match /metadata/reports_counter {
