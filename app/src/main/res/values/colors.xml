@@ -2,9 +2,43 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="background">#FFF9F5EB</color>
+    <color name="background">#FAF8F2</color>
     <color name="surface">#FFFFFFFF</color>
     <color name="ink">#FF12271F</color>
+
+    <color name="pine900">#FF132A20</color>
+    <color name="pine_900">#FF132A20</color>
+    <color name="pine800">#FF1F3D2E</color>
+    <color name="pine_800">#FF1F3D2E</color>
+    <color name="pine700">#FF2C5240</color>
+    <color name="pine_700">#FF2C5240</color>
+
+    <color name="sand100">#FFF3EFE4</color>
+    <color name="sand_100">#FFF3EFE4</color>
+    <color name="sand50">#FFFAF8F2</color>
+    <color name="sand_50">#FFFAF8F2</color>
+
+    <color name="clay600">#FFA85C3C</color>
+    <color name="clay_600">#FFA85C3C</color>
+    <color name="clay500">#FFBE6D46</color>
+    <color name="clay_500">#FFBE6D46</color>
+
+    <color name="brass500">#FFD9A441</color>
+    <color name="brass_500">#FFD9A441</color>
+    <color name="brass100">#FFF3E1B5</color>
+    <color name="brass_100">#FFF3E1B5</color>
+
+    <color name="alert600">#FFA83232</color>
+    <color name="alert_600">#FFA83232</color>
+    <color name="alert100">#FFF3DADA</color>
+    <color name="alert_100">#FFF3DADA</color>
+
+    <color name="ink900">#FF1C1A16</color>
+    <color name="ink_900">#FF1C1A16</color>
+    <color name="ink600">#FF5C5548</color>
+    <color name="ink_600">#FF5C5548</color>
+
+    <color name="line_border">#FFDDD6C4</color>
     <color name="muted">#FF5A625B</color>
     <color name="terracotta">#FFAD5E3B</color>
     <color name="terracotta_dark">#FF994D31</color>
@@ -15,6 +49,6 @@
     <color name="soft_gold">#FFF5E4B9</color>
     <color name="gold">#FFD49B31</color>
     <color name="red">#FFB73538</color>
-    <color name="map_background">#FFF0EDE1</color>
+    <color name="map_background">#EFEADC</color>
     <color name="map_grid">#FFDFDCCD</color>
 </resources>

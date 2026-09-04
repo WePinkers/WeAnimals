@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_root"
+    android:layout_width="match_parent"
+    android:layout_height="68dp"
+    android:layout_marginBottom="10dp"
+    android:background="@drawable/bg_report_card">
+
+    <View
+        android:id="@+id/urgency_indicator"
+        android:layout_width="5dp"
+        android:layout_height="44dp"
+        android:layout_gravity="start|center_vertical"
+        android:background="@color/alert600" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingEnd="12dp">
+
+        <ImageView
+            android:id="@+id/occurrence_icon"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="@drawable/bg_icon_box"
+            android:contentDescription="Ícone da ocorrência"
+            android:padding="8dp"
+            android:src="@drawable/ic_paw"
+            app:tint="@color/clay600" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="11dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/occurrence_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans"
+                android:maxLines="1"
+                android:textColor="@color/ink900"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                tools:text="Filhote — Rua Aimberê" />
+
+            <TextView
+                android:id="@+id/occurrence_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:fontFamily="sans"
+                android:textColor="@color/ink600"
+                android:textSize="10sp"
+                tools:text="420 m · protocolo #4471" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/occurrence_badge"
+            android:layout_width="wrap_content"
+            android:layout_height="22dp"
+            android:background="@drawable/bg_new_badge"
+            android:fontFamily="sans"
+            android:gravity="center"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:textColor="@color/alert600"
+            android:textSize="9sp"
+            android:textStyle="bold"
+            tools:text="Novo" />
+    </LinearLayout>
+</FrameLayout>
