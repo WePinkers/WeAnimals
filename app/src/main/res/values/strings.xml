@@ -42,4 +42,51 @@
     <string name="profile_stat_reports_count">6</string>
     <string name="profile_stat_rescues_count">3</string>
     <string name="profile_stat_campaigns_count">12</string>
+    <!-- Detail Screens -->
+    <string name="title_my_reports">Minhas denúncias</string>
+    <string name="reports_summary">6 protocolos, 4 concluídos</string>
+    <string name="protocol_prefix">Protocolo #</string>
+    <string name="status_completed">Concluído</string>
+    <string name="status_pending">Em análise</string>
+
+    <string name="title_campaigns">Campanhas</string>
+    <string name="campaign_adoption">Campanha de Adoção Especial</string>
+    <string name="campaign_food">Arrecadação de Alimentos</string>
+    <string name="campaign_clothing">Doação de Agasalhos Pet</string>
+
+    <string name="title_favorites">Favoritos</string>
+    <string name="pet_name_golden">Frederico</string>
+    <string name="pet_breed_golden">Golden Retriever</string>
+    <string name="pet_info_golden">Vacinado •Castrado •Pronto para adoção</string>
+    <string name="pet_desc_golden">Frederico é um cão muito dócil e brincalhão, ideal para famílias com crianças.</string>
+    <string name="btn_interest_adopt">Tenho interesse em adotar</string>
+    <string name="campaign_status_active">Ativa</string>
+    <string name="campaign_renata_summary">2 inscrições ativas</string>
+
+    <!-- Detailed Campaigns -->
+    <string name="campaign_adoption_title">Campanha de Adoção</string>
+    <string name="campaign_adoption_address">Endereço: Rua dos Pets, 123 - Vila Marlene</string>
+    <string name="campaign_adoption_contact">Falar com: Sra. Maria Silva</string>
+
+    <string name="campaign_items_title">Roupas e Petiscos</string>
+    <string name="campaign_items_address">Endereço: Praça da Amizade Pet, 45 - Centro</string>
+    <string name="campaign_items_contact">Falar com: Sr. Ricardo Oliveira</string>
+
+    <!-- Report Types -->
+    <string name="report_type_maus_tratos">Denúncia de maus tratos</string>
+    <string name="report_type_agressao">Agressão em flagrante</string>
+    <string name="report_type_abandono">Denúncia de abandono</string>
+    <string name="report_type_risco">Animal em situação de risco</string>
+    <string name="report_type_higiene">Falta de higiene e abrigo</string>
+    <string name="report_type_envenenamento">Denúncia de envenenamento</string>
+
+    <!-- Responsible Contact Info -->
+    <string name="title_contact_responsible">Responsável</string>
+    <string name="responsible_name">Felipe Menegazzi</string>
+    <string name="responsible_phone">(11) 98765-4321</string>
+    <string name="responsible_email">contato@weanimals.com.br</string>
+    <string name="btn_chat_responsible">Conversar com responsável</string>
+    <string name="label_name">Nome completo</string>
+    <string name="label_phone">Celular</string>
+    <string name="label_email">E-mail</string>
 </resources>

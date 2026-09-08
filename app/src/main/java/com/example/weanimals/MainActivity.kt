@@ -1,5 +1,6 @@
 package com.example.weanimals
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
@@ -40,6 +41,19 @@ class MainActivity : AppCompatActivity() {
 
         binding.viewMapButton.setOnClickListener {
             binding.homeContent.smoothScrollTo(0, binding.mapPreview.mapRoot.top)
+        }
+
+        // Profile Item Clicks
+        binding.profileContent.itemMyReports.rootMyReports.setOnClickListener {
+            startActivity(Intent(this, MyReportsActivity::class.java))
+        }
+
+        binding.profileContent.itemCampaigns.rootCampaigns.setOnClickListener {
+            startActivity(Intent(this, CampaignsActivity::class.java))
+        }
+
+        binding.profileContent.itemFavorites.rootFavorites.setOnClickListener {
+            startActivity(Intent(this, FavoritesActivity::class.java))
         }
     }
 

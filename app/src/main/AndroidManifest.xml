@@ -20,6 +20,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".MyReportsActivity" />
+        <activity android:name=".CampaignsActivity" />
+        <activity android:name=".FavoritesActivity" />
+        <activity android:name=".ContactResponsibleActivity" />
     </application>
 
 </manifest>

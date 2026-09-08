@@ -247,7 +247,7 @@
                 android:background="@color/border" />
 
             <!-- Activity Items -->
-            <include layout="@layout/item_profile_activity" />
+            <include android:id="@+id/item_my_reports" layout="@layout/item_profile_activity" />
 
             <View
                 android:layout_width="match_parent"
@@ -255,7 +255,7 @@
                 android:background="@color/border"
                 android:layout_marginHorizontal="0dp"/>
 
-            <include layout="@layout/item_profile_activity_campaigns" />
+            <include android:id="@+id/item_campaigns" layout="@layout/item_profile_activity_campaigns" />
 
             <View
                 android:layout_width="match_parent"
@@ -263,7 +263,7 @@
                 android:background="@color/border"
                 android:layout_marginHorizontal="0dp"/>
 
-            <include layout="@layout/item_profile_activity_favorites" />
+            <include android:id="@+id/item_favorites" layout="@layout/item_profile_activity_favorites" />
 
         </LinearLayout>
     </LinearLayout>
