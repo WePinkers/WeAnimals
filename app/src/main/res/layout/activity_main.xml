@@ -12,19 +12,31 @@
         android:id="@+id/fragment_container"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
+        app:layout_constraintBottom_toTopOf="@id/bottom_nav_divider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <View
+        android:id="@+id/bottom_nav_divider"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="@color/line_border"
+        app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
         android:layout_width="0dp"
-        android:layout_height="68dp"
+        android:layout_height="wrap_content"
+        android:minHeight="64dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
         android:background="@color/white"
         app:elevation="8dp"
         app:itemActiveIndicatorStyle="@null"
-        app:itemIconSize="22dp"
+        app:itemIconSize="24dp"
         app:itemIconTint="@color/bottom_nav_color"
         app:itemRippleColor="@null"
         app:itemTextColor="@color/bottom_nav_color"

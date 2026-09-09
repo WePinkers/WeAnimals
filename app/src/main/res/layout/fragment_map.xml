@@ -14,93 +14,15 @@
         android:layout_height="match_parent"
         android:background="@color/map_background">
 
-        <include
-            android:id="@+id/map_preview"
-            layout="@layout/map_preview"
+        <!-- Interactive Geographic Map (CartoDB Positron / OSMDroid) -->
+        <org.osmdroid.views.MapView
+            android:id="@+id/map_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-        <!-- User Location Pin -->
-        <View
-            android:id="@+id/user_location_pin"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:background="@drawable/bg_emergency_button"
-            android:backgroundTint="@color/pine800"
+            android:layout_height="match_parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.48"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.32" />
-
-        <!-- Incident Pin 1 (Red) -->
-        <ImageView
-            android:id="@+id/pin_1"
-            android:layout_width="24dp"
-            android:layout_height="28dp"
-            android:clickable="true"
-            android:contentDescription="Pin Ocorrência 1"
-            android:focusable="true"
-            android:src="@drawable/ic_map_pin"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.22"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.16"
-            app:tint="@color/alert600" />
-
-        <!-- Incident Pin 2 (Gold) -->
-        <ImageView
-            android:id="@+id/pin_2"
-            android:layout_width="24dp"
-            android:layout_height="28dp"
-            android:clickable="true"
-            android:contentDescription="Pin Ocorrência 2"
-            android:focusable="true"
-            android:src="@drawable/ic_map_pin"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.75"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.20"
-            app:tint="@color/brass500" />
-
-        <!-- Incident Pin 3 (Clay) -->
-        <ImageView
-            android:id="@+id/pin_3"
-            android:layout_width="24dp"
-            android:layout_height="28dp"
-            android:clickable="true"
-            android:contentDescription="Pin Ocorrência 3"
-            android:focusable="true"
-            android:src="@drawable/ic_map_pin"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.82"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.36"
-            app:tint="@color/clay600" />
-
-        <!-- Incident Pin 4 (Green) -->
-        <ImageView
-            android:id="@+id/pin_4"
-            android:layout_width="24dp"
-            android:layout_height="28dp"
-            android:clickable="true"
-            android:contentDescription="Pin Ocorrência 4"
-            android:focusable="true"
-            android:src="@drawable/ic_map_pin"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.30"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.38"
-            app:tint="@color/pine700" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <!-- Filter Chips in Horizontal Scroll -->
         <HorizontalScrollView
@@ -171,6 +93,144 @@
             </com.google.android.material.chip.ChipGroup>
         </HorizontalScrollView>
 
+        <!-- Floating Compact Legend Container -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/legend_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="276dp"
+            app:cardBackgroundColor="#E6FFFFFF"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:strokeColor="@color/line_border"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="8dp">
+
+                <!-- Legend Item Red -->
+                <LinearLayout
+                    android:id="@+id/legend_red"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="4dp"
+                    android:paddingVertical="3dp">
+
+                    <TextView
+                        android:id="@+id/indicator_red"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="4dp"
+                        android:text="►"
+                        android:textColor="@color/alert600"
+                        android:textSize="9sp"
+                        android:visibility="invisible"
+                        tools:visibility="visible" />
+
+                    <View
+                        android:layout_width="8dp"
+                        android:layout_height="8dp"
+                        android:background="@drawable/bg_new_badge"
+                        android:backgroundTint="@color/alert600" />
+
+                    <TextView
+                        android:id="@+id/text_red"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:fontFamily="sans"
+                        android:text="Emergência / Alta"
+                        android:textColor="@color/ink900"
+                        android:textSize="10sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- Legend Item Yellow -->
+                <LinearLayout
+                    android:id="@+id/legend_yellow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="4dp"
+                    android:paddingVertical="3dp">
+
+                    <TextView
+                        android:id="@+id/indicator_yellow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="4dp"
+                        android:text="►"
+                        android:textColor="@color/brass500"
+                        android:textSize="9sp"
+                        android:visibility="invisible" />
+
+                    <View
+                        android:layout_width="8dp"
+                        android:layout_height="8dp"
+                        android:background="@drawable/bg_new_badge"
+                        android:backgroundTint="@color/brass500" />
+
+                    <TextView
+                        android:id="@+id/text_yellow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:fontFamily="sans"
+                        android:text="Atenção / Média"
+                        android:textColor="@color/ink900"
+                        android:textSize="10sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- Legend Item Green -->
+                <LinearLayout
+                    android:id="@+id/legend_green"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="4dp"
+                    android:paddingVertical="3dp">
+
+                    <TextView
+                        android:id="@+id/indicator_green"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="4dp"
+                        android:text="►"
+                        android:textColor="@color/pine700"
+                        android:textSize="9sp"
+                        android:visibility="invisible" />
+
+                    <View
+                        android:layout_width="8dp"
+                        android:layout_height="8dp"
+                        android:background="@drawable/bg_new_badge"
+                        android:backgroundTint="@color/pine700" />
+
+                    <TextView
+                        android:id="@+id/text_green"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:fontFamily="sans"
+                        android:text="Encaminhado / Baixa"
+                        android:textColor="@color/ink900"
+                        android:textSize="10sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- Draggable Bottom Sheet Panel -->
@@ -210,7 +270,7 @@
             android:textSize="12sp"
             android:textStyle="bold" />
 
-        <!-- Urgency Legend -->
+        <!-- Urgency Legend in Bottom Sheet -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

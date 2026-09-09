@@ -27,14 +27,16 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Handle WindowInsets safely
+        // Apply System WindowInsets safely to avoid cutting off bottom navigation or status bar
         ViewCompat.setOnApplyWindowInsetsListener(binding.main) { _, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
 
+            // Apply status bar / notch inset to top of fragment container
             binding.fragmentContainer.updatePadding(
                 top = systemBars.top
             )
 
+            // Apply bottom gesture bar inset to bottom navigation view padding
             binding.bottomNavigation.updatePadding(
                 bottom = systemBars.bottom
             )
