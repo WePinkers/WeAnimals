@@ -26,6 +26,18 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".adoption.listing.presentation.AdoptionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".adoption.detail.presentation.AnimalDetailsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".adoption.questionnaire.presentation.AdoptionQuestionnaireActivity"
+            android:exported="false" />
+        <activity
+            android:name=".adoption.compatibility.presentation.CompatibleProfileActivity"
+            android:exported="false" />
+        <activity
             android:name=".reporting.report.presentation.ReportActivity"
             android:exported="false" />
         <activity

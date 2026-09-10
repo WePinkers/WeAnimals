@@ -9,7 +9,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import com.example.weanimals.R
 import com.example.weanimals.WeAnimalsApplication
-import com.example.weanimals.databinding.ActivityMainBinding
+import com.example.weanimals.core.navigation.MainNavigation
+import com.example.weanimals.databinding.ActivityHomeBinding
 import com.example.weanimals.databinding.ItemReportBinding
 import com.example.weanimals.home.presenter.HomeContract
 import com.example.weanimals.home.presenter.HomePresenter
@@ -19,7 +20,7 @@ import com.example.weanimals.reporting.tracking.presentation.TrackingActivity
 
 class HomeActivity : AppCompatActivity(), HomeContract.View {
 
-    private lateinit var binding: ActivityMainBinding
+    private lateinit var binding: ActivityHomeBinding
     private val presenter: HomePresenter by lazy {
         (application as WeAnimalsApplication).appContainer.createHomePresenter()
     }
@@ -27,9 +28,10 @@ class HomeActivity : AppCompatActivity(), HomeContract.View {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         configureSystemBars()
-        binding = ActivityMainBinding.inflate(layoutInflater)
+        binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setupInteractions()
+        MainNavigation.bind(this, binding.mainNavigation, MainNavigation.Destination.HOME)
     }
 
     override fun onStart() {

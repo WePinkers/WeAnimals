@@ -58,6 +58,18 @@ service cloud.firestore {
       }
     }
 
+    // Public adoption cards contain only shelter/animal information.
+    // NGO management and its write permissions belong to the future staff flow.
+    match /animais/{animalId} {
+      allow read: if signedIn() && resource.data.status == 'disponivel';
+      allow write: if false;
+    }
+
+    match /adoption_profiles/{userId} {
+      allow read, create, update: if signedIn() && request.auth.uid == userId;
+      allow delete: if false;
+    }
+
     match /metadata/reports_counter {
       allow read, write: if signedIn();
     }

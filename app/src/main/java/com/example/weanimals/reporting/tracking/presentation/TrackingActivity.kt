@@ -10,6 +10,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import com.example.weanimals.R
 import com.example.weanimals.WeAnimalsApplication
+import com.example.weanimals.core.navigation.MainNavigation
 import com.example.weanimals.databinding.ActivityTrackingBinding
 import com.example.weanimals.databinding.ItemTrackingStepBinding
 import com.example.weanimals.reporting.chat.presentation.CaseChatActivity
@@ -35,6 +36,7 @@ class TrackingActivity : AppCompatActivity(), TrackingContract.View {
         configureSystemBars()
         binding = ActivityTrackingBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        MainNavigation.bind(this, binding.mainNavigation)
     }
 
     override fun onStart() {

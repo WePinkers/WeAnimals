@@ -1,0 +1,35 @@
+package com.example.weanimals.adoption.detail.presenter
+
+import com.example.weanimals.adoption.detail.domain.AnimalDetails
+
+interface AnimalDetailsContract {
+    interface View {
+        fun showLoading()
+        fun showAnimal(details: AnimalDetails)
+        fun showDistance(distanceKm: Double?, shelterAddress: String)
+        fun showError(error: Throwable)
+        fun showFavorite(favorite: Boolean)
+        fun shareAnimal(details: AnimalDetails)
+        fun requestUserLocation()
+        fun showAdoptionProfileLoading(loading: Boolean)
+        fun showAdoptionProfileError(error: Throwable)
+        fun openAdoptionQuestionnaire(animalId: String)
+        fun openCompatibleProfile(animalId: String)
+        fun closeScreen()
+        fun showActionUnavailable()
+    }
+
+    interface Presenter {
+        fun attachView(view: View)
+        fun detachView()
+        fun destroy()
+        fun start()
+        fun onRetryClicked()
+        fun onBackClicked()
+        fun onShareClicked()
+        fun onFavoriteClicked()
+        fun onConversationClicked()
+        fun onAdoptClicked()
+        fun onLocationAccessResult(available: Boolean)
+    }
+}

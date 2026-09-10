@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/requirement_text"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:drawableStart="@drawable/ic_check_ink"
+    android:drawablePadding="8dp"
+    android:fontFamily="sans-serif"
+    android:gravity="top"
+    android:includeFontPadding="false"
+    android:lineSpacingExtra="1dp"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp"
+    android:textColor="@color/muted"
+    android:textSize="@dimen/text_size_adoption_detail_requirement" />
