@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
+    android:fitsSystemWindows="true"
     android:orientation="vertical">
 
     <RelativeLayout
@@ -35,24 +37,110 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="20dp">
+            android:paddingHorizontal="20dp"
+            android:paddingTop="20dp"
+            android:paddingBottom="40dp">
 
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/header_active"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/campaign_renata_summary"
-                android:textColor="@color/muted"
-                android:textSize="14sp" />
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingVertical="8dp">
 
-            <!-- Campaign Cards -->
-            <include layout="@layout/item_campaign" android:id="@+id/campaign_1" />
-            <include layout="@layout/item_campaign" android:id="@+id/campaign_2" />
+                <TextView
+                    android:id="@+id/text_active_summary"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/campaign_active_summary"
+                    android:textColor="@color/muted"
+                    android:textSize="14sp" />
+
+                <ImageView
+                    android:id="@+id/arrow_active"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_chevron_down"
+                    app:tint="@color/muted" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/container_active"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="visible">
+
+                <include layout="@layout/item_campaign" android:id="@+id/active_1" />
+                <include layout="@layout/item_campaign" android:id="@+id/active_2" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/header_completed"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingVertical="8dp">
+
+                <TextView
+                    android:id="@+id/text_completed_summary"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/campaign_completed_summary"
+                    android:textColor="@color/muted"
+                    android:textSize="14sp" />
+
+                <ImageView
+                    android:id="@+id/arrow_completed"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:contentDescription="@null"
+                    android:rotation="-90"
+                    android:src="@drawable/ic_chevron_down"
+                    app:tint="@color/muted" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/container_completed"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <include layout="@layout/item_campaign" android:id="@+id/completed_1" />
+                <include layout="@layout/item_campaign" android:id="@+id/completed_2" />
+                <include layout="@layout/item_campaign" android:id="@+id/completed_3" />
+                <include layout="@layout/item_campaign" android:id="@+id/completed_4" />
+                <include layout="@layout/item_campaign" android:id="@+id/completed_5" />
+                <include layout="@layout/item_campaign" android:id="@+id/completed_6" />
+                <include layout="@layout/item_campaign" android:id="@+id/completed_7" />
+                <include layout="@layout/item_campaign" android:id="@+id/completed_8" />
+                <include layout="@layout/item_campaign" android:id="@+id/completed_9" />
+                <include layout="@layout/item_campaign" android:id="@+id/completed_10" />
+                <include layout="@layout/item_campaign" android:id="@+id/completed_11" />
+                <include layout="@layout/item_campaign" android:id="@+id/completed_12" />
+
+            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>

@@ -61,6 +61,9 @@
     <string name="pet_desc_golden">Frederico é um cão muito dócil e brincalhão, ideal para famílias com crianças.</string>
     <string name="btn_interest_adopt">Tenho interesse em adotar</string>
     <string name="campaign_status_active">Ativa</string>
+    <string name="campaign_status_completed">Concluída</string>
+    <string name="campaign_active_summary">2 inscrições ativas</string>
+    <string name="campaign_completed_summary">12 campanhas concluídas</string>
     <string name="campaign_renata_summary">2 inscrições ativas</string>
 
     <!-- Detailed Campaigns -->
