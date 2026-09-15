@@ -38,6 +38,9 @@
             android:name=".adoption.compatibility.presentation.CompatibleProfileActivity"
             android:exported="false" />
         <activity
+            android:name=".adoption.confirmation.presentation.AdoptionConfirmationActivity"
+            android:exported="false" />
+        <activity
             android:name=".reporting.report.presentation.ReportActivity"
             android:exported="false" />
         <activity

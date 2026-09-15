@@ -8,6 +8,16 @@ import com.example.weanimals.adoption.listing.domain.Animal
 import com.example.weanimals.adoption.listing.domain.AnimalPage
 import com.example.weanimals.adoption.listing.domain.SpeciesFilter
 import com.example.weanimals.adoption.listing.interactor.GetAvailableAnimalsInteractor
+import com.example.weanimals.adoption.questionnaire.domain.AdoptionProfile
+import com.example.weanimals.adoption.questionnaire.domain.AdoptionQuestionnaireAnswers
+import com.example.weanimals.adoption.questionnaire.domain.AvailableSpaceOption
+import com.example.weanimals.adoption.questionnaire.domain.DailyTimeOption
+import com.example.weanimals.adoption.questionnaire.domain.HouseholdOption
+import com.example.weanimals.adoption.questionnaire.domain.PetExperienceOption
+import com.example.weanimals.adoption.questionnaire.domain.RoutineOption
+import com.example.weanimals.adoption.questionnaire.interactor.BuildAdoptionProfileInteractor
+import com.example.weanimals.adoption.questionnaire.interactor.GetAdoptionProfileInteractor
+import com.example.weanimals.adoption.questionnaire.repository.AdoptionProfileRepository
 import com.example.weanimals.core.location.interactor.GetUserLocationInteractor
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -28,6 +38,7 @@ import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class AdoptionPresenterTest {
     private val repository = FakeAnimalRepository()
+    private val profileRepository = FakeProfileRepository()
     private val view = RecordingView()
     private lateinit var presenter: AdoptionPresenter
 
@@ -35,7 +46,8 @@ class AdoptionPresenterTest {
         Dispatchers.setMain(StandardTestDispatcher())
         presenter = AdoptionPresenter(
             GetAvailableAnimalsInteractor(repository),
-            GetUserLocationInteractor(FakeUserLocationRepository())
+            GetUserLocationInteractor(FakeUserLocationRepository()),
+            GetAdoptionProfileInteractor(profileRepository)
         )
         presenter.attachView(view)
     }
@@ -176,6 +188,35 @@ class AdoptionPresenterTest {
         assertEquals(listOf("cat"), view.animals.map { it.id })
     }
 
+    @Test fun recommendationsAppearOnlyAfterQuestionnaireHasBeenSaved() = runTest {
+        presenter.start()
+        advanceUntilIdle()
+        assertFalse(view.recommendationsAvailable)
+        presenter.onRecommendationsClicked()
+        assertFalse(view.compatibleProfileOpened)
+
+        profileRepository.profile = BuildAdoptionProfileInteractor()(
+            AdoptionQuestionnaireAnswers(
+                routine = RoutineOption.HOME_OFFICE,
+                availableSpace = AvailableSpaceOption.APARTMENT_WITH_BALCONY,
+                petExperience = PetExperienceOption.HAD_PETS_BEFORE,
+                dailyTime = DailyTimeOption.ONE_TO_THREE_HOURS,
+                household = HouseholdOption.LIVES_ALONE
+            )
+        )
+        presenter.start()
+        advanceUntilIdle()
+        assertTrue(view.recommendationsAvailable)
+        presenter.onRecommendationsClicked()
+        assertTrue(view.compatibleProfileOpened)
+    }
+
+    private class FakeProfileRepository : AdoptionProfileRepository {
+        var profile: AdoptionProfile? = null
+        override suspend fun getProfile(): Result<AdoptionProfile?> = Result.success(profile)
+        override suspend fun saveProfile(profile: AdoptionProfile): Result<Unit> = Result.success(Unit)
+    }
+
     private class RecordingView : AdoptionContract.View {
         var animals = emptyList<Animal>()
         var filter: SpeciesFilter? = null
@@ -185,6 +226,8 @@ class AdoptionPresenterTest {
         var needsLocation = false
         var permissionRequested = false
         var selectedAnimal: String? = null
+        var recommendationsAvailable = false
+        var compatibleProfileOpened = false
         override fun showAnimals(animals: List<Animal>) { this.animals = animals }
         override fun appendAnimals(animals: List<Animal>) { this.animals += animals }
         override fun showFilterSelected(filter: SpeciesFilter) { this.filter = filter }
@@ -200,5 +243,9 @@ class AdoptionPresenterTest {
         override fun openAnimalDetails(animalId: String) {
             selectedAnimal = animalId
         }
+        override fun showRecommendationsAvailable(available: Boolean) {
+            recommendationsAvailable = available
+        }
+        override fun openCompatibleProfile() { compatibleProfileOpened = true }
     }
 }

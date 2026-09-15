@@ -24,7 +24,7 @@ import androidx.core.widget.ImageViewCompat
 import androidx.viewpager2.widget.ViewPager2
 import com.example.weanimals.R
 import com.example.weanimals.WeAnimalsApplication
-import com.example.weanimals.adoption.compatibility.presentation.CompatibleProfileActivity
+import com.example.weanimals.adoption.confirmation.presentation.AdoptionConfirmationActivity
 import com.example.weanimals.adoption.detail.domain.AnimalDetails
 import com.example.weanimals.adoption.detail.domain.AnimalShareDocument
 import com.example.weanimals.adoption.detail.domain.EnergyLevel
@@ -319,8 +319,8 @@ class AnimalDetailsActivity : AppCompatActivity(), AnimalDetailsContract.View {
         startActivity(AdoptionQuestionnaireActivity.newIntent(this, animalId))
     }
 
-    override fun openCompatibleProfile(animalId: String) {
-        startActivity(CompatibleProfileActivity.newIntent(this, animalId))
+    override fun openAdoptionConfirmation(animalId: String) {
+        startActivity(AdoptionConfirmationActivity.newIntent(this, animalId))
     }
 
     override fun closeScreen() = finish()

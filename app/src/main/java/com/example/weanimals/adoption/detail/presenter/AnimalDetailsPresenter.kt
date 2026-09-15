@@ -93,7 +93,7 @@ class AnimalDetailsPresenter(
                         withView {
                             it.showAdoptionProfileLoading(false)
                             if (profile == null) it.openAdoptionQuestionnaire(animalId)
-                            else it.openCompatibleProfile(animalId)
+                            else it.openAdoptionConfirmation(animalId)
                         }
                     },
                     onFailure = { cause ->

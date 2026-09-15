@@ -4,6 +4,7 @@ import com.example.weanimals.adoption.listing.domain.Animal
 import com.example.weanimals.adoption.listing.domain.AnimalPageCursor
 import com.example.weanimals.adoption.listing.domain.SpeciesFilter
 import com.example.weanimals.adoption.listing.interactor.GetAvailableAnimalsInteractor
+import com.example.weanimals.adoption.questionnaire.interactor.GetAdoptionProfileInteractor
 import com.example.weanimals.core.base.BasePresenter
 import com.example.weanimals.core.location.domain.Coordinates
 import com.example.weanimals.core.location.domain.UserLocationUnavailableException
@@ -15,7 +16,8 @@ import kotlinx.coroutines.launch
 
 class AdoptionPresenter(
     private val getAvailableAnimals: GetAvailableAnimalsInteractor,
-    private val getUserLocation: GetUserLocationInteractor
+    private val getUserLocation: GetUserLocationInteractor,
+    private val getAdoptionProfile: GetAdoptionProfileInteractor
 ) : BasePresenter<AdoptionContract.View>(), AdoptionContract.Presenter {
     private var started = false
     private var filter = SpeciesFilter.ALL
@@ -26,8 +28,11 @@ class AdoptionPresenter(
     private var loading = false
     private var error: Throwable? = null
     private var loadJob: Job? = null
+    private var profileCheckJob: Job? = null
+    private var recommendationsAvailable = false
 
     override fun start(initialFilter: SpeciesFilter) {
+        checkRecommendationsAvailability()
         if (!started) {
             started = true
             reset(initialFilter)
@@ -67,6 +72,18 @@ class AdoptionPresenter(
     override fun onPetClicked(animalId: String) {
         animals.firstOrNull { it.id == animalId }?.let { animal ->
             withView { it.openAnimalDetails(animal.id) }
+        }
+    }
+
+    override fun onRecommendationsClicked() {
+        if (recommendationsAvailable) withView { it.openCompatibleProfile() }
+    }
+
+    private fun checkRecommendationsAvailability() {
+        profileCheckJob?.cancel()
+        profileCheckJob = presenterScope.launch {
+            recommendationsAvailable = getAdoptionProfile().getOrNull() != null
+            withView { it.showRecommendationsAvailable(recommendationsAvailable) }
         }
     }
 
@@ -129,6 +146,7 @@ class AdoptionPresenter(
     }
 
     private fun render() = withView { view ->
+        view.showRecommendationsAvailable(recommendationsAvailable)
         view.showFilterSelected(filter)
         view.hideLoading()
         if (animals.isNotEmpty()) view.showAnimals(animals)

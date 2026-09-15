@@ -70,6 +70,30 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    match /adoption_applications/{userId}/animals/{animalId} {
+      allow read: if (signedIn() && request.auth.uid == userId)
+        || (isTeamMember() && request.auth.token.ngoId == resource.data.ngoId);
+      allow create: if signedIn()
+        && request.auth.uid == userId
+        && exists(/databases/$(database)/documents/animais/$(animalId))
+        && get(/databases/$(database)/documents/animais/$(animalId)).data.status == 'disponivel'
+        && request.resource.data.keys().hasOnly([
+          'userId', 'animalId', 'ngoId', 'status', 'matchPercentage',
+          'profile', 'submittedAt'
+        ])
+        && request.resource.data.userId == userId
+        && request.resource.data.animalId == animalId
+        && request.resource.data.ngoId ==
+          get(/databases/$(database)/documents/animais/$(animalId)).data.ong_id
+        && request.resource.data.status == 'pending'
+        && request.resource.data.matchPercentage is int
+        && request.resource.data.matchPercentage >= 0
+        && request.resource.data.matchPercentage <= 100
+        && request.resource.data.profile is map
+        && request.resource.data.submittedAt == request.time;
+      allow update, delete: if false;
+    }
+
     match /metadata/reports_counter {
       allow read, write: if signedIn();
     }

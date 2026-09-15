@@ -72,11 +72,22 @@ class AnimalAdapter(
                 else context.getString(R.string.adoption_distance, distanceFormat.format(distance))
             }
             animalPhoto.contentDescription = context.getString(R.string.adoption_photo_accessibility, animal.name)
-            animalPhoto.load(animal.photoUrl) {
-                placeholder(R.drawable.adoption_photo_placeholder)
-                error(R.drawable.adoption_photo_placeholder)
-                fallback(R.drawable.adoption_photo_placeholder)
-                crossfade(true)
+            val photoUrl = animal.photoUrl?.takeIf(String::isNotBlank)
+            animalPhotoPlaceholder.isVisible = true
+            animalPhoto.isVisible = photoUrl != null
+            if (photoUrl == null) {
+                animalPhoto.dispose()
+                animalPhoto.setImageDrawable(null)
+            } else {
+                animalPhoto.load(photoUrl) {
+                    placeholder(R.drawable.adoption_photo_placeholder)
+                    error(R.drawable.adoption_photo_placeholder)
+                    crossfade(true)
+                    listener(
+                        onSuccess = { _, _ -> animalPhotoPlaceholder.isVisible = false },
+                        onError = { _, _ -> animalPhotoPlaceholder.isVisible = true }
+                    )
+                }
             }
             root.contentDescription = context.getString(R.string.adoption_meet_accessibility, animal.name)
             root.setOnClickListener { onPetClicked(animal.id) }

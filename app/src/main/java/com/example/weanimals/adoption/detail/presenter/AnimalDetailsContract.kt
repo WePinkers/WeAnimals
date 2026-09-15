@@ -17,7 +17,7 @@ interface AnimalDetailsContract {
         fun showAdoptionProfileLoading(loading: Boolean)
         fun showAdoptionProfileError(error: Throwable)
         fun openAdoptionQuestionnaire(animalId: String)
-        fun openCompatibleProfile(animalId: String)
+        fun openAdoptionConfirmation(animalId: String)
         fun closeScreen()
         fun showActionUnavailable()
     }

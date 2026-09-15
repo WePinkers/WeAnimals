@@ -3,6 +3,11 @@ package com.example.weanimals.core.di
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import com.example.weanimals.adoption.compatibility.interactor.GetAnimalRecommendationsInteractor
+import com.example.weanimals.adoption.confirmation.interactor.GetAdoptionCandidateInteractor
+import com.example.weanimals.adoption.confirmation.interactor.SubmitAdoptionApplicationInteractor
+import com.example.weanimals.adoption.confirmation.presenter.AdoptionConfirmationPresenter
+import com.example.weanimals.adoption.confirmation.repository.DemoAdoptionApplicationRepository
+import com.example.weanimals.adoption.confirmation.repository.FirebaseAdoptionApplicationRepository
 import com.example.weanimals.adoption.compatibility.presenter.CompatibleProfilePresenter
 import com.example.weanimals.adoption.compatibility.repository.AnimalRecommendationRepositoryImpl
 import com.example.weanimals.adoption.detail.interactor.GetAnimalDetailsInteractor
@@ -133,6 +138,15 @@ class AppContainer(context: Context) {
         AnimalRecommendationRepositoryImpl(adoptionListingRepository)
     }
 
+    private val adoptionApplicationRepository by lazy {
+        val firebaseRepository = FirebaseAdoptionApplicationRepository(
+            auth = FirebaseAuth.getInstance(),
+            firestore = FirebaseFirestore.getInstance()
+        )
+        if (isDebuggable) DemoAdoptionApplicationRepository(firebaseRepository)
+        else firebaseRepository
+    }
+
     private val getAdoptionProfileInteractor by lazy {
         GetAdoptionProfileInteractor(adoptionProfileRepository)
     }
@@ -204,7 +218,8 @@ class AppContainer(context: Context) {
 
     fun createAdoptionPresenter() = AdoptionPresenter(
         getAvailableAnimals = GetAvailableAnimalsInteractor(adoptionListingRepository),
-        getUserLocation = getUserLocationInteractor
+        getUserLocation = getUserLocationInteractor,
+        getAdoptionProfile = getAdoptionProfileInteractor
     )
 
     fun createAnimalDetailsPresenter(animalId: String) =
@@ -236,6 +251,20 @@ class AppContainer(context: Context) {
                 calculateDistance = calculateDistanceInteractor
             )
         )
+
+    fun createAdoptionConfirmationPresenter(animalId: String) = AdoptionConfirmationPresenter(
+        animalId = animalId,
+        getCandidate = GetAdoptionCandidateInteractor(
+            getProfile = getAdoptionProfileInteractor,
+            animalRepository = adoptionListingRepository,
+            getRecommendations = GetAnimalRecommendationsInteractor(
+                repository = animalRecommendationRepository,
+                getUserLocation = getUserLocationInteractor,
+                calculateDistance = calculateDistanceInteractor
+            )
+        ),
+        submitApplication = SubmitAdoptionApplicationInteractor(adoptionApplicationRepository)
+    )
 
     fun createReportPresenter() = ReportPresenter(
         getCurrentLocationInteractor = getCurrentLocationInteractor,

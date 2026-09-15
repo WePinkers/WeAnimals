@@ -154,7 +154,7 @@ class AnimalDetailsPresenterTest {
         advanceUntilIdle()
 
         assertEquals("animal-1", view.questionnaireAnimalId)
-        assertNull(view.compatibleProfileAnimalId)
+        assertNull(view.confirmationAnimalId)
         assertFalse(view.adoptionProfileLoading)
     }
 
@@ -168,7 +168,7 @@ class AnimalDetailsPresenterTest {
         presenter.onAdoptClicked()
         advanceUntilIdle()
 
-        assertEquals("animal-1", view.compatibleProfileAnimalId)
+        assertEquals("animal-1", view.confirmationAnimalId)
         assertNull(view.questionnaireAnimalId)
         assertFalse(view.adoptionProfileLoading)
     }
@@ -228,7 +228,7 @@ class AnimalDetailsPresenterTest {
         var adoptionProfileLoading = false
         var adoptionProfileError: Throwable? = null
         var questionnaireAnimalId: String? = null
-        var compatibleProfileAnimalId: String? = null
+        var confirmationAnimalId: String? = null
 
         override fun showLoading() { loading = true }
         override fun showAnimal(details: AnimalDetails) {
@@ -257,8 +257,8 @@ class AnimalDetailsPresenterTest {
         override fun openAdoptionQuestionnaire(animalId: String) {
             questionnaireAnimalId = animalId
         }
-        override fun openCompatibleProfile(animalId: String) {
-            compatibleProfileAnimalId = animalId
+        override fun openAdoptionConfirmation(animalId: String) {
+            confirmationAnimalId = animalId
         }
         override fun closeScreen() = Unit
         override fun showActionUnavailable() = Unit

@@ -172,6 +172,8 @@
     <string name="adoption_filter_dogs">Cães</string>
     <string name="adoption_filter_cats">Gatos</string>
     <string name="adoption_filter_nearest">Mais próximos</string>
+    <string name="adoption_recommendations_button">Ver recomendados pra você</string>
+    <string name="adoption_recommendations_subtitle">Baseado no seu perfil de adotante</string>
     <string name="adoption_meet">Quero conhecer</string>
     <string name="adoption_meet_accessibility">Quero conhecer %1$s</string>
     <string name="adoption_photo_accessibility">Foto de %1$s</string>
@@ -296,4 +298,23 @@
     <string name="compatible_profile_error">Não foi possível calcular suas recomendações.</string>
     <string name="compatible_profile_empty">Seu perfil foi calculado, mas ainda não há animais disponíveis compatíveis.</string>
     <string name="compatible_profile_retry">Tentar novamente</string>
+
+    <!-- Adoption Confirmation Screen -->
+    <string name="adoption_confirmation_title">Confirmar candidatura</string>
+    <string name="adoption_confirmation_steps_label">O QUE ACONTECE A PARTIR DAQUI</string>
+    <string name="adoption_confirmation_step_submit">Sua candidatura é enviada ao abrigo</string>
+    <string name="adoption_confirmation_step_submit_body">Junto com seu perfil de adotante e a compatibilidade calculada</string>
+    <string name="adoption_confirmation_step_review">O abrigo analisa e responde pelo chat</string>
+    <string name="adoption_confirmation_step_review_body">Pode haver mais de um candidato interessado em %1$s</string>
+    <string name="adoption_confirmation_step_visit">Se aprovado, você agenda a visita</string>
+    <string name="adoption_confirmation_step_visit_body">E o acompanhamento pós-adoção começa automaticamente</string>
+    <string name="adoption_confirmation_note">Você poderá se candidatar a outros animais enquanto aguarda — sua candidatura por %1$s continua ativa até o abrigo decidir.</string>
+    <string name="adoption_confirmation_submit">Enviar candidatura</string>
+    <string name="adoption_confirmation_submitting">Enviando candidatura…</string>
+    <string name="adoption_confirmation_submitted">Candidatura enviada</string>
+    <string name="adoption_confirmation_success">Sua candidatura chegou ao abrigo. Aguarde a análise.</string>
+    <string name="adoption_confirmation_loading">Preparando candidatura…</string>
+    <string name="adoption_confirmation_load_error">Não foi possível preparar sua candidatura.</string>
+    <string name="adoption_confirmation_submit_error">Não foi possível enviar sua candidatura. Confira sua conexão e tente novamente.</string>
+    <string name="adoption_confirmation_demo_error">Este animal é apenas um exemplo para testar as telas. Candidaturas reais só podem ser enviadas para animais cadastrados por um abrigo.</string>
 </resources>

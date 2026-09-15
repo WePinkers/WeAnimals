@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.weanimals.R
 import com.example.weanimals.WeAnimalsApplication
 import com.example.weanimals.adoption.detail.presentation.AnimalDetailsActivity
+import com.example.weanimals.adoption.compatibility.presentation.CompatibleProfileActivity
 import com.example.weanimals.adoption.listing.domain.Animal
 import com.example.weanimals.adoption.listing.domain.SpeciesFilter
 import com.example.weanimals.adoption.listing.presenter.AdoptionContract
@@ -87,6 +88,7 @@ class AdoptionActivity : AppCompatActivity(), AdoptionContract.View {
         }
         binding.stateAction.setOnClickListener { presenter.onRetryClicked() }
         binding.pageRetry.setOnClickListener { presenter.onRetryClicked() }
+        binding.recommendationsButton.setOnClickListener { presenter.onRecommendationsClicked() }
         MainNavigation.bind(this, binding.mainNavigation, MainNavigation.Destination.ADOPTION)
     }
 
@@ -216,6 +218,14 @@ class AdoptionActivity : AppCompatActivity(), AdoptionContract.View {
 
     override fun openAnimalDetails(animalId: String) {
         startActivity(AnimalDetailsActivity.newIntent(this, animalId))
+    }
+
+    override fun showRecommendationsAvailable(available: Boolean) {
+        binding.recommendationsButton.isVisible = available
+    }
+
+    override fun openCompatibleProfile() {
+        startActivity(CompatibleProfileActivity.newIntent(this, ""))
     }
 
     private fun useLocationOrOpenSettings() {

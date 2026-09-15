@@ -29,6 +29,8 @@ class DemoAnimalRepositoryTest {
     }
 
     private class FailingRepository : AnimalRepository {
+        override suspend fun getAvailableAnimalById(animalId: String) =
+            Result.failure<com.example.weanimals.adoption.listing.domain.Animal>(IllegalStateException("offline"))
         override suspend fun getAvailableAnimals(
             filter: SpeciesFilter?,
             lastDocument: AnimalPageCursor?,

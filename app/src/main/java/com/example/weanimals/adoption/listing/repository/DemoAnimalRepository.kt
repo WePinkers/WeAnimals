@@ -13,6 +13,10 @@ class DemoAnimalRepository(
     private val delegate: AnimalRepository
 ) : AnimalRepository {
 
+    override suspend fun getAvailableAnimalById(animalId: String): Result<Animal> =
+        if (animalId == DEMO_ANIMAL_ID) Result.success(requireNotNull(demoAnimalFor(null)))
+        else delegate.getAvailableAnimalById(animalId)
+
     override suspend fun getAvailableAnimals(
         filter: SpeciesFilter?,
         lastDocument: AnimalPageCursor?,

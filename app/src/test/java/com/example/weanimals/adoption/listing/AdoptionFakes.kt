@@ -40,6 +40,12 @@ data class AnimalRequest(val filter: SpeciesFilter?, val cursor: AnimalPageCurso
 class FakeAnimalRepository : AnimalRepository {
     val requests = mutableListOf<AnimalRequest>()
     var answer: suspend (AnimalRequest) -> Result<AnimalPage> = { Result.success(AnimalPage(emptyList())) }
+    var byIdAnswer: suspend (String) -> Result<Animal> = {
+        Result.failure(UnsupportedOperationException("No by-id answer configured."))
+    }
+
+    override suspend fun getAvailableAnimalById(animalId: String): Result<Animal> =
+        byIdAnswer(animalId)
 
     override suspend fun getAvailableAnimals(
         filter: SpeciesFilter?,

@@ -15,6 +15,8 @@ interface AdoptionContract {
         fun showLocationRequired()
         fun requestLocationPermission()
         fun openAnimalDetails(animalId: String)
+        fun showRecommendationsAvailable(available: Boolean)
+        fun openCompatibleProfile()
     }
 
     interface Presenter {
@@ -27,5 +29,6 @@ interface AdoptionContract {
         fun onRetryClicked()
         fun onLocationPermissionResult(granted: Boolean)
         fun onPetClicked(animalId: String)
+        fun onRecommendationsClicked()
     }
 }

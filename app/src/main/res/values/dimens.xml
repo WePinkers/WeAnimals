@@ -121,4 +121,10 @@
     <dimen name="compatible_profile_match_size">54dp</dimen>
     <dimen name="compatible_profile_match_radius">27dp</dimen>
     <dimen name="compatible_profile_match_stroke_width">1dp</dimen>
+    <dimen name="text_size_adoption_confirmation_name">18sp</dimen>
+    <dimen name="text_size_adoption_confirmation_meta">10sp</dimen>
+    <dimen name="text_size_adoption_confirmation_match">16sp</dimen>
+    <dimen name="text_size_adoption_confirmation_step_title">13sp</dimen>
+    <dimen name="text_size_adoption_confirmation_step_body">11sp</dimen>
+    <dimen name="text_size_adoption_confirmation_note">11sp</dimen>
 </resources>

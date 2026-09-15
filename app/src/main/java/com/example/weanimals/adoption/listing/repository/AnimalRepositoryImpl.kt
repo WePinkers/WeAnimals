@@ -21,6 +21,20 @@ class AnimalRepositoryImpl(
     private val auth: FirebaseAuth
 ) : AnimalRepository {
 
+    override suspend fun getAvailableAnimalById(animalId: String): Result<Animal> = try {
+        require(animalId.isNotBlank())
+        if (auth.currentUser == null) auth.signInAnonymously().await()
+        val document = firestore.collection(COLLECTION).document(animalId)
+            .get(Source.SERVER).await()
+        val animal = requireNotNull(toAnimal(document)) { "Animal not found." }
+        check(animal.status == AnimalStatus.AVAILABLE) { "Animal is not available." }
+        Result.success(animal)
+    } catch (cancelled: CancellationException) {
+        throw cancelled
+    } catch (error: Exception) {
+        Result.failure(error)
+    }
+
     override suspend fun getAvailableAnimals(
         filter: SpeciesFilter?,
         lastDocument: AnimalPageCursor?,

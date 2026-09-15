@@ -22,6 +22,8 @@ class GetAnimalRecommendationsInteractor(
     private val getUserLocation: GetUserLocationInteractor,
     private val calculateDistance: CalculateDistanceInteractor
 ) {
+    fun matchPercentage(profile: AdoptionProfile, animal: Animal): Int = score(profile, animal)
+
     suspend operator fun invoke(profile: AdoptionProfile): Result<List<AnimalRecommendation>> = try {
         val animals = repository.getAvailableAnimals().getOrThrow()
         val userCoordinates = getUserLocation()
