@@ -12,6 +12,8 @@
         android:id="@+id/map_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:clipChildren="false"
+        android:clipToPadding="false"
         android:background="@color/map_background">
 
         <!-- Interactive Geographic Map (CartoDB Positron / OSMDroid) -->
@@ -30,8 +32,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:paddingStart="14dp"
-            android:paddingEnd="14dp"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
             android:scrollbars="none"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -41,6 +45,10 @@
                 android:id="@+id/chip_group_filters"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                app:chipSpacingHorizontal="8dp"
+                app:selectionRequired="true"
                 app:singleLine="true"
                 app:singleSelection="true">
 
@@ -52,8 +60,10 @@
                     android:checked="true"
                     android:text="Todas · 9"
                     android:textColor="@color/white"
+                    app:checkedIconVisible="false"
                     app:chipBackgroundColor="@color/pine800"
-                    app:chipCornerRadius="20dp" />
+                    app:chipCornerRadius="20dp"
+                    app:chipStrokeWidth="0dp" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chip_urgente"
@@ -61,7 +71,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Urgente"
-                    android:textColor="@color/ink600"
+                    android:textColor="@color/ink900"
+                    app:checkedIconVisible="false"
                     app:chipBackgroundColor="@color/white"
                     app:chipCornerRadius="20dp"
                     app:chipStrokeColor="@color/line_border"
@@ -73,7 +84,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Em curso"
-                    android:textColor="@color/ink600"
+                    android:textColor="@color/ink900"
+                    app:checkedIconVisible="false"
                     app:chipBackgroundColor="@color/white"
                     app:chipCornerRadius="20dp"
                     app:chipStrokeColor="@color/line_border"
@@ -85,7 +97,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Emergência"
-                    android:textColor="@color/ink600"
+                    android:textColor="@color/ink900"
+                    app:checkedIconVisible="false"
                     app:chipBackgroundColor="@color/white"
                     app:chipCornerRadius="20dp"
                     app:chipStrokeColor="@color/line_border"

@@ -117,7 +117,7 @@ class MapFragment : Fragment() {
             e.printStackTrace()
         }
 
-        // Allow network tile fetching smoothly on main thread if needed
+        // Allow network tile fetching smoothly on main thread
         val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
     }
@@ -199,8 +199,13 @@ class MapFragment : Fragment() {
     }
 
     private fun setupFilterChips() {
+        // Ensure checked icon ✔ is hidden and initial style is applied
+        updateChipsVisualState(R.id.chip_all)
+
         binding.chipGroupFilters.setOnCheckedStateChangeListener { _, checkedIds ->
             val selectedChipId = checkedIds.firstOrNull() ?: R.id.chip_all
+
+            updateChipsVisualState(selectedChipId)
 
             val filteredList = when (selectedChipId) {
                 R.id.chip_urgente -> allOccurrences.filter { it.urgencyLevel == "Urgente" }
@@ -212,6 +217,34 @@ class MapFragment : Fragment() {
             adapter.submitList(filteredList)
             updateCountText(filteredList.size)
             updateMapMarkers(filteredList)
+        }
+    }
+
+    private fun updateChipsVisualState(selectedChipId: Int) {
+        val chips = listOf(
+            binding.chipAll,
+            binding.chipUrgente,
+            binding.chipEmCurso,
+            binding.chipEmergencia
+        )
+        val density = resources.displayMetrics.density
+
+        chips.forEach { chip ->
+            chip.isCheckedIconVisible = false
+            val isSelected = (chip.id == selectedChipId)
+            if (isSelected) {
+                chip.setChipBackgroundColorResource(R.color.pine800)
+                chip.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+                chip.chipStrokeWidth = 0f
+                chip.animate().scaleX(1.08f).scaleY(1.08f).setDuration(150).start()
+                chip.requestRectangleOnScreen(android.graphics.Rect(0, 0, chip.width, chip.height))
+            } else {
+                chip.setChipBackgroundColorResource(R.color.white)
+                chip.setTextColor(ContextCompat.getColor(requireContext(), R.color.ink900))
+                chip.setChipStrokeColorResource(R.color.line_border)
+                chip.chipStrokeWidth = 1f * density
+                chip.animate().scaleX(1.0f).scaleY(1.0f).setDuration(150).start()
+            }
         }
     }
 
