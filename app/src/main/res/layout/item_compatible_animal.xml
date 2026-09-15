@@ -25,10 +25,15 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <FrameLayout
-                android:layout_width="58dp"
-                android:layout_height="58dp"
-                android:background="@drawable/bg_compatible_match">
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/match_badge"
+                android:layout_width="@dimen/compatible_profile_match_size"
+                android:layout_height="@dimen/compatible_profile_match_size"
+                app:cardBackgroundColor="@color/surface"
+                app:cardCornerRadius="@dimen/compatible_profile_match_radius"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/terracotta"
+                app:strokeWidth="@dimen/compatible_profile_match_stroke_width">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -48,6 +53,7 @@
                         tools:text="88%" />
 
                     <TextView
+                        android:id="@+id/match_label"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="monospace"
@@ -57,7 +63,7 @@
                         android:textSize="@dimen/text_size_compatible_match_label"
                         android:textStyle="bold" />
                 </LinearLayout>
-            </FrameLayout>
+            </com.google.android.material.card.MaterialCardView>
 
             <LinearLayout
                 android:layout_width="0dp"

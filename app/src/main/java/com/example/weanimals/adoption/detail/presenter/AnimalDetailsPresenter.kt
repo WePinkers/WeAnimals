@@ -3,6 +3,7 @@ package com.example.weanimals.adoption.detail.presenter
 import com.example.weanimals.adoption.detail.domain.AnimalDetails
 import com.example.weanimals.adoption.detail.interactor.GetAnimalDetailsInteractor
 import com.example.weanimals.adoption.detail.interactor.GetShelterDistanceInteractor
+import com.example.weanimals.adoption.detail.interactor.CreateAnimalSharePdfInteractor
 import com.example.weanimals.adoption.questionnaire.interactor.GetAdoptionProfileInteractor
 import com.example.weanimals.core.base.BasePresenter
 import kotlinx.coroutines.CancellationException
@@ -13,7 +14,8 @@ class AnimalDetailsPresenter(
     private val animalId: String,
     private val getAnimalDetails: GetAnimalDetailsInteractor,
     private val getShelterDistance: GetShelterDistanceInteractor,
-    private val getAdoptionProfile: GetAdoptionProfileInteractor
+    private val getAdoptionProfile: GetAdoptionProfileInteractor,
+    private val createAnimalSharePdf: CreateAnimalSharePdfInteractor
 ) : BasePresenter<AnimalDetailsContract.View>(), AnimalDetailsContract.Presenter {
 
     private var started = false
@@ -25,6 +27,7 @@ class AnimalDetailsPresenter(
     private var locationRequestMade = false
     private var distanceJob: Job? = null
     private var checkingAdoptionProfile = false
+    private var sharing = false
 
     override fun start() {
         if (!started) {
@@ -42,7 +45,32 @@ class AnimalDetailsPresenter(
     override fun onBackClicked() = withView(AnimalDetailsContract.View::closeScreen)
 
     override fun onShareClicked() {
-        details?.let { animal -> withView { it.shareAnimal(animal) } }
+        val animal = details ?: return
+        if (sharing) return
+        sharing = true
+        withView { it.showShareLoading(true) }
+        presenterScope.launch {
+            try {
+                createAnimalSharePdf(animal, distanceKm).fold(
+                    onSuccess = { document ->
+                        sharing = false
+                        withView {
+                            it.showShareLoading(false)
+                            it.shareAnimalDocument(document)
+                        }
+                    },
+                    onFailure = { cause ->
+                        sharing = false
+                        withView {
+                            it.showShareLoading(false)
+                            it.showShareError(cause)
+                        }
+                    }
+                )
+            } catch (cancelled: CancellationException) {
+                throw cancelled
+            }
+        }
     }
 
     override fun onFavoriteClicked() {

@@ -1,6 +1,7 @@
 package com.example.weanimals.adoption.detail.presentation
 
 import android.Manifest
+import android.content.ClipData
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -14,6 +15,7 @@ import android.widget.LinearLayout
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.core.location.LocationManagerCompat
 import androidx.core.net.toUri
 import androidx.core.view.WindowCompat
@@ -24,6 +26,7 @@ import com.example.weanimals.R
 import com.example.weanimals.WeAnimalsApplication
 import com.example.weanimals.adoption.compatibility.presentation.CompatibleProfileActivity
 import com.example.weanimals.adoption.detail.domain.AnimalDetails
+import com.example.weanimals.adoption.detail.domain.AnimalShareDocument
 import com.example.weanimals.adoption.detail.domain.EnergyLevel
 import com.example.weanimals.adoption.detail.presenter.AnimalDetailsContract
 import com.example.weanimals.adoption.questionnaire.presentation.AdoptionQuestionnaireActivity
@@ -31,6 +34,7 @@ import com.example.weanimals.databinding.ActivityAnimalDetailsBinding
 import com.example.weanimals.databinding.ItemAdoptionRequirementBinding
 import com.google.android.material.snackbar.Snackbar
 import java.text.NumberFormat
+import java.io.File
 import java.util.Locale
 import kotlin.math.max
 
@@ -236,12 +240,38 @@ class AnimalDetailsActivity : AppCompatActivity(), AnimalDetailsContract.View {
         )
     }
 
-    override fun shareAnimal(details: AnimalDetails) {
+    override fun showShareLoading(loading: Boolean) {
+        binding.shareButton.isEnabled = !loading
+        binding.shareButton.alpha = if (loading) DISABLED_ALPHA else ENABLED_ALPHA
+        binding.shareButton.contentDescription = getString(
+            if (loading) R.string.adoption_detail_share_generating
+            else R.string.adoption_detail_share
+        )
+    }
+
+    override fun shareAnimalDocument(document: AnimalShareDocument) {
+        val file = File(document.absolutePath)
+        val uri = FileProvider.getUriForFile(this, "$packageName.fileprovider", file)
+        val animalName = binding.animalName.text.toString()
+        val subject = getString(R.string.adoption_detail_share_subject, animalName)
         val shareIntent = Intent(Intent.ACTION_SEND).apply {
-            type = "text/plain"
-            putExtra(Intent.EXTRA_TEXT, getString(R.string.adoption_detail_share_text, details.name))
+            type = document.mimeType
+            putExtra(Intent.EXTRA_SUBJECT, subject)
+            putExtra(Intent.EXTRA_TITLE, subject)
+            putExtra(Intent.EXTRA_STREAM, uri)
+            clipData = ClipData.newUri(contentResolver, document.displayName, uri)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
         startActivity(Intent.createChooser(shareIntent, getString(R.string.adoption_detail_share)))
+    }
+
+    override fun showShareError(error: Throwable) {
+        Log.e(TAG, "Could not generate animal PDF", error)
+        Snackbar.make(
+            binding.root,
+            R.string.adoption_detail_share_error,
+            Snackbar.LENGTH_LONG
+        ).show()
     }
 
     override fun requestUserLocation() {
@@ -396,6 +426,8 @@ class AnimalDetailsActivity : AppCompatActivity(), AnimalDetailsContract.View {
         private const val EXTRA_ANIMAL_ID = "extra_animal_id"
         private const val STATE_LOCATION_PERMISSION_REQUESTED = "location_permission_requested"
         private const val MONTH_MILLIS = 30L * 24 * 60 * 60 * 1000
+        private const val ENABLED_ALPHA = 1f
+        private const val DISABLED_ALPHA = 0.55f
 
         fun newIntent(context: Context, animalId: String) =
             Intent(context, AnimalDetailsActivity::class.java).apply {

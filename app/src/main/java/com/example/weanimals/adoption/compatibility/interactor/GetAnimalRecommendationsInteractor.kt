@@ -1,6 +1,7 @@
 package com.example.weanimals.adoption.compatibility.interactor
 
 import com.example.weanimals.adoption.compatibility.domain.AnimalRecommendation
+import com.example.weanimals.adoption.compatibility.domain.MatchLevel
 import com.example.weanimals.adoption.compatibility.repository.AnimalRecommendationRepository
 import com.example.weanimals.adoption.listing.domain.Animal
 import com.example.weanimals.adoption.listing.domain.AnimalEnergyLevel
@@ -25,11 +26,15 @@ class GetAnimalRecommendationsInteractor(
         val animals = repository.getAvailableAnimals().getOrThrow()
         val userCoordinates = getUserLocation()
         val recommendations = animals.map { animal ->
+            val matchPercentage = score(profile, animal)
             AnimalRecommendation(
                 animal = animal,
-                matchPercentage = score(profile, animal),
+                matchPercentage = matchPercentage,
+                matchLevel = matchLevel(matchPercentage),
                 distanceKm = distance(userCoordinates, animal)
             )
+        }.filter { recommendation ->
+            recommendation.matchPercentage >= MIN_RECOMMENDED_PERCENTAGE
         }.sortedWith(
             compareByDescending<AnimalRecommendation> { it.matchPercentage }
                 .thenBy { it.distanceKm ?: Double.POSITIVE_INFINITY }
@@ -51,6 +56,12 @@ class GetAnimalRecommendationsInteractor(
             householdScore(profile, animal)
         )
         return scores.average().roundToInt().coerceIn(0, 100)
+    }
+
+    private fun matchLevel(matchPercentage: Int) = when {
+        matchPercentage >= HIGH_MATCH_PERCENTAGE -> MatchLevel.HIGH
+        matchPercentage >= MEDIUM_MATCH_PERCENTAGE -> MatchLevel.MEDIUM
+        else -> MatchLevel.LOW
     }
 
     private fun sizeScore(profile: AdoptionProfile, animal: Animal): Int {
@@ -131,6 +142,9 @@ class GetAnimalRecommendationsInteractor(
         .lowercase()
 
     private companion object {
+        const val HIGH_MATCH_PERCENTAGE = 80
+        const val MEDIUM_MATCH_PERCENTAGE = 60
+        const val MIN_RECOMMENDED_PERCENTAGE = 50
         val NUMBER = "\\d+".toRegex()
         val NON_SPACING_MARKS = "\\p{Mn}+".toRegex()
     }

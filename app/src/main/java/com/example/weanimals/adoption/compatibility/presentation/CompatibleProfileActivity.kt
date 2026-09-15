@@ -6,11 +6,14 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.annotation.ColorRes
+import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.isVisible
 import com.example.weanimals.R
 import com.example.weanimals.WeAnimalsApplication
 import com.example.weanimals.adoption.compatibility.domain.AnimalRecommendation
+import com.example.weanimals.adoption.compatibility.domain.MatchLevel
 import com.example.weanimals.adoption.compatibility.presenter.CompatibleProfileContract
 import com.example.weanimals.adoption.detail.presentation.AnimalDetailsActivity
 import com.example.weanimals.adoption.listing.domain.Animal
@@ -36,7 +39,8 @@ class CompatibleProfileActivity : AppCompatActivity(), CompatibleProfileContract
     private val presenter by lazy {
         (application as WeAnimalsApplication).appContainer.createCompatibleProfilePresenter(animalId)
     }
-    private val distanceFormat = NumberFormat.getNumberInstance(Locale.forLanguageTag("pt-BR")).apply {
+    private val portugueseLocale = Locale.forLanguageTag("pt-BR")
+    private val distanceFormat = NumberFormat.getNumberInstance(portugueseLocale).apply {
         minimumFractionDigits = 1
         maximumFractionDigits = 1
     }
@@ -138,8 +142,8 @@ class CompatibleProfileActivity : AppCompatActivity(), CompatibleProfileContract
         })
         profileDescription.text = getString(
             R.string.compatible_profile_description,
-            getString(profile.answers.routine.toStringResource()),
-            getString(profile.answers.availableSpace.toStringResource())
+            getString(profile.answers.routine.toStringResource()).lowercase(portugueseLocale),
+            getString(profile.answers.availableSpace.toStringResource()).lowercase(portugueseLocale)
         )
     }
 
@@ -178,6 +182,30 @@ class CompatibleProfileActivity : AppCompatActivity(), CompatibleProfileContract
         matchValue.text = getString(
             R.string.compatible_profile_match_value,
             recommendation.matchPercentage
+        )
+        val matchStrokeColor = ContextCompat.getColor(
+            this@CompatibleProfileActivity,
+            recommendation.matchLevel.strokeColorRes()
+        )
+        val matchTextColor = ContextCompat.getColor(
+            this@CompatibleProfileActivity,
+            recommendation.matchLevel.textColorRes()
+        )
+        val matchBackgroundColor = ContextCompat.getColor(
+            this@CompatibleProfileActivity,
+            recommendation.matchLevel.backgroundColorRes()
+        )
+        matchBadge.strokeColor = matchStrokeColor
+        matchBadge.setCardBackgroundColor(matchBackgroundColor)
+        matchValue.setTextColor(matchTextColor)
+        matchLabel.setTextColor(matchTextColor)
+        root.strokeColor = ContextCompat.getColor(
+            this@CompatibleProfileActivity,
+            if (recommendation.matchLevel == MatchLevel.HIGH) {
+                R.color.adoption_primary
+            } else {
+                R.color.border
+            }
         )
         root.contentDescription = getString(
             R.string.compatible_profile_match_accessibility,
@@ -240,6 +268,27 @@ class CompatibleProfileActivity : AppCompatActivity(), CompatibleProfileContract
         R.string.adoption_distance,
         distanceFormat.format(distanceKm)
     )
+
+    @ColorRes
+    private fun MatchLevel.strokeColorRes() = when (this) {
+        MatchLevel.HIGH -> R.color.adoption_primary
+        MatchLevel.MEDIUM -> R.color.gold
+        MatchLevel.LOW -> R.color.muted
+    }
+
+    @ColorRes
+    private fun MatchLevel.textColorRes() = when (this) {
+        MatchLevel.HIGH -> R.color.adoption_primary
+        MatchLevel.MEDIUM -> R.color.terracotta_dark
+        MatchLevel.LOW -> R.color.muted
+    }
+
+    @ColorRes
+    private fun MatchLevel.backgroundColorRes() = when (this) {
+        MatchLevel.HIGH -> R.color.low_urgency_light
+        MatchLevel.MEDIUM -> R.color.soft_gold
+        MatchLevel.LOW -> R.color.soft_cream
+    }
 
     private fun configureSystemBars() {
         WindowCompat.setDecorFitsSystemWindows(window, true)

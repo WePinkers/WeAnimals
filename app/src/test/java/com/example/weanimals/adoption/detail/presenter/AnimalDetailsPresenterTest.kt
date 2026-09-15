@@ -1,11 +1,14 @@
 package com.example.weanimals.adoption.detail.presenter
 
 import com.example.weanimals.adoption.detail.domain.AnimalDetails
+import com.example.weanimals.adoption.detail.domain.AnimalShareDocument
 import com.example.weanimals.adoption.detail.domain.EnergyLevel
 import com.example.weanimals.adoption.detail.domain.Shelter
 import com.example.weanimals.adoption.detail.interactor.GetAnimalDetailsInteractor
 import com.example.weanimals.adoption.detail.interactor.GetShelterDistanceInteractor
+import com.example.weanimals.adoption.detail.interactor.CreateAnimalSharePdfInteractor
 import com.example.weanimals.adoption.detail.repository.AnimalDetailsRepository
+import com.example.weanimals.adoption.detail.repository.AnimalShareRepository
 import com.example.weanimals.adoption.questionnaire.domain.AdoptionProfile
 import com.example.weanimals.adoption.questionnaire.domain.AdoptionQuestionnaireAnswers
 import com.example.weanimals.adoption.questionnaire.domain.AvailableSpaceOption
@@ -44,6 +47,7 @@ class AnimalDetailsPresenterTest {
         Coordinates(-23.5505, -46.6333)
     )
     private val profileRepository = FakeProfileRepository()
+    private val shareRepository = FakeShareRepository()
     private val view = RecordingView()
     private lateinit var presenter: AnimalDetailsPresenter
 
@@ -57,7 +61,8 @@ class AnimalDetailsPresenterTest {
                 GetUserLocationInteractor(locationRepository),
                 CalculateDistanceInteractor()
             ),
-            getAdoptionProfile = GetAdoptionProfileInteractor(profileRepository)
+            getAdoptionProfile = GetAdoptionProfileInteractor(profileRepository),
+            createAnimalSharePdf = CreateAnimalSharePdfInteractor(shareRepository)
         )
         presenter.attachView(view)
     }
@@ -121,7 +126,7 @@ class AnimalDetailsPresenterTest {
     fun favoriteAndShareRequireLoadedAnimal() = runTest {
         presenter.onFavoriteClicked()
         presenter.onShareClicked()
-        assertNull(view.shared)
+        assertEquals(0, shareRepository.requests)
         assertFalse(view.favorite)
 
         repository.result = Result.success(animalDetails())
@@ -129,9 +134,13 @@ class AnimalDetailsPresenterTest {
         advanceUntilIdle()
         presenter.onFavoriteClicked()
         presenter.onShareClicked()
+        advanceUntilIdle()
 
         assertTrue(view.favorite)
-        assertEquals("Canela", view.shared?.name)
+        assertEquals("Canela", shareRepository.details?.name)
+        assertEquals(360.75, shareRepository.distanceKm!!, 1.0)
+        assertEquals("animal.pdf", view.sharedDocument?.displayName)
+        assertFalse(view.shareLoading)
     }
 
     @Test
@@ -186,13 +195,34 @@ class AnimalDetailsPresenterTest {
         override suspend fun saveProfile(profile: AdoptionProfile) = Result.success(Unit)
     }
 
+    private class FakeShareRepository : AnimalShareRepository {
+        var requests = 0
+        var details: AnimalDetails? = null
+        var distanceKm: Double? = null
+        var result = Result.success(
+            AnimalShareDocument("C:/cache/animal.pdf", "animal.pdf", "application/pdf")
+        )
+
+        override suspend fun createPdf(
+            details: AnimalDetails,
+            distanceKm: Double?
+        ): Result<AnimalShareDocument> {
+            requests++
+            this.details = details
+            this.distanceKm = distanceKm
+            return result
+        }
+    }
+
     private class RecordingView : AnimalDetailsContract.View {
         var loading = false
         var details: AnimalDetails? = null
         var distanceKm: Double? = null
         var error: Throwable? = null
         var favorite = false
-        var shared: AnimalDetails? = null
+        var shareLoading = false
+        var sharedDocument: AnimalShareDocument? = null
+        var shareError: Throwable? = null
         var shelterAddress = ""
         var locationRequested = false
         var adoptionProfileLoading = false
@@ -214,7 +244,11 @@ class AnimalDetailsPresenterTest {
             this.error = error
         }
         override fun showFavorite(favorite: Boolean) { this.favorite = favorite }
-        override fun shareAnimal(details: AnimalDetails) { shared = details }
+        override fun showShareLoading(loading: Boolean) { shareLoading = loading }
+        override fun shareAnimalDocument(document: AnimalShareDocument) {
+            sharedDocument = document
+        }
+        override fun showShareError(error: Throwable) { shareError = error }
         override fun requestUserLocation() { locationRequested = true }
         override fun showAdoptionProfileLoading(loading: Boolean) {
             adoptionProfileLoading = loading

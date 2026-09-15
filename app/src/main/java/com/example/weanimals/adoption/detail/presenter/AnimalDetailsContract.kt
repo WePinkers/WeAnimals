@@ -1,6 +1,7 @@
 package com.example.weanimals.adoption.detail.presenter
 
 import com.example.weanimals.adoption.detail.domain.AnimalDetails
+import com.example.weanimals.adoption.detail.domain.AnimalShareDocument
 
 interface AnimalDetailsContract {
     interface View {
@@ -9,7 +10,9 @@ interface AnimalDetailsContract {
         fun showDistance(distanceKm: Double?, shelterAddress: String)
         fun showError(error: Throwable)
         fun showFavorite(favorite: Boolean)
-        fun shareAnimal(details: AnimalDetails)
+        fun showShareLoading(loading: Boolean)
+        fun shareAnimalDocument(document: AnimalShareDocument)
+        fun showShareError(error: Throwable)
         fun requestUserLocation()
         fun showAdoptionProfileLoading(loading: Boolean)
         fun showAdoptionProfileError(error: Throwable)

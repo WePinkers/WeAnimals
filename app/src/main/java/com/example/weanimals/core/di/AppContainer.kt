@@ -7,8 +7,10 @@ import com.example.weanimals.adoption.compatibility.presenter.CompatibleProfileP
 import com.example.weanimals.adoption.compatibility.repository.AnimalRecommendationRepositoryImpl
 import com.example.weanimals.adoption.detail.interactor.GetAnimalDetailsInteractor
 import com.example.weanimals.adoption.detail.interactor.GetShelterDistanceInteractor
+import com.example.weanimals.adoption.detail.interactor.CreateAnimalSharePdfInteractor
 import com.example.weanimals.adoption.detail.presenter.AnimalDetailsPresenter
 import com.example.weanimals.adoption.detail.repository.DemoAnimalDetailsRepository
+import com.example.weanimals.adoption.detail.repository.AndroidAnimalShareRepository
 import com.example.weanimals.adoption.detail.repository.FirebaseAnimalDetailsRepository
 import com.example.weanimals.adoption.listing.interactor.GetAvailableAnimalsInteractor
 import com.example.weanimals.adoption.listing.presenter.AdoptionPresenter
@@ -116,6 +118,10 @@ class AppContainer(context: Context) {
         }
     }
 
+    private val animalShareRepository by lazy {
+        AndroidAnimalShareRepository(applicationContext)
+    }
+
     private val adoptionProfileRepository by lazy {
         FirebaseAdoptionProfileRepository(
             auth = FirebaseAuth.getInstance(),
@@ -209,7 +215,8 @@ class AppContainer(context: Context) {
                 getUserLocation = getUserLocationInteractor,
                 calculateDistance = calculateDistanceInteractor
             ),
-            getAdoptionProfile = getAdoptionProfileInteractor
+            getAdoptionProfile = getAdoptionProfileInteractor,
+            createAnimalSharePdf = CreateAnimalSharePdfInteractor(animalShareRepository)
         )
 
     fun createAdoptionQuestionnairePresenter(animalId: String) =
