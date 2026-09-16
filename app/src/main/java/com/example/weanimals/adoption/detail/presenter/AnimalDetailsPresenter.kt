@@ -79,7 +79,9 @@ class AnimalDetailsPresenter(
         withView { it.showFavorite(favorite) }
     }
 
-    override fun onConversationClicked() = withView { it.showActionUnavailable() }
+    override fun onConversationClicked() {
+        details?.let { animal -> withView { it.openShelterChat(animal) } }
+    }
 
     override fun onAdoptClicked() {
         if (details == null || checkingAdoptionProfile) return

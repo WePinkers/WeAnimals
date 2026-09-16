@@ -15,10 +15,11 @@ import kotlinx.coroutines.launch
 class AdoptionQuestionnairePresenter(
     private val animalId: String,
     private val buildProfile: BuildAdoptionProfileInteractor,
-    private val saveProfile: SaveAdoptionProfileInteractor
+    private val saveProfile: SaveAdoptionProfileInteractor,
+    initialAnswers: AdoptionQuestionnaireAnswers? = null
 ) : BasePresenter<AdoptionQuestionnaireContract.View>(), AdoptionQuestionnaireContract.Presenter {
 
-    private var answers = AdoptionQuestionnaireAnswers()
+    private var answers = initialAnswers ?: AdoptionQuestionnaireAnswers()
     private var saving = false
 
     override fun start() = withView { it.showAnswers(answers) }

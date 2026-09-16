@@ -18,8 +18,8 @@ interface AnimalDetailsContract {
         fun showAdoptionProfileError(error: Throwable)
         fun openAdoptionQuestionnaire(animalId: String)
         fun openAdoptionConfirmation(animalId: String)
+        fun openShelterChat(details: AnimalDetails)
         fun closeScreen()
-        fun showActionUnavailable()
     }
 
     interface Presenter {

@@ -13,8 +13,8 @@ import coil.load
 import com.example.weanimals.R
 import com.example.weanimals.WeAnimalsApplication
 import com.example.weanimals.adoption.confirmation.domain.AdoptionCandidate
-import com.example.weanimals.adoption.confirmation.domain.DemoApplicationUnavailableException
 import com.example.weanimals.adoption.confirmation.presenter.AdoptionConfirmationContract
+import com.example.weanimals.adoption.sent.presentation.AdoptionSentActivity
 import com.example.weanimals.databinding.ActivityAdoptionConfirmationBinding
 
 class AdoptionConfirmationActivity : AppCompatActivity(), AdoptionConfirmationContract.View {
@@ -121,23 +121,14 @@ class AdoptionConfirmationActivity : AppCompatActivity(), AdoptionConfirmationCo
         if (submitting) binding.submitFeedback.isVisible = false
     }
 
-    override fun showSubmitted() {
-        binding.submitApplicationButton.isEnabled = false
-        binding.submitApplicationButton.setText(R.string.adoption_confirmation_submitted)
-        binding.submitFeedback.setText(R.string.adoption_confirmation_success)
-        binding.submitFeedback.setTextColor(ContextCompat.getColor(this, R.color.adoption_primary))
-        binding.submitFeedback.isVisible = true
+    override fun openAdoptionSent(candidate: AdoptionCandidate) {
+        startActivity(AdoptionSentActivity.newIntent(this, candidate))
+        finish()
     }
 
     override fun showSubmitError(error: Throwable) {
         Log.e(TAG, "Could not submit adoption application", error)
-        binding.submitFeedback.setText(
-            if (error is DemoApplicationUnavailableException) {
-                R.string.adoption_confirmation_demo_error
-            } else {
-                R.string.adoption_confirmation_submit_error
-            }
-        )
+        binding.submitFeedback.setText(R.string.adoption_confirmation_submit_error)
         binding.submitFeedback.setTextColor(ContextCompat.getColor(this, R.color.terracotta_dark))
         binding.submitFeedback.isVisible = true
     }

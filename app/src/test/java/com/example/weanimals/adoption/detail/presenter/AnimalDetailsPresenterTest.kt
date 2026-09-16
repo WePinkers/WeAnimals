@@ -90,6 +90,16 @@ class AnimalDetailsPresenterTest {
     }
 
     @Test
+    fun conversationOpensChatForTheLoadedAnimal() = runTest {
+        val animal = animalDetails()
+        repository.result = Result.success(animal)
+        presenter.start()
+        advanceUntilIdle()
+        presenter.onConversationClicked()
+        assertSame(animal, view.chatAnimal)
+    }
+
+    @Test
     fun requestsLocationAndCalculatesAfterAccessBecomesAvailable() = runTest {
         locationRepository.coordinates = null
         repository.result = Result.success(animalDetails())
@@ -229,6 +239,7 @@ class AnimalDetailsPresenterTest {
         var adoptionProfileError: Throwable? = null
         var questionnaireAnimalId: String? = null
         var confirmationAnimalId: String? = null
+        var chatAnimal: AnimalDetails? = null
 
         override fun showLoading() { loading = true }
         override fun showAnimal(details: AnimalDetails) {
@@ -260,8 +271,8 @@ class AnimalDetailsPresenterTest {
         override fun openAdoptionConfirmation(animalId: String) {
             confirmationAnimalId = animalId
         }
+        override fun openShelterChat(details: AnimalDetails) { chatAnimal = details }
         override fun closeScreen() = Unit
-        override fun showActionUnavailable() = Unit
     }
 
     private fun animalDetails() = AnimalDetails(

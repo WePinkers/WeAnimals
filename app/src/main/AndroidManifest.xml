@@ -41,6 +41,16 @@
             android:name=".adoption.confirmation.presentation.AdoptionConfirmationActivity"
             android:exported="false" />
         <activity
+            android:name=".adoption.sent.presentation.AdoptionSentActivity"
+            android:exported="false" />
+        <activity
+            android:name=".adoption.tracking.presentation.AdoptionTrackingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".adoption.checkin.presentation.AdoptionFollowUpActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
             android:name=".reporting.report.presentation.ReportActivity"
             android:exported="false" />
         <activity

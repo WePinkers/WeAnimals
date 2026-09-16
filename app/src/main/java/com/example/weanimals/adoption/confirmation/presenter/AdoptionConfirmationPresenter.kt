@@ -17,7 +17,7 @@ class AdoptionConfirmationPresenter(
     private var loadError: Throwable? = null
     private var loading = false
     private var submitting = false
-    private var submitted = false
+    private var sentScreenReady = false
 
     override fun start() {
         if (candidate == null && loadError == null && !loading) load()
@@ -30,7 +30,7 @@ class AdoptionConfirmationPresenter(
 
     override fun onSubmitClicked() {
         val selected = candidate ?: return
-        if (submitting || submitted) return
+        if (submitting || sentScreenReady) return
         submitting = true
         withView { it.showSubmitting(true) }
         presenterScope.launch {
@@ -38,14 +38,16 @@ class AdoptionConfirmationPresenter(
                 submitApplication(selected).fold(
                     onSuccess = {
                         submitting = false
-                        submitted = true
-                        withView { it.showSubmitted() }
+                        sentScreenReady = true
+                        withView { it.openAdoptionSent(selected) }
                     },
                     onFailure = { error ->
                         submitting = false
-                        if (error is AlreadyAppliedException) submitted = true
+                        if (error is AlreadyAppliedException) {
+                            sentScreenReady = true
+                        }
                         withView {
-                            if (error is AlreadyAppliedException) it.showSubmitted()
+                            if (sentScreenReady) it.openAdoptionSent(selected)
                             else {
                                 it.showSubmitting(false)
                                 it.showSubmitError(error)
@@ -90,7 +92,8 @@ class AdoptionConfirmationPresenter(
             loading -> view.showLoading()
             candidate != null -> {
                 view.showCandidate(requireNotNull(candidate))
-                if (submitted) view.showSubmitted() else view.showSubmitting(submitting)
+                if (sentScreenReady) view.openAdoptionSent(requireNotNull(candidate))
+                else view.showSubmitting(submitting)
             }
             loadError != null -> view.showLoadError(requireNotNull(loadError))
         }

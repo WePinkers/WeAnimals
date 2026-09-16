@@ -177,9 +177,24 @@
                     tools:text="Com base na sua rotina (home office) e no espaço disponível (apto com varanda), estes animais apresentam maior chance de adaptação ao seu perfil." />
 
                 <TextView
+                    android:id="@+id/edit_questionnaire_link"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="22dp"
+                    android:layout_marginTop="4dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:fontFamily="sans-serif"
+                    android:includeFontPadding="false"
+                    android:minHeight="28dp"
+                    android:gravity="center_vertical"
+                    android:text="@string/compatible_profile_edit_answers"
+                    android:textColor="@color/muted"
+                    android:textSize="@dimen/text_size_compatible_edit_link" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
                     android:fontFamily="monospace"
                     android:includeFontPadding="false"
                     android:letterSpacing="0.06"

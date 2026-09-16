@@ -164,6 +164,13 @@
     <string name="chat_empty_message_error">Escreva uma mensagem antes de enviar.</string>
     <string name="chat_unassigned_send_error">Não foi possível enviar a mensagem. O caso ainda aguarda a atribuição de um atendente. Tente novamente em instantes.</string>
     <string name="chat_send_error">Não foi possível enviar a mensagem. Tente novamente.</string>
+    <string name="adoption_chat_organization_fallback">Organização responsável</string>
+    <string name="adoption_chat_animal_format">Sobre %1$s</string>
+    <string name="adoption_chat_message_hint">Escreva para %1$s</string>
+    <string name="adoption_chat_agent_format">%1$s · %2$s</string>
+    <string name="adoption_chat_empty_message">Ainda não há mensagens sobre %2$s.\nEnvie uma mensagem para %1$s; ela ficará disponível para a equipe.</string>
+    <string name="adoption_chat_messages_error">Não foi possível carregar a conversa com a organização.</string>
+    <string name="adoption_chat_send_error">Não foi possível enviar a mensagem para a organização. Tente novamente.</string>
 
     <!-- Adoption Screen -->
     <string name="adoption_eyebrow">REDE DE ABRIGOS PARCEIROS</string>
@@ -237,7 +244,6 @@
     <string name="adoption_detail_adopt">Quero adotar</string>
     <string name="adoption_detail_loading">Carregando detalhes...</string>
     <string name="adoption_detail_error">Não foi possível carregar os detalhes deste animal.</string>
-    <string name="adoption_detail_future_action">Essa etapa do fluxo de adoção será implementada na próxima tela.</string>
 
     <!-- Adoption Questionnaire Screen -->
     <string name="adoption_profile_checking">Verificando perfil…</string>
@@ -265,6 +271,7 @@
     <string name="adoption_household_children">Crianças pequenas</string>
     <string name="adoption_household_pets">Outros pets</string>
     <string name="adoption_questionnaire_submit">Ver meu perfil compatível</string>
+    <string name="adoption_questionnaire_update_submit">Salvar respostas e ver perfil</string>
     <string name="adoption_questionnaire_saving">Salvando perfil…</string>
     <string name="adoption_questionnaire_incomplete">Responda às cinco perguntas para continuar.</string>
     <string name="adoption_questionnaire_save_error">Não foi possível salvar seu perfil. Tente novamente.</string>
@@ -284,6 +291,7 @@
     <string name="compatible_profile_age_young_adult">Filhote ou adulto (até 5 anos)</string>
     <string name="compatible_profile_age_any">Todas as idades</string>
     <string name="compatible_profile_description">Com base na sua rotina (%1$s) e no espaço disponível (%2$s), estes animais apresentam maior chance de adaptação ao seu perfil.</string>
+    <string name="compatible_profile_edit_answers">Editar respostas do questionário</string>
     <string name="compatible_profile_recommendations">ANIMAIS RECOMENDADOS PARA VOCÊ</string>
     <string name="compatible_profile_match_value">%1$d%%</string>
     <string name="compatible_profile_match_label">MATCH</string>
@@ -311,10 +319,104 @@
     <string name="adoption_confirmation_note">Você poderá se candidatar a outros animais enquanto aguarda — sua candidatura por %1$s continua ativa até o abrigo decidir.</string>
     <string name="adoption_confirmation_submit">Enviar candidatura</string>
     <string name="adoption_confirmation_submitting">Enviando candidatura…</string>
-    <string name="adoption_confirmation_submitted">Candidatura enviada</string>
-    <string name="adoption_confirmation_success">Sua candidatura chegou ao abrigo. Aguarde a análise.</string>
     <string name="adoption_confirmation_loading">Preparando candidatura…</string>
     <string name="adoption_confirmation_load_error">Não foi possível preparar sua candidatura.</string>
     <string name="adoption_confirmation_submit_error">Não foi possível enviar sua candidatura. Confira sua conexão e tente novamente.</string>
-    <string name="adoption_confirmation_demo_error">Este animal é apenas um exemplo para testar as telas. Candidaturas reais só podem ser enviadas para animais cadastrados por um abrigo.</string>
+
+    <!-- Adoption Sent Screen -->
+    <string name="adoption_sent_eyebrow">CANDIDATURA ENVIADA</string>
+    <string name="adoption_sent_summary">%1$s · %2$s · %3$d%% match</string>
+    <string name="adoption_sent_title">Candidatura enviada</string>
+    <string name="adoption_sent_description">Sua candidatura para %1$s foi registrada para análise de %2$s. Você pode conhecer outros animais enquanto aguarda uma resposta.</string>
+    <string name="adoption_sent_now">O QUE ACONTECE AGORA</string>
+    <string name="adoption_sent_step_received">Candidatura registrada</string>
+    <string name="adoption_sent_step_review">Análise do perfil pelo abrigo</string>
+    <string name="adoption_sent_step_visit">Visita e adoção confirmada</string>
+    <string name="adoption_sent_track">Acompanhar candidatura</string>
+    <string name="adoption_sent_other_animals">Ver outros animais</string>
+    <string name="adoption_sent_status_close">Entendi</string>
+
+    <!-- Adoption Tracking Screen -->
+    <string name="adoption_tracking_eyebrow">CANDIDATURA</string>
+    <string name="adoption_tracking_rejected_eyebrow">CANDIDATURA · NÃO SELECIONADO</string>
+    <string name="adoption_tracking_cancelled_eyebrow">CANDIDATURA · DESISTÊNCIA</string>
+    <string name="adoption_tracking_title">%1$s · %2$s</string>
+    <string name="adoption_tracking_animal_meta">%1$s · %2$s, %3$s</string>
+    <string name="adoption_tracking_animal_name_only">%1$s</string>
+    <string name="adoption_tracking_match">%1$d%% de compatibilidade com você</string>
+    <string name="adoption_tracking_loading">Carregando candidatura…</string>
+    <string name="adoption_tracking_load_error">Não foi possível carregar o andamento da candidatura. Volte e tente novamente.</string>
+    <string name="adoption_tracking_sent">Candidatura enviada</string>
+    <string name="adoption_tracking_sent_date">%1$s — candidatura registrada</string>
+    <string name="adoption_tracking_sent_fallback">Candidatura registrada</string>
+    <string name="adoption_tracking_waiting_review">Aguardando análise do abrigo</string>
+    <string name="adoption_tracking_in_review">Em análise pelo abrigo</string>
+    <string name="adoption_tracking_review_done">Analisada pelo abrigo</string>
+    <string name="adoption_tracking_review_hint">Pode haver outros candidatos interessados</string>
+    <string name="adoption_tracking_review_rejected">%1$s — outro candidato foi escolhido</string>
+    <string name="adoption_tracking_review_rejected_fallback">Outro candidato foi escolhido</string>
+    <string name="adoption_tracking_review_approved">%1$s — candidatura aprovada</string>
+    <string name="adoption_tracking_review_approved_fallback">Candidatura aprovada</string>
+    <string name="adoption_tracking_visit">Conversa e visita agendada</string>
+    <string name="adoption_tracking_visit_pending">Aguardando agendamento</string>
+    <string name="adoption_tracking_visit_confirmed">Visita agendada</string>
+    <string name="adoption_tracking_adopted">Adoção confirmada</string>
+    <string name="adoption_tracking_adopted_pending">Aguardando confirmação</string>
+    <string name="adoption_tracking_adopted_confirmed">Adoção confirmada pelo abrigo</string>
+    <string name="adoption_tracking_step_pending">—</string>
+    <string name="adoption_tracking_chat_title">Precisa falar com %1$s?</string>
+    <string name="adoption_tracking_chat_hint">Envie uma mensagem pelo chat</string>
+    <string name="adoption_tracking_withdraw">Desistir da candidatura</string>
+    <string name="adoption_tracking_withdraw_confirm_title">Desistir da candidatura?</string>
+    <string name="adoption_tracking_withdraw_confirm">Sua candidatura para %1$s será encerrada. Esta ação não pode ser desfeita.</string>
+    <string name="adoption_tracking_withdraw_action">Desistir</string>
+    <string name="adoption_tracking_withdraw_error">Não foi possível desistir da candidatura. Tente novamente.</string>
+    <string name="adoption_tracking_cancel">Voltar</string>
+    <string name="adoption_tracking_rejected_title">Não foi dessa vez</string>
+    <string name="adoption_tracking_rejected_description">%1$s escolheu outro adotante para %2$s. Isso não define seu perfil: às vezes a decisão depende de outros fatores do abrigo.</string>
+    <string name="adoption_tracking_cancelled_title">Candidatura encerrada</string>
+    <string name="adoption_tracking_cancelled_description">Você desistiu da candidatura para %1$s. Pode continuar conhecendo outros animais.</string>
+
+    <!-- Adoption Follow-up Screen -->
+    <string name="adoption_follow_up_title">Acompanhamento</string>
+    <string name="adoption_follow_up_summary">%1$s · adoção em %2$s</string>
+    <string name="adoption_follow_up_adopter">Adotante: %1$s</string>
+    <string name="adoption_follow_up_timeline">LINHA DO TEMPO DE ACOMPANHAMENTO</string>
+    <string name="adoption_follow_up_step">Check-in de %1$d dias</string>
+    <string name="adoption_follow_up_completed">Respondido · adaptação classificada como %1$s</string>
+    <string name="adoption_follow_up_available">Disponível agora</string>
+    <string name="adoption_follow_up_scheduled">Agendado para %1$s</string>
+    <string name="adoption_follow_up_reply">Responder</string>
+    <string name="adoption_follow_up_adaptation">COMO ESTÁ A ADAPTAÇÃO?</string>
+    <string name="adoption_follow_up_difficult">Difícil</string>
+    <string name="adoption_follow_up_challenges">Alguns desafios</string>
+    <string name="adoption_follow_up_good">Boa</string>
+    <string name="adoption_follow_up_excellent">Ótima</string>
+    <string name="adoption_follow_up_note_label">QUER CONTAR MAIS ALGUMA COISA? (OPCIONAL)</string>
+    <string name="adoption_follow_up_note_hint">Conte como está a adaptação…</string>
+    <string name="adoption_follow_up_submit">Enviar check-in</string>
+    <string name="adoption_follow_up_sending">Enviando check-in…</string>
+    <string name="adoption_follow_up_loading">Carregando acompanhamento…</string>
+    <string name="adoption_follow_up_unavailable">O acompanhamento estará disponível após a adoção ser confirmada pelo abrigo.</string>
+    <string name="adoption_follow_up_date_missing">A adoção foi confirmada, mas a organização responsável ainda não registrou a data em que ela aconteceu. Tente novamente quando essa data for informada.</string>
+    <string name="adoption_follow_up_load_error">Não foi possível carregar o acompanhamento. Confira sua conexão e tente novamente.</string>
+    <string name="adoption_follow_up_rating_required">Selecione como está a adaptação antes de enviar.</string>
+    <string name="adoption_follow_up_question_required">Responda esta pergunta antes de enviar o check-in.</string>
+    <string name="adoption_follow_up_routine_adjusted">O animal já se acostumou com a rotina da casa?</string>
+    <string name="adoption_follow_up_health_issue">Teve algum problema de saúde ou comportamento nesse período?</string>
+    <string name="adoption_follow_up_walks_and_feeding">A rotina de passeios e alimentação já está estabelecida?</string>
+    <string name="adoption_follow_up_behavior_changed">O comportamento mudou desde o último check-in?</string>
+    <string name="adoption_follow_up_regular_vet_visits">JÁ LEVA AO VETERINÁRIO COM REGULARIDADE?</string>
+    <string name="adoption_follow_up_strong_bond">Vocês já formaram um vínculo forte?</string>
+    <string name="adoption_follow_up_shelter_support">Sente que precisa de algum suporte do abrigo agora?</string>
+    <string name="adoption_follow_up_recommend_adoption">RECOMENDARIA A ADOÇÃO PARA OUTRAS PESSOAS?</string>
+    <string name="adoption_follow_up_answer_yes">Sim</string>
+    <string name="adoption_follow_up_answer_no">Não</string>
+    <string name="adoption_follow_up_answer_partly">Em parte</string>
+    <string name="adoption_follow_up_answer_certainly">Sim, com certeza</string>
+    <string name="adoption_follow_up_answer_maybe">Talvez</string>
+    <string name="adoption_follow_up_submit_error">Não foi possível enviar o check-in. Confira sua conexão e tente novamente.</string>
+    <string name="adoption_follow_up_submit_success">Check-in enviado com sucesso!</string>
+    <string name="adoption_follow_up_next">O próximo check-in estará disponível próximo de %1$s.</string>
+    <string name="adoption_follow_up_all_done">Todos os check-ins foram respondidos. Obrigado por acompanhar a adaptação!</string>
 </resources>

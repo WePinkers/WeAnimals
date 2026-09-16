@@ -109,6 +109,7 @@
     <dimen name="text_size_adoption_questionnaire_error">10sp</dimen>
     <dimen name="text_size_compatible_profile_item">12sp</dimen>
     <dimen name="text_size_compatible_profile_description">12sp</dimen>
+    <dimen name="text_size_compatible_edit_link">11sp</dimen>
     <dimen name="text_size_compatible_match_value">16sp</dimen>
     <dimen name="text_size_compatible_match_label">8sp</dimen>
     <dimen name="text_size_compatible_animal_title">14sp</dimen>
@@ -127,4 +128,12 @@
     <dimen name="text_size_adoption_confirmation_step_title">13sp</dimen>
     <dimen name="text_size_adoption_confirmation_step_body">11sp</dimen>
     <dimen name="text_size_adoption_confirmation_note">11sp</dimen>
+    <dimen name="text_size_follow_up_card_title">12sp</dimen>
+    <dimen name="text_size_follow_up_eyebrow">9sp</dimen>
+    <dimen name="text_size_follow_up_step_title">12sp</dimen>
+    <dimen name="text_size_follow_up_step_body">10sp</dimen>
+    <dimen name="text_size_follow_up_rating">10sp</dimen>
+    <dimen name="text_size_follow_up_note">11sp</dimen>
+    <dimen name="text_size_follow_up_question">12sp</dimen>
+    <dimen name="text_size_follow_up_answer">10sp</dimen>
 </resources>

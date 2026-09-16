@@ -8,7 +8,7 @@ interface AdoptionConfirmationContract {
         fun showCandidate(candidate: AdoptionCandidate)
         fun showLoadError(error: Throwable)
         fun showSubmitting(submitting: Boolean)
-        fun showSubmitted()
+        fun openAdoptionSent(candidate: AdoptionCandidate)
         fun showSubmitError(error: Throwable)
         fun closeScreen()
     }

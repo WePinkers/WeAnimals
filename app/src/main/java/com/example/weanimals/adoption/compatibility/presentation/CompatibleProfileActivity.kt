@@ -3,9 +3,11 @@ package com.example.weanimals.adoption.compatibility.presentation
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.graphics.Paint
 import android.util.Log
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
@@ -20,6 +22,7 @@ import com.example.weanimals.adoption.listing.domain.Animal
 import com.example.weanimals.adoption.listing.domain.AnimalEnergyLevel
 import com.example.weanimals.adoption.listing.domain.Species
 import com.example.weanimals.adoption.questionnaire.domain.AdoptionProfile
+import com.example.weanimals.adoption.questionnaire.domain.AdoptionQuestionnaireAnswers
 import com.example.weanimals.adoption.questionnaire.domain.AgeProfile
 import com.example.weanimals.adoption.questionnaire.domain.AvailableSpaceOption
 import com.example.weanimals.adoption.questionnaire.domain.EnergyProfile
@@ -39,6 +42,14 @@ class CompatibleProfileActivity : AppCompatActivity(), CompatibleProfileContract
     private val presenter by lazy {
         (application as WeAnimalsApplication).appContainer.createCompatibleProfilePresenter(animalId)
     }
+    private val editQuestionnaireLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            binding.profileContent.scrollTo(0, 0)
+            presenter.onAnswersUpdated()
+        }
+    }
     private val portugueseLocale = Locale.forLanguageTag("pt-BR")
     private val distanceFormat = NumberFormat.getNumberInstance(portugueseLocale).apply {
         minimumFractionDigits = 1
@@ -53,6 +64,9 @@ class CompatibleProfileActivity : AppCompatActivity(), CompatibleProfileContract
         binding.compatibleProfileHeader.headerTitle.setText(R.string.compatible_profile_title)
         binding.compatibleProfileHeader.backButton.setOnClickListener { presenter.onBackClicked() }
         binding.profileStateAction.setOnClickListener { presenter.onRetryClicked() }
+        binding.editQuestionnaireLink.paintFlags =
+            binding.editQuestionnaireLink.paintFlags or Paint.UNDERLINE_TEXT_FLAG
+        binding.editQuestionnaireLink.setOnClickListener { presenter.onEditAnswersClicked() }
     }
 
     override fun onStart() {
@@ -108,6 +122,15 @@ class CompatibleProfileActivity : AppCompatActivity(), CompatibleProfileContract
     override fun openQuestionnaire(animalId: String) {
         startActivity(AdoptionQuestionnaireActivity.newIntent(this, animalId))
         finish()
+    }
+
+    override fun openQuestionnaireForEditing(
+        animalId: String,
+        answers: AdoptionQuestionnaireAnswers
+    ) {
+        editQuestionnaireLauncher.launch(
+            AdoptionQuestionnaireActivity.newEditIntent(this, animalId, answers)
+        )
     }
 
     override fun openAnimalDetails(animalId: String) {

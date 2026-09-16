@@ -30,6 +30,7 @@ import com.example.weanimals.adoption.detail.domain.AnimalShareDocument
 import com.example.weanimals.adoption.detail.domain.EnergyLevel
 import com.example.weanimals.adoption.detail.presenter.AnimalDetailsContract
 import com.example.weanimals.adoption.questionnaire.presentation.AdoptionQuestionnaireActivity
+import com.example.weanimals.reporting.chat.presentation.CaseChatActivity
 import com.example.weanimals.databinding.ActivityAnimalDetailsBinding
 import com.example.weanimals.databinding.ItemAdoptionRequirementBinding
 import com.google.android.material.snackbar.Snackbar
@@ -323,11 +324,16 @@ class AnimalDetailsActivity : AppCompatActivity(), AnimalDetailsContract.View {
         startActivity(AdoptionConfirmationActivity.newIntent(this, animalId))
     }
 
-    override fun closeScreen() = finish()
-
-    override fun showActionUnavailable() {
-        Snackbar.make(binding.root, R.string.adoption_detail_future_action, Snackbar.LENGTH_SHORT).show()
+    override fun openShelterChat(details: AnimalDetails) {
+        startActivity(CaseChatActivity.newAdoptionIntent(
+            context = this,
+            animalId = details.id,
+            animalName = details.name,
+            organizationName = details.shelter?.name.orEmpty()
+        ))
     }
+
+    override fun closeScreen() = finish()
 
     private fun setupInteractions() = with(binding) {
         backButton.setOnClickListener { presenter.onBackClicked() }

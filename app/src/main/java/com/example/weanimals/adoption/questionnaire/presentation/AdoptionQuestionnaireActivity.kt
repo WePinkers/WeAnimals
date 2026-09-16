@@ -26,9 +26,29 @@ class AdoptionQuestionnaireActivity : AppCompatActivity(), AdoptionQuestionnaire
 
     private lateinit var binding: ActivityAdoptionQuestionnaireBinding
     private val animalId by lazy { intent.getStringExtra(EXTRA_ANIMAL_ID).orEmpty() }
+    private val isEditing by lazy { intent.getBooleanExtra(EXTRA_EDITING, false) }
+    private val initialAnswers by lazy {
+        if (!isEditing) null else AdoptionQuestionnaireAnswers(
+            routine = RoutineOption.entries.firstOrNull {
+                it.storageValue == intent.getStringExtra(EXTRA_ROUTINE)
+            },
+            availableSpace = AvailableSpaceOption.entries.firstOrNull {
+                it.storageValue == intent.getStringExtra(EXTRA_SPACE)
+            },
+            petExperience = PetExperienceOption.entries.firstOrNull {
+                it.storageValue == intent.getStringExtra(EXTRA_EXPERIENCE)
+            },
+            dailyTime = DailyTimeOption.entries.firstOrNull {
+                it.storageValue == intent.getStringExtra(EXTRA_DAILY_TIME)
+            },
+            household = HouseholdOption.entries.firstOrNull {
+                it.storageValue == intent.getStringExtra(EXTRA_HOUSEHOLD)
+            }
+        )
+    }
     private val presenter by lazy {
         (application as WeAnimalsApplication).appContainer
-            .createAdoptionQuestionnairePresenter(animalId)
+            .createAdoptionQuestionnairePresenter(animalId, initialAnswers)
     }
     private var updatingSelections = false
 
@@ -38,6 +58,7 @@ class AdoptionQuestionnaireActivity : AppCompatActivity(), AdoptionQuestionnaire
         binding = ActivityAdoptionQuestionnaireBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.questionnaireHeader.headerTitle.setText(R.string.adoption_questionnaire_title)
+        if (isEditing) binding.submitButton.setText(R.string.adoption_questionnaire_update_submit)
         setupInteractions()
     }
 
@@ -82,7 +103,10 @@ class AdoptionQuestionnaireActivity : AppCompatActivity(), AdoptionQuestionnaire
 
     override fun hideSaving() {
         binding.submitButton.isEnabled = true
-        binding.submitButton.setText(R.string.adoption_questionnaire_submit)
+        binding.submitButton.setText(
+            if (isEditing) R.string.adoption_questionnaire_update_submit
+            else R.string.adoption_questionnaire_submit
+        )
     }
 
     override fun showSaveError(error: Throwable) {
@@ -92,6 +116,11 @@ class AdoptionQuestionnaireActivity : AppCompatActivity(), AdoptionQuestionnaire
     }
 
     override fun openCompatibleProfile(animalId: String) {
+        if (isEditing) {
+            setResult(RESULT_OK)
+            finish()
+            return
+        }
         startActivity(CompatibleProfileActivity.newIntent(this, animalId))
         finish()
     }
@@ -241,10 +270,29 @@ class AdoptionQuestionnaireActivity : AppCompatActivity(), AdoptionQuestionnaire
     companion object {
         private const val TAG = "AdoptionQuestionnaireActivity"
         private const val EXTRA_ANIMAL_ID = "extra_animal_id"
+        private const val EXTRA_EDITING = "extra_editing"
+        private const val EXTRA_ROUTINE = "extra_routine"
+        private const val EXTRA_SPACE = "extra_space"
+        private const val EXTRA_EXPERIENCE = "extra_experience"
+        private const val EXTRA_DAILY_TIME = "extra_daily_time"
+        private const val EXTRA_HOUSEHOLD = "extra_household"
 
         fun newIntent(context: Context, animalId: String) =
             Intent(context, AdoptionQuestionnaireActivity::class.java).apply {
                 putExtra(EXTRA_ANIMAL_ID, animalId)
             }
+
+        fun newEditIntent(
+            context: Context,
+            animalId: String,
+            answers: AdoptionQuestionnaireAnswers
+        ) = newIntent(context, animalId).apply {
+            putExtra(EXTRA_EDITING, true)
+            putExtra(EXTRA_ROUTINE, answers.routine?.storageValue)
+            putExtra(EXTRA_SPACE, answers.availableSpace?.storageValue)
+            putExtra(EXTRA_EXPERIENCE, answers.petExperience?.storageValue)
+            putExtra(EXTRA_DAILY_TIME, answers.dailyTime?.storageValue)
+            putExtra(EXTRA_HOUSEHOLD, answers.household?.storageValue)
+        }
     }
 }

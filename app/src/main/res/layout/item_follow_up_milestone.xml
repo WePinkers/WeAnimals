@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:minHeight="68dp"
+    android:orientation="horizontal">
+
+    <FrameLayout
+        android:id="@+id/milestone_marker"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:background="@drawable/bg_tracking_marker_pending">
+
+        <ImageView
+            android:id="@+id/milestone_icon"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_gravity="center"
+            android:contentDescription="@null" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/milestone_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:includeFontPadding="false"
+            android:textColor="@color/ink"
+            android:textSize="@dimen/text_size_follow_up_step_title"
+            android:textStyle="bold"
+            tools:text="Check-in de 90 dias" />
+
+        <TextView
+            android:id="@+id/milestone_subtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:includeFontPadding="false"
+            android:textColor="@color/muted"
+            android:textSize="@dimen/text_size_follow_up_step_body"
+            tools:text="Disponível agora" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/milestone_action"
+        android:layout_width="wrap_content"
+        android:layout_height="44dp"
+        android:gravity="center"
+        android:paddingStart="8dp"
+        android:text="@string/adoption_follow_up_reply"
+        android:textColor="@color/terracotta_dark"
+        android:textSize="@dimen/text_size_follow_up_step_body"
+        android:textStyle="bold"
+        android:visibility="gone" />
+</LinearLayout>

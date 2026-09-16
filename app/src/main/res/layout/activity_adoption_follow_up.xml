@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:orientation="vertical"
+    tools:context=".adoption.checkin.presentation.AdoptionFollowUpActivity">
+
+    <include
+        android:id="@+id/follow_up_header"
+        layout="@layout/view_screen_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <ScrollView
+            android:id="@+id/follow_up_scroll"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            android:overScrollMode="never"
+            android:scrollbars="none"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingStart="22dp"
+                android:paddingTop="16dp"
+                android:paddingEnd="22dp"
+                android:paddingBottom="24dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_status_card"
+                    android:gravity="center_vertical"
+                    android:minHeight="58dp"
+                    android:orientation="horizontal"
+                    android:padding="11dp">
+
+                    <FrameLayout
+                        android:layout_width="34dp"
+                        android:layout_height="34dp"
+                        android:background="@drawable/bg_tracking_detail_card"
+                        android:clipToOutline="true">
+
+                        <ImageView
+                            android:id="@+id/follow_up_photo"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:contentDescription="@null"
+                            android:scaleType="centerCrop" />
+
+                        <ImageView
+                            android:id="@+id/follow_up_photo_placeholder"
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:layout_gravity="center"
+                            android:contentDescription="@null"
+                            android:src="@drawable/ic_adoption_photo_marker" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/follow_up_animal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:includeFontPadding="false"
+                            android:textColor="@color/ink"
+                            android:textSize="@dimen/text_size_follow_up_card_title"
+                            android:textStyle="bold"
+                            tools:text="Canela · adoção em 28/06/2026" />
+
+                        <TextView
+                            android:id="@+id/follow_up_adopter"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:includeFontPadding="false"
+                            android:textColor="@color/muted"
+                            android:textSize="@dimen/text_size_follow_up_step_body"
+                            tools:text="Adotante: Renata Ferreira" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:fontFamily="monospace"
+                    android:includeFontPadding="false"
+                    android:letterSpacing="0.08"
+                    android:text="@string/adoption_follow_up_timeline"
+                    android:textColor="@color/ink"
+                    android:textSize="@dimen/text_size_follow_up_eyebrow" />
+
+                <LinearLayout
+                    android:id="@+id/follow_up_milestones"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="7dp"
+                    android:orientation="vertical" />
+
+                <LinearLayout
+                    android:id="@+id/follow_up_form"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    tools:visibility="visible">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:fontFamily="monospace"
+                        android:includeFontPadding="false"
+                        android:letterSpacing="0.08"
+                        android:text="@string/adoption_follow_up_adaptation"
+                        android:textColor="@color/ink"
+                        android:textSize="@dimen/text_size_follow_up_eyebrow" />
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/follow_up_rating_group"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="7dp"
+                        app:chipSpacingHorizontal="5dp"
+                        app:chipSpacingVertical="5dp"
+                        app:singleSelection="true">
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/follow_up_difficult"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checkable="true"
+                            android:text="@string/adoption_follow_up_difficult"
+                            android:textSize="@dimen/text_size_follow_up_rating"
+                            app:checkedIconVisible="false"
+                            app:chipCornerRadius="12dp"
+                            app:chipMinHeight="40dp"
+                            app:chipStrokeWidth="1dp"
+                            app:ensureMinTouchTargetSize="false" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/follow_up_challenges"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checkable="true"
+                            android:text="@string/adoption_follow_up_challenges"
+                            android:textSize="@dimen/text_size_follow_up_rating"
+                            app:checkedIconVisible="false"
+                            app:chipCornerRadius="12dp"
+                            app:chipMinHeight="40dp"
+                            app:chipStrokeWidth="1dp"
+                            app:ensureMinTouchTargetSize="false" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/follow_up_good"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checkable="true"
+                            android:text="@string/adoption_follow_up_good"
+                            android:textSize="@dimen/text_size_follow_up_rating"
+                            app:checkedIconVisible="false"
+                            app:chipCornerRadius="12dp"
+                            app:chipMinHeight="40dp"
+                            app:chipStrokeWidth="1dp"
+                            app:ensureMinTouchTargetSize="false" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/follow_up_excellent"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checkable="true"
+                            android:text="@string/adoption_follow_up_excellent"
+                            android:textSize="@dimen/text_size_follow_up_rating"
+                            app:checkedIconVisible="false"
+                            app:chipCornerRadius="12dp"
+                            app:chipMinHeight="40dp"
+                            app:chipStrokeWidth="1dp"
+                            app:ensureMinTouchTargetSize="false" />
+                    </com.google.android.material.chip.ChipGroup>
+
+                    <LinearLayout
+                        android:id="@+id/follow_up_questions"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="18dp"
+                        android:fontFamily="monospace"
+                        android:includeFontPadding="false"
+                        android:letterSpacing="0.07"
+                        android:text="@string/adoption_follow_up_note_label"
+                        android:textColor="@color/ink"
+                        android:textSize="@dimen/text_size_follow_up_eyebrow" />
+
+                    <EditText
+                        android:id="@+id/follow_up_note"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="7dp"
+                        android:background="@drawable/bg_tracking_detail_card"
+                        android:gravity="top|start"
+                        android:hint="@string/adoption_follow_up_note_hint"
+                        android:inputType="textCapSentences|textMultiLine"
+                        android:maxLength="1000"
+                        android:minHeight="50dp"
+                        android:paddingStart="12dp"
+                        android:paddingTop="10dp"
+                        android:paddingEnd="12dp"
+                        android:paddingBottom="10dp"
+                        android:textColor="@color/ink"
+                        android:textColorHint="@color/muted"
+                        android:textSize="@dimen/text_size_follow_up_note" />
+
+                    <TextView
+                        android:id="@+id/follow_up_form_error"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:textColor="@color/red"
+                        android:textSize="@dimen/text_size_follow_up_step_body"
+                        android:visibility="gone" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/follow_up_submit"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="14dp"
+                        android:text="@string/adoption_follow_up_submit"
+                        android:textAllCaps="false"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/text_size_follow_up_step_title"
+                        app:backgroundTint="@color/terracotta"
+                        app:cornerRadius="12dp"
+                        app:icon="@drawable/ic_check"
+                        app:iconGravity="textStart"
+                        app:iconPadding="6dp"
+                        app:iconSize="16dp"
+                        app:iconTint="@color/white" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/follow_up_next_hint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:textColor="@color/muted"
+                    android:textSize="@dimen/text_size_follow_up_step_body"
+                    android:visibility="gone" />
+            </LinearLayout>
+        </ScrollView>
+
+        <LinearLayout
+            android:id="@+id/follow_up_state"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="28dp"
+            tools:visibility="gone">
+
+            <ProgressBar
+                android:id="@+id/follow_up_progress"
+                android:layout_width="36dp"
+                android:layout_height="36dp" />
+
+            <TextView
+                android:id="@+id/follow_up_state_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:gravity="center"
+                android:text="@string/adoption_follow_up_loading"
+                android:textColor="@color/muted"
+                android:textSize="@dimen/text_size_follow_up_note" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/follow_up_retry"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:text="@string/compatible_profile_retry"
+                android:textAllCaps="false"
+                android:visibility="gone"
+                app:backgroundTint="@color/adoption_primary" />
+        </LinearLayout>
+    </FrameLayout>
+</LinearLayout>

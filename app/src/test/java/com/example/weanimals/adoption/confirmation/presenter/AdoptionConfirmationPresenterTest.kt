@@ -4,7 +4,6 @@ import com.example.weanimals.adoption.compatibility.interactor.GetAnimalRecommen
 import com.example.weanimals.adoption.compatibility.repository.AnimalRecommendationRepository
 import com.example.weanimals.adoption.confirmation.domain.AdoptionCandidate
 import com.example.weanimals.adoption.confirmation.domain.AlreadyAppliedException
-import com.example.weanimals.adoption.confirmation.domain.DemoApplicationUnavailableException
 import com.example.weanimals.adoption.confirmation.interactor.GetAdoptionCandidateInteractor
 import com.example.weanimals.adoption.confirmation.interactor.SubmitAdoptionApplicationInteractor
 import com.example.weanimals.adoption.confirmation.repository.AdoptionApplicationRepository
@@ -85,7 +84,7 @@ class AdoptionConfirmationPresenterTest {
         presenter.onSubmitClicked()
         advanceUntilIdle()
         assertEquals(1, applications.submissions)
-        assertTrue(view.submitted)
+        assertEquals("canela", view.openedCandidate?.animal?.id)
         presenter.onSubmitClicked()
         assertEquals(1, applications.submissions)
     }
@@ -96,19 +95,19 @@ class AdoptionConfirmationPresenterTest {
         advanceUntilIdle()
         presenter.onSubmitClicked()
         advanceUntilIdle()
-        assertTrue(view.submitted)
+        assertEquals("canela", view.openedCandidate?.animal?.id)
         assertEquals(1, applications.submissions)
     }
 
-    @Test fun demoFailureDoesNotClaimAnApplicationWasSent() = runTest {
-        applications.result = Result.failure(DemoApplicationUnavailableException())
+    @Test fun failedSubmissionNeverOpensSentScreen() = runTest {
+        applications.result = Result.failure(IllegalStateException("offline"))
         presenter.start()
         advanceUntilIdle()
         presenter.onSubmitClicked()
         advanceUntilIdle()
-        assertFalse(view.submitted)
-        assertTrue(view.submitError is DemoApplicationUnavailableException)
-        assertFalse(view.submitting)
+        assertEquals(null, view.openedCandidate)
+        assertTrue(view.submitError is IllegalStateException)
+        assertEquals(1, applications.submissions)
     }
 
     @Test fun missingQuestionnaireProfileBlocksConfirmation() = runTest {
@@ -139,7 +138,7 @@ class AdoptionConfirmationPresenterTest {
         var candidate: AdoptionCandidate? = null
         var loadError: Throwable? = null
         var submitting = false
-        var submitted = false
+        var openedCandidate: AdoptionCandidate? = null
         var submitError: Throwable? = null
         override fun showLoading() { loading = true }
         override fun showCandidate(candidate: AdoptionCandidate) {
@@ -151,7 +150,9 @@ class AdoptionConfirmationPresenterTest {
             loadError = error
         }
         override fun showSubmitting(submitting: Boolean) { this.submitting = submitting }
-        override fun showSubmitted() { submitted = true }
+        override fun openAdoptionSent(candidate: AdoptionCandidate) {
+            openedCandidate = candidate
+        }
         override fun showSubmitError(error: Throwable) { submitError = error }
         override fun closeScreen() = Unit
     }

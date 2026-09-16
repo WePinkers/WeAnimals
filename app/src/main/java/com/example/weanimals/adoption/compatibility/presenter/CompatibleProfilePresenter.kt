@@ -6,6 +6,7 @@ import com.example.weanimals.adoption.questionnaire.domain.AdoptionProfile
 import com.example.weanimals.adoption.questionnaire.interactor.GetAdoptionProfileInteractor
 import com.example.weanimals.core.base.BasePresenter
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class CompatibleProfilePresenter(
@@ -19,6 +20,7 @@ class CompatibleProfilePresenter(
     private var profile: AdoptionProfile? = null
     private var recommendations = emptyList<AnimalRecommendation>()
     private var error: Throwable? = null
+    private var loadJob: Job? = null
 
     override fun start() {
         if (!started) {
@@ -33,6 +35,14 @@ class CompatibleProfilePresenter(
         if (!loading) load()
     }
 
+    override fun onEditAnswersClicked() {
+        profile?.answers?.let { answers ->
+            withView { it.openQuestionnaireForEditing(originAnimalId, answers) }
+        }
+    }
+
+    override fun onAnswersUpdated() = load()
+
     override fun onAnimalClicked(animalId: String) {
         if (recommendations.any { it.animal.id == animalId }) {
             withView { it.openAnimalDetails(animalId) }
@@ -42,10 +52,11 @@ class CompatibleProfilePresenter(
     override fun onBackClicked() = withView(CompatibleProfileContract.View::closeScreen)
 
     private fun load() {
+        loadJob?.cancel()
         loading = true
         error = null
         withView { it.showLoading() }
-        presenterScope.launch {
+        loadJob = presenterScope.launch {
             try {
                 val savedProfile = getProfile().getOrElse {
                     fail(it)

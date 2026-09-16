@@ -1,12 +1,17 @@
 package com.example.weanimals.core.di
 
 import android.content.Context
-import android.content.pm.ApplicationInfo
 import com.example.weanimals.adoption.compatibility.interactor.GetAnimalRecommendationsInteractor
+import com.example.weanimals.adoption.chat.repository.FirebaseAdoptionChatRepository
+import com.example.weanimals.adoption.checkin.interactor.CalculateFollowUpMilestonesInteractor
+import com.example.weanimals.adoption.checkin.interactor.GetAdoptionFollowUpInteractor
+import com.example.weanimals.adoption.checkin.interactor.GetFollowUpQuestionsInteractor
+import com.example.weanimals.adoption.checkin.interactor.SubmitAdoptionCheckInInteractor
+import com.example.weanimals.adoption.checkin.presenter.AdoptionFollowUpPresenter
+import com.example.weanimals.adoption.checkin.repository.FirebaseAdoptionFollowUpRepository
 import com.example.weanimals.adoption.confirmation.interactor.GetAdoptionCandidateInteractor
 import com.example.weanimals.adoption.confirmation.interactor.SubmitAdoptionApplicationInteractor
 import com.example.weanimals.adoption.confirmation.presenter.AdoptionConfirmationPresenter
-import com.example.weanimals.adoption.confirmation.repository.DemoAdoptionApplicationRepository
 import com.example.weanimals.adoption.confirmation.repository.FirebaseAdoptionApplicationRepository
 import com.example.weanimals.adoption.compatibility.presenter.CompatibleProfilePresenter
 import com.example.weanimals.adoption.compatibility.repository.AnimalRecommendationRepositoryImpl
@@ -14,18 +19,23 @@ import com.example.weanimals.adoption.detail.interactor.GetAnimalDetailsInteract
 import com.example.weanimals.adoption.detail.interactor.GetShelterDistanceInteractor
 import com.example.weanimals.adoption.detail.interactor.CreateAnimalSharePdfInteractor
 import com.example.weanimals.adoption.detail.presenter.AnimalDetailsPresenter
-import com.example.weanimals.adoption.detail.repository.DemoAnimalDetailsRepository
 import com.example.weanimals.adoption.detail.repository.AndroidAnimalShareRepository
 import com.example.weanimals.adoption.detail.repository.FirebaseAnimalDetailsRepository
 import com.example.weanimals.adoption.listing.interactor.GetAvailableAnimalsInteractor
 import com.example.weanimals.adoption.listing.presenter.AdoptionPresenter
 import com.example.weanimals.adoption.listing.repository.AnimalRepositoryImpl
-import com.example.weanimals.adoption.listing.repository.DemoAnimalRepository
 import com.example.weanimals.adoption.questionnaire.interactor.BuildAdoptionProfileInteractor
+import com.example.weanimals.adoption.questionnaire.domain.AdoptionQuestionnaireAnswers
 import com.example.weanimals.adoption.questionnaire.interactor.GetAdoptionProfileInteractor
 import com.example.weanimals.adoption.questionnaire.interactor.SaveAdoptionProfileInteractor
 import com.example.weanimals.adoption.questionnaire.presenter.AdoptionQuestionnairePresenter
 import com.example.weanimals.adoption.questionnaire.repository.FirebaseAdoptionProfileRepository
+import com.example.weanimals.adoption.sent.domain.AdoptionSentSummary
+import com.example.weanimals.adoption.sent.presenter.AdoptionSentPresenter
+import com.example.weanimals.adoption.tracking.interactor.ObserveAdoptionApplicationInteractor
+import com.example.weanimals.adoption.tracking.interactor.WithdrawAdoptionApplicationInteractor
+import com.example.weanimals.adoption.tracking.presenter.AdoptionTrackingPresenter
+import com.example.weanimals.adoption.tracking.repository.FirebaseAdoptionTrackingRepository
 import com.example.weanimals.reporting.chat.interactor.ObserveCaseMessagesInteractor
 import com.example.weanimals.reporting.chat.interactor.SendCaseMessageInteractor
 import com.example.weanimals.reporting.chat.presenter.ChatPresenter
@@ -56,14 +66,11 @@ import com.example.weanimals.reporting.tracking.repository.FirebaseTrackingRepos
 import com.example.weanimals.core.location.interactor.CalculateDistanceInteractor
 import com.example.weanimals.core.location.interactor.GetUserLocationInteractor
 import com.example.weanimals.core.location.repository.AndroidUserLocationRepository
-import com.example.weanimals.core.location.domain.Coordinates
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 class AppContainer(context: Context) {
     private val applicationContext = context.applicationContext
-    private val isDebuggable = applicationContext.applicationInfo.flags and
-        ApplicationInfo.FLAG_DEBUGGABLE != 0
 
     private val reportRepository: ReportRepository by lazy {
         FirebaseReportRepository(
@@ -96,31 +103,25 @@ class AppContainer(context: Context) {
         )
     }
 
+    private val adoptionChatRepository by lazy {
+        FirebaseAdoptionChatRepository(
+            auth = FirebaseAuth.getInstance(),
+            firestore = FirebaseFirestore.getInstance()
+        )
+    }
+
     private val adoptionListingRepository by lazy {
-        val firebaseRepository = AnimalRepositoryImpl(
+        AnimalRepositoryImpl(
             FirebaseFirestore.getInstance(),
             FirebaseAuth.getInstance()
         )
-        if (isDebuggable) DemoAnimalRepository(firebaseRepository) else firebaseRepository
     }
 
     private val animalDetailsRepository by lazy {
-        val firebaseRepository = FirebaseAnimalDetailsRepository(
+        FirebaseAnimalDetailsRepository(
             FirebaseFirestore.getInstance(),
             FirebaseAuth.getInstance()
         )
-        if (isDebuggable) {
-            DemoAnimalDetailsRepository(
-                delegate = firebaseRepository,
-                demoAnimalId = DemoAnimalRepository.DEMO_ANIMAL_ID,
-                demoShelterCoordinates = Coordinates(
-                    latitude = DemoAnimalRepository.DEMO_SHELTER_LATITUDE,
-                    longitude = DemoAnimalRepository.DEMO_SHELTER_LONGITUDE
-                )
-            )
-        } else {
-            firebaseRepository
-        }
     }
 
     private val animalShareRepository by lazy {
@@ -139,12 +140,24 @@ class AppContainer(context: Context) {
     }
 
     private val adoptionApplicationRepository by lazy {
-        val firebaseRepository = FirebaseAdoptionApplicationRepository(
+        FirebaseAdoptionApplicationRepository(
             auth = FirebaseAuth.getInstance(),
             firestore = FirebaseFirestore.getInstance()
         )
-        if (isDebuggable) DemoAdoptionApplicationRepository(firebaseRepository)
-        else firebaseRepository
+    }
+
+    private val adoptionTrackingRepository by lazy {
+        FirebaseAdoptionTrackingRepository(
+            auth = FirebaseAuth.getInstance(),
+            firestore = FirebaseFirestore.getInstance()
+        )
+    }
+
+    private val adoptionFollowUpRepository by lazy {
+        FirebaseAdoptionFollowUpRepository(
+            auth = FirebaseAuth.getInstance(),
+            firestore = FirebaseFirestore.getInstance()
+        )
     }
 
     private val getAdoptionProfileInteractor by lazy {
@@ -234,11 +247,15 @@ class AppContainer(context: Context) {
             createAnimalSharePdf = CreateAnimalSharePdfInteractor(animalShareRepository)
         )
 
-    fun createAdoptionQuestionnairePresenter(animalId: String) =
+    fun createAdoptionQuestionnairePresenter(
+        animalId: String,
+        initialAnswers: AdoptionQuestionnaireAnswers? = null
+    ) =
         AdoptionQuestionnairePresenter(
             animalId = animalId,
             buildProfile = BuildAdoptionProfileInteractor(),
-            saveProfile = SaveAdoptionProfileInteractor(adoptionProfileRepository)
+            saveProfile = SaveAdoptionProfileInteractor(adoptionProfileRepository),
+            initialAnswers = initialAnswers
         )
 
     fun createCompatibleProfilePresenter(animalId: String) =
@@ -265,6 +282,24 @@ class AppContainer(context: Context) {
         ),
         submitApplication = SubmitAdoptionApplicationInteractor(adoptionApplicationRepository)
     )
+
+    fun createAdoptionSentPresenter(summary: AdoptionSentSummary) = AdoptionSentPresenter(summary)
+
+    fun createAdoptionTrackingPresenter(summary: AdoptionSentSummary) = AdoptionTrackingPresenter(
+        summary = summary,
+        observeApplication = ObserveAdoptionApplicationInteractor(adoptionTrackingRepository),
+        withdrawApplication = WithdrawAdoptionApplicationInteractor(adoptionTrackingRepository)
+    )
+
+    fun createAdoptionFollowUpPresenter(animalId: String): AdoptionFollowUpPresenter {
+        return AdoptionFollowUpPresenter(
+            animalId = animalId,
+            getFollowUp = GetAdoptionFollowUpInteractor(adoptionFollowUpRepository),
+            calculateMilestones = CalculateFollowUpMilestonesInteractor(),
+            getQuestions = GetFollowUpQuestionsInteractor(),
+            submitCheckIn = SubmitAdoptionCheckInInteractor(adoptionFollowUpRepository)
+        )
+    }
 
     fun createReportPresenter() = ReportPresenter(
         getCurrentLocationInteractor = getCurrentLocationInteractor,
@@ -293,5 +328,11 @@ class AppContainer(context: Context) {
         reportId = reportId,
         observeCaseMessagesInteractor = observeCaseMessagesInteractor,
         sendCaseMessageInteractor = sendCaseMessageInteractor
+    )
+
+    fun createAdoptionChatPresenter(animalId: String) = ChatPresenter(
+        reportId = animalId,
+        observeCaseMessagesInteractor = ObserveCaseMessagesInteractor(adoptionChatRepository),
+        sendCaseMessageInteractor = SendCaseMessageInteractor(adoptionChatRepository)
     )
 }

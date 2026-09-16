@@ -10,4 +10,3 @@ data class AdoptionCandidate(
 )
 
 class AlreadyAppliedException : IllegalStateException("Application already exists.")
-class DemoApplicationUnavailableException : IllegalStateException("Demo animal cannot receive applications.")

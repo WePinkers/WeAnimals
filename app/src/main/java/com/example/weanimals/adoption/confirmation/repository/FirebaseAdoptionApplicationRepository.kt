@@ -40,6 +40,13 @@ class FirebaseAdoptionApplicationRepository(
                     "ngoId" to candidate.animal.ngoId,
                     "status" to "pending",
                     "matchPercentage" to candidate.matchPercentage,
+                    "animalName" to animal.getString("nome").orEmpty(),
+                    "shelterName" to animal.getString("abrigo_nome").orEmpty(),
+                    "breed" to animal.getString("raca").orEmpty(),
+                    "ageText" to animal.getString("idade_texto").orEmpty(),
+                    "photoUrl" to (animal.getString("foto_url")?.takeIf(String::isNotBlank)
+                        ?: (animal.get("foto_urls") as? List<*>)
+                            ?.filterIsInstance<String>()?.firstOrNull(String::isNotBlank)).orEmpty(),
                     "profile" to candidate.profile.toSnapshot(),
                     "submittedAt" to FieldValue.serverTimestamp()
                 ))

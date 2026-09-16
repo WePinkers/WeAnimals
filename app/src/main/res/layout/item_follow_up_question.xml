@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/question_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-medium"
+        android:includeFontPadding="false"
+        android:textColor="@color/ink"
+        android:textSize="@dimen/text_size_follow_up_question"
+        tools:text="O animal já se acostumou com a rotina da casa?" />
+
+    <TextView
+        android:id="@+id/question_eyebrow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="monospace"
+        android:includeFontPadding="false"
+        android:letterSpacing="0.07"
+        android:textColor="@color/ink"
+        android:textSize="@dimen/text_size_follow_up_eyebrow"
+        android:visibility="gone"
+        tools:text="JÁ LEVA AO VETERINÁRIO COM REGULARIDADE?" />
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/question_options"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="7dp"
+        app:chipSpacingHorizontal="6dp"
+        app:chipSpacingVertical="6dp"
+        app:singleSelection="true" />
+
+    <TextView
+        android:id="@+id/question_error"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="@string/adoption_follow_up_question_required"
+        android:textColor="@color/red"
+        android:textSize="@dimen/text_size_follow_up_step_body"
+        android:visibility="gone" />
+</LinearLayout>

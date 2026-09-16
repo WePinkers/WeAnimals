@@ -79,7 +79,8 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/animais/$(animalId)).data.status == 'disponivel'
         && request.resource.data.keys().hasOnly([
           'userId', 'animalId', 'ngoId', 'status', 'matchPercentage',
-          'profile', 'submittedAt'
+          'profile', 'submittedAt', 'animalName', 'shelterName',
+          'breed', 'ageText', 'photoUrl'
         ])
         && request.resource.data.userId == userId
         && request.resource.data.animalId == animalId
@@ -90,8 +91,168 @@ service cloud.firestore {
         && request.resource.data.matchPercentage >= 0
         && request.resource.data.matchPercentage <= 100
         && request.resource.data.profile is map
+        && request.resource.data.animalName ==
+          get(/databases/$(database)/documents/animais/$(animalId)).data.nome
+        && request.resource.data.shelterName is string
+        && request.resource.data.breed is string
+        && request.resource.data.ageText is string
+        && request.resource.data.photoUrl is string
         && request.resource.data.submittedAt == request.time;
+      allow update: if signedIn()
+        && request.resource.data.updatedAt == request.time
+        && (
+          (request.resource.data.status == 'adopted'
+            && request.resource.data.diff(resource.data).affectedKeys()
+              .hasOnly(['status', 'updatedAt', 'adoptedAt'])
+            && request.resource.data.keys().hasAll(['adoptedAt'])
+            && request.resource.data.adoptedAt is timestamp
+            && request.resource.data.adoptedAt >= resource.data.submittedAt
+            && request.resource.data.adoptedAt <= request.time)
+          || (request.resource.data.status != 'adopted'
+            && request.resource.data.diff(resource.data).affectedKeys()
+              .hasOnly(['status', 'updatedAt']))
+        )
+        && (
+          (request.auth.uid == userId
+            && resource.data.status in ['pending', 'reviewing']
+            && request.resource.data.status == 'cancelled')
+          || (isTeamMember()
+            && request.auth.token.ngoId == resource.data.ngoId
+            && resource.data.status in ['pending', 'reviewing', 'approved', 'visit_scheduled']
+            && request.resource.data.status in [
+              'reviewing', 'approved', 'rejected', 'visit_scheduled', 'adopted'
+            ])
+          || (isTeamMember()
+            && request.auth.token.ngoId == resource.data.ngoId
+            && resource.data.status == 'adopted'
+            && request.resource.data.status == 'adopted'
+            && !resource.data.keys().hasAny(['adoptedAt']))
+        );
+      allow delete: if false;
+
+      match /checkins/{milestoneId} {
+        allow read: if (signedIn() && request.auth.uid == userId)
+          || (isTeamMember()
+            && exists(/databases/$(database)/documents/adoption_applications/$(userId)/animals/$(animalId))
+            && request.auth.token.ngoId ==
+              get(/databases/$(database)/documents/adoption_applications/$(userId)/animals/$(animalId)).data.ngoId);
+        allow create: if signedIn()
+          && request.auth.uid == userId
+          && exists(/databases/$(database)/documents/adoption_applications/$(userId)/animals/$(animalId))
+          && get(/databases/$(database)/documents/adoption_applications/$(userId)/animals/$(animalId)).data.status == 'adopted'
+          && (milestoneId == '30'
+            || (milestoneId == '90'
+              && exists(/databases/$(database)/documents/adoption_applications/$(userId)/animals/$(animalId)/checkins/30))
+            || (milestoneId == '180'
+              && exists(/databases/$(database)/documents/adoption_applications/$(userId)/animals/$(animalId)/checkins/30)
+              && exists(/databases/$(database)/documents/adoption_applications/$(userId)/animals/$(animalId)/checkins/90)))
+          && request.resource.data.keys().hasAll([
+            'milestoneDays', 'rating', 'answers', 'note', 'submittedAt'
+          ])
+          && request.resource.data.keys().hasOnly([
+            'milestoneDays', 'rating', 'answers', 'note', 'submittedAt'
+          ])
+          && ((milestoneId == '30' && request.resource.data.milestoneDays == 30)
+            || (milestoneId == '90' && request.resource.data.milestoneDays == 90)
+            || (milestoneId == '180' && request.resource.data.milestoneDays == 180))
+          && request.resource.data.rating in [
+            'difficult', 'some_challenges', 'good', 'excellent'
+          ]
+          && request.resource.data.answers is map
+          && (
+            (milestoneId == '30'
+              && request.resource.data.answers.keys().hasAll([
+                'routine_adjusted', 'health_or_behavior_issue'
+              ])
+              && request.resource.data.answers.keys().hasOnly([
+                'routine_adjusted', 'health_or_behavior_issue'
+              ])
+              && request.resource.data.answers.routine_adjusted in ['yes', 'no', 'partly']
+              && request.resource.data.answers.health_or_behavior_issue in ['yes', 'no'])
+            || (milestoneId == '90'
+              && request.resource.data.answers.keys().hasAll([
+                'walks_and_feeding_established', 'behavior_changed', 'regular_vet_visits'
+              ])
+              && request.resource.data.answers.keys().hasOnly([
+                'walks_and_feeding_established', 'behavior_changed', 'regular_vet_visits'
+              ])
+              && request.resource.data.answers.walks_and_feeding_established in ['yes', 'no', 'partly']
+              && request.resource.data.answers.behavior_changed in ['yes', 'no']
+              && request.resource.data.answers.regular_vet_visits in ['yes', 'no'])
+            || (milestoneId == '180'
+              && request.resource.data.answers.keys().hasAll([
+                'strong_bond', 'shelter_support_needed', 'recommend_adoption'
+              ])
+              && request.resource.data.answers.keys().hasOnly([
+                'strong_bond', 'shelter_support_needed', 'recommend_adoption'
+              ])
+              && request.resource.data.answers.strong_bond in ['yes', 'no', 'partly']
+              && request.resource.data.answers.shelter_support_needed in ['yes', 'no']
+              && request.resource.data.answers.recommend_adoption in ['yes_certainly', 'maybe'])
+          )
+          && request.resource.data.note is string
+          && request.resource.data.note.size() <= 1000
+          && request.resource.data.submittedAt == request.time;
+        allow update, delete: if false;
+      }
+    }
+
+    // The animal detail and candidature tracking open the same adoption chat.
+    // Only the adopter and members of the responsible NGO can access its messages.
+    match /adoption_conversations/{userId}/animals/{animalId} {
+      allow read: if (signedIn() && request.auth.uid == userId)
+        || (isTeamMember() && request.auth.token.ngoId == resource.data.ngoId);
+      allow create: if signedIn()
+        && request.auth.uid == userId
+        && request.resource.data.keys().hasOnly([
+          'userId', 'animalId', 'ngoId', 'createdAt'
+        ])
+        && request.resource.data.userId == userId
+        && request.resource.data.animalId == animalId
+        && request.resource.data.ngoId is string
+        && request.resource.data.ngoId.size() > 0
+        && request.resource.data.createdAt == request.time
+        && (
+          (exists(/databases/$(database)/documents/adoption_applications/$(userId)/animals/$(animalId))
+            && request.resource.data.ngoId ==
+              get(/databases/$(database)/documents/adoption_applications/$(userId)/animals/$(animalId)).data.ngoId)
+          || (exists(/databases/$(database)/documents/animais/$(animalId))
+            && get(/databases/$(database)/documents/animais/$(animalId)).data.status == 'disponivel'
+            && request.resource.data.ngoId ==
+              get(/databases/$(database)/documents/animais/$(animalId)).data.ong_id)
+        );
       allow update, delete: if false;
+
+      match /messages/{messageId} {
+        allow read: if (signedIn() && request.auth.uid == userId)
+          || (isTeamMember()
+            && exists(/databases/$(database)/documents/adoption_conversations/$(userId)/animals/$(animalId))
+            && request.auth.token.ngoId ==
+              get(/databases/$(database)/documents/adoption_conversations/$(userId)/animals/$(animalId)).data.ngoId);
+        allow create: if signedIn()
+          && existsAfter(/databases/$(database)/documents/adoption_conversations/$(userId)/animals/$(animalId))
+          && request.resource.data.keys().hasOnly([
+            'senderId', 'senderRole', 'senderName', 'text', 'createdAt'
+          ])
+          && request.resource.data.senderId == request.auth.uid
+          && request.resource.data.text is string
+          && request.resource.data.text.size() > 0
+          && request.resource.data.text.size() <= 1000
+          && request.resource.data.createdAt == request.time
+          && (
+            (request.auth.uid == userId
+              && request.resource.data.senderRole == 'user'
+              && !('senderName' in request.resource.data.keys()))
+            || (isTeamMember()
+              && request.auth.token.ngoId ==
+                getAfter(/databases/$(database)/documents/adoption_conversations/$(userId)/animals/$(animalId)).data.ngoId
+              && request.resource.data.senderRole == 'team'
+              && request.resource.data.senderName is string
+              && request.resource.data.senderName.size() > 0
+              && request.resource.data.senderName.size() <= 100)
+          );
+        allow update, delete: if false;
+      }
     }
 
     match /metadata/reports_counter {

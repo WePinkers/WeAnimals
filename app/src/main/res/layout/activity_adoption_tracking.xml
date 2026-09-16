@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    tools:context=".adoption.tracking.presentation.AdoptionTrackingActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        android:paddingBottom="68dp"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="16dp"
+            android:paddingTop="48dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="24dp">
+
+            <TextView
+                android:id="@+id/application_eyebrow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="monospace"
+                android:includeFontPadding="false"
+                android:letterSpacing="0.08"
+                android:text="@string/adoption_tracking_eyebrow"
+                android:textColor="@color/terracotta"
+                android:textSize="@dimen/text_size_tracking_protocol" />
+
+            <TextView
+                android:id="@+id/application_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="serif"
+                android:includeFontPadding="false"
+                android:textColor="@color/ink"
+                android:textSize="@dimen/text_size_tracking_title"
+                android:textStyle="bold"
+                tools:text="Canela · Abrigo Esperança" />
+
+            <LinearLayout
+                android:id="@+id/application_summary"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/bg_status_card"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="10dp"
+                android:visibility="gone">
+
+                <FrameLayout
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:background="@drawable/bg_status_card"
+                    android:clipToOutline="true">
+
+                    <ImageView
+                        android:id="@+id/application_photo"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:contentDescription="@null"
+                        android:scaleType="centerCrop" />
+
+                    <ImageView
+                        android:id="@+id/application_photo_placeholder"
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:layout_gravity="center"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_adoption_photo_marker" />
+                </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/application_animal_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif"
+                        android:includeFontPadding="false"
+                        android:textColor="@color/ink"
+                        android:textSize="@dimen/text_size_tracking_card_title"
+                        android:textStyle="bold"
+                        tools:text="Canela · SRD, 2 anos" />
+
+                    <TextView
+                        android:id="@+id/application_match"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif"
+                        android:includeFontPadding="false"
+                        android:textColor="@color/muted"
+                        android:textSize="@dimen/text_size_tracking_card_body"
+                        tools:text="74% de compatibilidade com você" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/application_state"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:fontFamily="sans-serif"
+                android:gravity="center"
+                android:text="@string/adoption_tracking_loading"
+                android:textColor="@color/muted"
+                android:textSize="@dimen/text_size_tracking_state" />
+
+            <LinearLayout
+                android:id="@+id/application_steps"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="vertical"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/application_actions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:id="@+id/shelter_chat_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="54dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_tracking_detail_card"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_warning"
+                        android:tint="@color/terracotta" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/shelter_chat_title"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/ink"
+                            android:textSize="@dimen/text_size_tracking_card_title"
+                            android:textStyle="bold"
+                            tools:text="Precisa falar com Abrigo Esperança?" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/adoption_tracking_chat_hint"
+                            android:textColor="@color/muted"
+                            android:textSize="@dimen/text_size_tracking_card_body" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/withdraw_application"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:text="@string/adoption_tracking_withdraw"
+                    android:textColor="@color/muted"
+                    android:textSize="@dimen/text_size_tracking_card_body" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/application_outcome"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_status_card"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_adoption_heart"
+                    android:tint="@color/terracotta" />
+
+                <TextView
+                    android:id="@+id/outcome_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:fontFamily="serif"
+                    android:gravity="center"
+                    android:textColor="@color/ink"
+                    android:textSize="@dimen/text_size_tracking_title"
+                    android:textStyle="bold"
+                    tools:text="Não foi dessa vez" />
+
+                <TextView
+                    android:id="@+id/outcome_description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="sans-serif"
+                    android:gravity="center"
+                    android:textColor="@color/muted"
+                    android:textSize="@dimen/text_size_tracking_card_body"
+                    tools:text="O abrigo escolheu outro adotante." />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/outcome_other_animals"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="20dp"
+                    android:text="@string/adoption_sent_other_animals"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_size_tracking_card_title"
+                    app:backgroundTint="@color/adoption_primary"
+                    app:cornerRadius="10dp" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <include
+        android:id="@+id/main_navigation"
+        layout="@layout/view_main_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="68dp"
+        android:layout_gravity="bottom" />
+</FrameLayout>

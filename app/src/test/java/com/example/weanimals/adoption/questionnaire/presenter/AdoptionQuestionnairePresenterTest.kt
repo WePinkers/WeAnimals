@@ -70,6 +70,36 @@ class AdoptionQuestionnairePresenterTest {
         assertTrue(!view.saving)
     }
 
+    @Test
+    fun editingStartsWithPreviousAnswersAndSavesOnlyAfterSubmission() = runTest {
+        val savedAnswers = AdoptionQuestionnaireAnswers(
+            routine = RoutineOption.HOME_OFFICE,
+            availableSpace = AvailableSpaceOption.APARTMENT_WITH_BALCONY,
+            petExperience = PetExperienceOption.HAD_PETS_BEFORE,
+            dailyTime = DailyTimeOption.ONE_TO_THREE_HOURS,
+            household = HouseholdOption.LIVES_ALONE
+        )
+        val editingPresenter = AdoptionQuestionnairePresenter(
+            animalId = "animal-1",
+            buildProfile = BuildAdoptionProfileInteractor(),
+            saveProfile = SaveAdoptionProfileInteractor(repository),
+            initialAnswers = savedAnswers
+        )
+        editingPresenter.attachView(view)
+        editingPresenter.start()
+        assertEquals(savedAnswers, view.answers)
+        assertTrue(repository.savedProfiles.isEmpty())
+
+        editingPresenter.onDailyTimeSelected(DailyTimeOption.MORE_THAN_THREE_HOURS)
+        editingPresenter.onSubmitClicked()
+        advanceUntilIdle()
+        assertEquals(
+            savedAnswers.copy(dailyTime = DailyTimeOption.MORE_THAN_THREE_HOURS),
+            repository.savedProfiles.single().answers
+        )
+        editingPresenter.destroy()
+    }
+
     private class FakeProfileRepository : AdoptionProfileRepository {
         val savedProfiles = mutableListOf<AdoptionProfile>()
         override suspend fun getProfile(): Result<AdoptionProfile?> = Result.success(null)

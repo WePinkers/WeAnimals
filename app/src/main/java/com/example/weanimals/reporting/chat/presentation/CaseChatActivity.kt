@@ -28,8 +28,17 @@ class CaseChatActivity : AppCompatActivity(), ChatContract.View {
     private lateinit var binding: ActivityCaseChatBinding
     private val reportId: String by lazy { intent.getStringExtra(EXTRA_REPORT_ID).orEmpty() }
     private val protocolNumber: Int by lazy { intent.getIntExtra(EXTRA_PROTOCOL_NUMBER, 0) }
+    private val isAdoption by lazy { intent.getBooleanExtra(EXTRA_ADOPTION_CHAT, false) }
+    private val animalId by lazy { intent.getStringExtra(EXTRA_ANIMAL_ID).orEmpty() }
+    private val animalName by lazy { intent.getStringExtra(EXTRA_ANIMAL_NAME).orEmpty() }
+    private val organizationName by lazy {
+        intent.getStringExtra(EXTRA_ORGANIZATION_NAME)?.takeIf(String::isNotBlank)
+            ?: getString(R.string.adoption_chat_organization_fallback)
+    }
     private val presenter: ChatPresenter by lazy {
-        (application as WeAnimalsApplication).appContainer.createChatPresenter(reportId)
+        val container = (application as WeAnimalsApplication).appContainer
+        if (isAdoption) container.createAdoptionChatPresenter(animalId)
+        else container.createChatPresenter(reportId)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,7 +46,12 @@ class CaseChatActivity : AppCompatActivity(), ChatContract.View {
         configureSystemBars()
         binding = ActivityCaseChatBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        binding.chatProtocol.text = getString(R.string.chat_protocol_format, protocolNumber)
+        binding.chatProtocol.text = if (isAdoption)
+            getString(R.string.adoption_chat_animal_format, animalName)
+        else getString(R.string.chat_protocol_format, protocolNumber)
+        if (isAdoption) {
+            binding.messageInput.hint = getString(R.string.adoption_chat_message_hint, organizationName)
+        }
         setupInteractions()
     }
 
@@ -67,7 +81,9 @@ class CaseChatActivity : AppCompatActivity(), ChatContract.View {
         binding.messagesScroll.visibility = View.VISIBLE
         binding.chatState.visibility = if (messages.isEmpty()) View.VISIBLE else View.GONE
         if (messages.isEmpty()) {
-            binding.chatState.setText(R.string.chat_unassigned_message)
+            binding.chatState.text = if (isAdoption)
+                getString(R.string.adoption_chat_empty_message, organizationName, animalName)
+            else getString(R.string.chat_unassigned_message)
         }
 
         binding.messagesContainer.removeAllViews()
@@ -87,10 +103,22 @@ class CaseChatActivity : AppCompatActivity(), ChatContract.View {
         Log.e(TAG, "Could not load case chat", error)
         binding.messagesScroll.visibility = View.GONE
         binding.chatState.visibility = View.VISIBLE
-        binding.chatState.setText(R.string.chat_messages_error)
+        binding.chatState.setText(
+            if (isAdoption) R.string.adoption_chat_messages_error else R.string.chat_messages_error
+        )
     }
 
     override fun showHeader(header: ChatHeader) {
+        if (isAdoption) {
+            val agentName = (header as? ChatHeader.Assigned)?.teamMemberName
+            binding.chatAgentName.text = agentName?.let {
+                getString(R.string.adoption_chat_agent_format, it, organizationName)
+            } ?: organizationName
+            binding.chatAvatar.text = (agentName ?: organizationName)
+                .firstOrNull()?.uppercaseChar()?.toString()
+                ?: getString(R.string.chat_team_avatar)
+            return
+        }
         when (header) {
             ChatHeader.Unassigned -> {
                 binding.chatAvatar.setText(R.string.chat_unassigned_avatar)
@@ -121,10 +149,14 @@ class CaseChatActivity : AppCompatActivity(), ChatContract.View {
     override fun showSendError(error: Throwable, failure: ChatSendFailure) {
         Log.e(TAG, "Could not send case chat message", error)
         binding.chatError.setText(
-            when (failure) {
+            when {
+                failure == ChatSendFailure.EmptyMessage -> R.string.chat_empty_message_error
+                isAdoption -> R.string.adoption_chat_send_error
+                else -> when (failure) {
                 ChatSendFailure.EmptyMessage -> R.string.chat_empty_message_error
                 ChatSendFailure.UnassignedCase -> R.string.chat_unassigned_send_error
                 ChatSendFailure.Generic -> R.string.chat_send_error
+                }
             }
         )
         binding.chatError.visibility = View.VISIBLE
@@ -188,11 +220,27 @@ class CaseChatActivity : AppCompatActivity(), ChatContract.View {
         private const val TAG = "CaseChatActivity"
         private const val EXTRA_REPORT_ID = "extra_report_id"
         private const val EXTRA_PROTOCOL_NUMBER = "extra_protocol_number"
+        private const val EXTRA_ADOPTION_CHAT = "extra_adoption_chat"
+        private const val EXTRA_ANIMAL_ID = "extra_animal_id"
+        private const val EXTRA_ANIMAL_NAME = "extra_animal_name"
+        private const val EXTRA_ORGANIZATION_NAME = "extra_organization_name"
 
         fun newIntent(context: Context, reportId: String, protocolNumber: Int) =
             Intent(context, CaseChatActivity::class.java).apply {
                 putExtra(EXTRA_REPORT_ID, reportId)
                 putExtra(EXTRA_PROTOCOL_NUMBER, protocolNumber)
             }
+
+        fun newAdoptionIntent(
+            context: Context,
+            animalId: String,
+            animalName: String,
+            organizationName: String
+        ) = Intent(context, CaseChatActivity::class.java).apply {
+            putExtra(EXTRA_ADOPTION_CHAT, true)
+            putExtra(EXTRA_ANIMAL_ID, animalId)
+            putExtra(EXTRA_ANIMAL_NAME, animalName)
+            putExtra(EXTRA_ORGANIZATION_NAME, organizationName)
+        }
     }
 }

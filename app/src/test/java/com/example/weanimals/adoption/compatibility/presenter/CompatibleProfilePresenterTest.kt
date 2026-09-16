@@ -92,6 +92,29 @@ class CompatibleProfilePresenterTest {
         assertEquals("animal-1", view.openedAnimalId)
     }
 
+    @Test
+    fun editOpensQuestionnaireWithSavedAnswersAndReloadsAfterSaving() = runTest {
+        val original = adoptionProfile()
+        profileRepository.result = Result.success(original)
+        recommendationRepository.animals = listOf(animal("animal-1"))
+        presenter.start()
+        advanceUntilIdle()
+
+        presenter.onEditAnswersClicked()
+        assertEquals("animal-origin", view.editAnimalId)
+        assertEquals(original.answers, view.editAnswers)
+
+        val updated = BuildAdoptionProfileInteractor()(
+            original.answers.copy(routine = RoutineOption.OFTEN_HOME)
+        )
+        profileRepository.result = Result.success(updated)
+        recommendationRepository.animals = listOf(animal("animal-2"))
+        presenter.onAnswersUpdated()
+        advanceUntilIdle()
+        assertSame(updated, view.profile)
+        assertEquals("animal-2", view.recommendations.single().animal.id)
+    }
+
     private class FakeProfileRepository : AdoptionProfileRepository {
         var result: Result<AdoptionProfile?> = Result.success(null)
         override suspend fun getProfile() = result
@@ -115,6 +138,8 @@ class CompatibleProfilePresenterTest {
         var recommendations = emptyList<AnimalRecommendation>()
         var error: Throwable? = null
         var questionnaireAnimalId: String? = null
+        var editAnimalId: String? = null
+        var editAnswers: AdoptionQuestionnaireAnswers? = null
         var openedAnimalId: String? = null
 
         override fun showLoading() { loading = true }
@@ -137,6 +162,13 @@ class CompatibleProfilePresenterTest {
         }
         override fun openQuestionnaire(animalId: String) {
             questionnaireAnimalId = animalId
+        }
+        override fun openQuestionnaireForEditing(
+            animalId: String,
+            answers: AdoptionQuestionnaireAnswers
+        ) {
+            editAnimalId = animalId
+            editAnswers = answers
         }
         override fun openAnimalDetails(animalId: String) { openedAnimalId = animalId }
         override fun closeScreen() = Unit
