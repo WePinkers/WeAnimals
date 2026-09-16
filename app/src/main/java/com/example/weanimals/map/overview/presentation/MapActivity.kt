@@ -1,8 +1,10 @@
 package com.example.weanimals.map.overview.presentation
 
 import android.Manifest
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +13,7 @@ import android.widget.LinearLayout
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.WindowCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,10 +28,12 @@ import com.example.weanimals.map.overview.domain.PublicOccurrence
 import com.example.weanimals.map.overview.interactor.NearbyOccurrences
 import com.example.weanimals.map.overview.presenter.MapContract
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import org.osmdroid.config.Configuration
-import org.osmdroid.tileprovider.tilesource.XYTileSource
-import org.osmdroid.util.GeoPoint
-import org.osmdroid.views.overlay.Marker
+import org.maplibre.android.MapLibre
+import org.maplibre.android.annotations.IconFactory
+import org.maplibre.android.annotations.MarkerOptions
+import org.maplibre.android.camera.CameraUpdateFactory
+import org.maplibre.android.geometry.LatLng
+import org.maplibre.android.maps.MapLibreMap
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -39,6 +44,8 @@ class MapActivity : AppCompatActivity(), MapContract.View {
     private var nearby = NearbyOccurrences(null, emptyList())
     private var selectedUrgency: String? = null
     private var sheet: BottomSheetBehavior<LinearLayout>? = null
+    private var map: MapLibreMap? = null
+    private val markerOccurrences = mutableMapOf<Long, PublicOccurrence>()
     private val distanceFormat = NumberFormat.getNumberInstance(Locale.forLanguageTag("pt-BR")).apply {
         minimumFractionDigits = 1
         maximumFractionDigits = 1
@@ -49,10 +56,7 @@ class MapActivity : AppCompatActivity(), MapContract.View {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Configuration.getInstance().apply {
-            load(applicationContext, getSharedPreferences("map_tiles", MODE_PRIVATE))
-            userAgentValue = packageName
-        }
+        MapLibre.getInstance(this)
         WindowCompat.setDecorFitsSystemWindows(window, true)
         WindowCompat.getInsetsController(window, window.decorView).apply {
             isAppearanceLightStatusBars = true
@@ -60,8 +64,12 @@ class MapActivity : AppCompatActivity(), MapContract.View {
         }
         binding = ActivityMapBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        binding.mapContent.mapView.onCreate(savedInstanceState)
         MainNavigation.bind(this, binding.mainNavigation, MainNavigation.Destination.MAP)
         configureMap()
+        binding.mapContent.mapAttribution.setOnClickListener {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(MAP_ATTRIBUTION_URL)))
+        }
         binding.mapContent.recyclerOccurrences.layoutManager = LinearLayoutManager(this)
         binding.mapContent.recyclerOccurrences.adapter = adapter
         sheet = BottomSheetBehavior.from(binding.mapContent.bottomSheet).apply {
@@ -87,12 +95,14 @@ class MapActivity : AppCompatActivity(), MapContract.View {
 
     override fun onStart() {
         super.onStart()
+        binding.mapContent.mapView.onStart()
         presenter.attachView(this)
         presenter.load()
     }
 
     override fun onStop() {
         presenter.detachView()
+        binding.mapContent.mapView.onStop()
         super.onStop()
     }
 
@@ -107,9 +117,20 @@ class MapActivity : AppCompatActivity(), MapContract.View {
     }
 
     override fun onDestroy() {
-        binding.mapContent.mapView.onDetach()
+        map = null
+        binding.mapContent.mapView.onDestroy()
         presenter.destroy()
         super.onDestroy()
+    }
+
+    override fun onLowMemory() {
+        super.onLowMemory()
+        binding.mapContent.mapView.onLowMemory()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        binding.mapContent.mapView.onSaveInstanceState(outState)
     }
 
     private fun hasLocationPermission() = listOf(
@@ -117,19 +138,23 @@ class MapActivity : AppCompatActivity(), MapContract.View {
     ).any { ContextCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED }
 
     private fun configureMap() {
-        binding.mapContent.mapView.apply {
-            setTileSource(XYTileSource(
-                "CartoDB-Positron", 0, 19, 256, ".png",
-                arrayOf(
-                    "https://a.basemaps.cartocdn.com/light_all/",
-                    "https://b.basemaps.cartocdn.com/light_all/",
-                    "https://c.basemaps.cartocdn.com/light_all/"
-                )
-            ))
-            setBuiltInZoomControls(false)
-            setMultiTouchControls(true)
-            controller.setZoom(2.0)
-            controller.setCenter(GeoPoint(0.0, 0.0))
+        binding.mapContent.mapView.getMapAsync { readyMap ->
+            map = readyMap
+            readyMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(0.0, 0.0), 2.0))
+            readyMap.setOnMarkerClickListener { marker ->
+                markerOccurrences[marker.id]?.let {
+                    selectOccurrence(it)
+                    true
+                } ?: false
+            }
+            readyMap.setStyle(MAP_STYLE_URL) {
+                nearby.userLocation?.let { location ->
+                    readyMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                        LatLng(location.latitude, location.longitude), 15.0
+                    ))
+                }
+                updateMarkers(filteredOccurrences())
+            }
         }
     }
 
@@ -142,8 +167,9 @@ class MapActivity : AppCompatActivity(), MapContract.View {
     override fun showOccurrences(result: NearbyOccurrences) {
         nearby = result
         result.userLocation?.let { location ->
-            binding.mapContent.mapView.controller.setZoom(15.0)
-            binding.mapContent.mapView.controller.animateTo(GeoPoint(location.latitude, location.longitude))
+            map?.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                LatLng(location.latitude, location.longitude), 15.0
+            ))
         }
         renderOccurrences()
     }
@@ -154,12 +180,12 @@ class MapActivity : AppCompatActivity(), MapContract.View {
         binding.mapContent.mapStateText.setText(R.string.map_error)
         binding.mapContent.mapStateText.visibility = View.VISIBLE
         binding.mapContent.occurrenceCountText.setText(R.string.map_error)
-        binding.mapContent.mapView.overlays.clear()
-        binding.mapContent.mapView.invalidate()
+        map?.removeAnnotations()
+        markerOccurrences.clear()
     }
 
     private fun renderOccurrences() {
-        val items = nearby.occurrences.filter { selectedUrgency == null || it.urgency == selectedUrgency }
+        val items = filteredOccurrences()
         adapter.submitList(items)
         binding.mapContent.occurrenceCountText.text = resources.getQuantityString(
             R.plurals.map_occurrences_nearby, items.size, items.size
@@ -171,41 +197,43 @@ class MapActivity : AppCompatActivity(), MapContract.View {
         updateMarkers(items)
     }
 
+    private fun filteredOccurrences() = nearby.occurrences.filter {
+        selectedUrgency == null || it.urgency == selectedUrgency
+    }
+
     private fun updateMarkers(items: List<PublicOccurrence>) {
-        val map = binding.mapContent.mapView
-        map.overlays.clear()
+        val readyMap = map ?: return
+        if (readyMap.style == null) return
+        readyMap.removeAnnotations()
+        markerOccurrences.clear()
+        val iconFactory = IconFactory.getInstance(this)
+        fun pinIcon(colorRes: Int) = ContextCompat.getDrawable(this, R.drawable.ic_map_pin)
+            ?.mutate()?.apply { setTint(ContextCompat.getColor(this@MapActivity, colorRes)) }
+            ?.toBitmap()?.let(iconFactory::fromBitmap)
         nearby.userLocation?.let { location ->
-            val marker = Marker(map)
-            marker.position = GeoPoint(location.latitude, location.longitude)
-            marker.title = getString(R.string.map_your_location)
-            marker.icon = ContextCompat.getDrawable(this, R.drawable.ic_map_pin)?.mutate()?.apply {
-                setTint(ContextCompat.getColor(this@MapActivity, R.color.pine800))
-            }
-            marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-            map.overlays.add(marker)
+            val marker = MarkerOptions()
+                .position(LatLng(location.latitude, location.longitude))
+                .title(getString(R.string.map_your_location))
+            pinIcon(R.color.pine800)?.let(marker::icon)
+            readyMap.addMarker(marker)
         }
         items.forEach { occurrence ->
-            val marker = Marker(map)
-            marker.position = GeoPoint(occurrence.coordinates.latitude, occurrence.coordinates.longitude)
-            marker.title = title(occurrence)
-            marker.snippet = getString(R.string.map_point_distance, distanceFormat.format(occurrence.distanceKm))
-            marker.icon = ContextCompat.getDrawable(this, R.drawable.ic_map_pin)?.mutate()?.apply {
-                setTint(ContextCompat.getColor(this@MapActivity, urgencyColor(occurrence.urgency)))
-            }
-            marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-            marker.setOnMarkerClickListener { _, _ -> selectOccurrence(occurrence); true }
-            map.overlays.add(marker)
+            val marker = MarkerOptions()
+                .position(LatLng(occurrence.coordinates.latitude, occurrence.coordinates.longitude))
+                .title(title(occurrence))
+                .snippet(getString(R.string.map_point_distance, distanceFormat.format(occurrence.distanceKm)))
+            pinIcon(urgencyColor(occurrence.urgency))?.let(marker::icon)
+            markerOccurrences[readyMap.addMarker(marker).id] = occurrence
         }
-        map.invalidate()
     }
 
     private fun selectOccurrence(item: PublicOccurrence) {
         val index = adapter.currentList.indexOfFirst { it.id == item.id }
         if (index >= 0) binding.mapContent.recyclerOccurrences.smoothScrollToPosition(index)
         sheet?.state = BottomSheetBehavior.STATE_EXPANDED
-        binding.mapContent.mapView.controller.animateTo(
-            GeoPoint(item.coordinates.latitude, item.coordinates.longitude)
-        )
+        map?.animateCamera(CameraUpdateFactory.newLatLng(
+            LatLng(item.coordinates.latitude, item.coordinates.longitude)
+        ))
     }
 
     private fun updateChips() {
@@ -274,5 +302,10 @@ class MapActivity : AppCompatActivity(), MapContract.View {
                 itemBinding.root.setOnClickListener { onClick(item) }
             }
         }
+    }
+
+    private companion object {
+        const val MAP_STYLE_URL = "https://tiles.openfreemap.org/styles/positron"
+        const val MAP_ATTRIBUTION_URL = "https://openfreemap.org/"
     }
 }

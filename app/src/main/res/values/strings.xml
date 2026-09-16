@@ -451,6 +451,7 @@
     <string name="map_filter_high">Alta</string>
     <string name="map_filter_medium">Média</string>
     <string name="map_filter_low">Baixa</string>
+    <string name="map_attribution">© OpenMapTiles · © OpenStreetMap contributors</string>
     <string name="map_loading">Buscando ocorrências próximas…</string>
     <string name="map_location_unavailable">Ative a localização para ver ocorrências próximas. Os pontos exibidos são aproximados.</string>
     <string name="map_empty">Nenhuma ocorrência pública próxima neste filtro.</string>

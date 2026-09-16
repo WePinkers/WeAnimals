@@ -16,8 +16,8 @@
         android:clipToPadding="false"
         android:background="@color/map_background">
 
-        <!-- Interactive Geographic Map (CartoDB Positron / OSMDroid) -->
-        <org.osmdroid.views.MapView
+        <!-- OpenFreeMap vector map rendered by MapLibre. -->
+        <org.maplibre.android.maps.MapView
             android:id="@+id/map_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -25,6 +25,24 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/map_attribution"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginBottom="270dp"
+            android:background="#E6FFFFFF"
+            android:clickable="true"
+            android:contentDescription="@string/map_attribution"
+            android:focusable="true"
+            android:paddingHorizontal="5dp"
+            android:paddingVertical="3dp"
+            android:text="@string/map_attribution"
+            android:textColor="@color/ink900"
+            android:textSize="9sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <!-- Filter Chips in Horizontal Scroll -->
         <HorizontalScrollView
@@ -324,7 +342,7 @@
                     android:layout_width="7dp"
                     android:layout_height="7dp"
                     android:background="@drawable/bg_new_badge"
-                    android:backgroundTint="@color/clay600" />
+                    android:backgroundTint="@color/brass500" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -346,7 +364,7 @@
                     android:layout_width="7dp"
                     android:layout_height="7dp"
                     android:background="@drawable/bg_new_badge"
-                    android:backgroundTint="@color/brass500" />
+                    android:backgroundTint="@color/pine700" />
 
                 <TextView
                     android:layout_width="wrap_content"
