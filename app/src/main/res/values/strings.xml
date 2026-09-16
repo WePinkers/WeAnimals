@@ -446,6 +446,7 @@
         <item quantity="one">%d protocolo</item>
         <item quantity="other">%d protocolos</item>
     </plurals>
+
     <!-- Public map -->
     <string name="map_filter_all">Todas</string>
     <string name="map_filter_high">Alta</string>
