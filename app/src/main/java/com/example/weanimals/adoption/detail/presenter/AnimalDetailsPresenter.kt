@@ -6,6 +6,7 @@ import com.example.weanimals.adoption.detail.interactor.GetShelterDistanceIntera
 import com.example.weanimals.adoption.detail.interactor.CreateAnimalSharePdfInteractor
 import com.example.weanimals.adoption.questionnaire.interactor.GetAdoptionProfileInteractor
 import com.example.weanimals.core.base.BasePresenter
+import com.example.weanimals.profile.favorites.repository.FavoriteRepository
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -15,7 +16,8 @@ class AnimalDetailsPresenter(
     private val getAnimalDetails: GetAnimalDetailsInteractor,
     private val getShelterDistance: GetShelterDistanceInteractor,
     private val getAdoptionProfile: GetAdoptionProfileInteractor,
-    private val createAnimalSharePdf: CreateAnimalSharePdfInteractor
+    private val createAnimalSharePdf: CreateAnimalSharePdfInteractor,
+    private val favoriteRepository: FavoriteRepository
 ) : BasePresenter<AnimalDetailsContract.View>(), AnimalDetailsContract.Presenter {
 
     private var started = false
@@ -24,6 +26,7 @@ class AnimalDetailsPresenter(
     private var distanceKm: Double? = null
     private var error: Throwable? = null
     private var favorite = false
+    private var favoriteSaving = false
     private var locationRequestMade = false
     private var distanceJob: Job? = null
     private var checkingAdoptionProfile = false
@@ -74,9 +77,24 @@ class AnimalDetailsPresenter(
     }
 
     override fun onFavoriteClicked() {
-        if (details == null) return
-        favorite = !favorite
-        withView { it.showFavorite(favorite) }
+        if (details == null || favoriteSaving) return
+        favoriteSaving = true
+        val target = !favorite
+        presenterScope.launch {
+            try {
+                favoriteRepository.setFavorite(animalId, target).fold(
+                    onSuccess = {
+                        favorite = target
+                        withView { it.showFavorite(favorite) }
+                    },
+                    onFailure = { withView { it.showFavoriteError() } }
+                )
+            } catch (cancelled: CancellationException) {
+                throw cancelled
+            } finally {
+                favoriteSaving = false
+            }
+        }
     }
 
     override fun onConversationClicked() {
@@ -131,6 +149,7 @@ class AnimalDetailsPresenter(
                         loading = false
                         render()
                         loadDistance(it)
+                        loadFavorite()
                     },
                     onFailure = {
                         error = it
@@ -170,6 +189,18 @@ class AnimalDetailsPresenter(
                     it.requestUserLocation()
                 }
             }
+        }
+    }
+
+    private fun loadFavorite() {
+        presenterScope.launch {
+            favoriteRepository.isFavorite(animalId).fold(
+                onSuccess = { saved ->
+                    favorite = saved
+                    withView { it.showFavorite(saved) }
+                },
+                onFailure = { withView { it.showFavoriteError() } }
+            )
         }
     }
 }

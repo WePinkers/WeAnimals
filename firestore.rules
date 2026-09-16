@@ -65,6 +65,18 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    match /user_favorites/{userId}/animals/{animalId} {
+      allow read, delete: if signedIn() && request.auth.uid == userId;
+      allow create: if signedIn() && request.auth.uid == userId
+        && exists(/databases/$(database)/documents/animais/$(animalId))
+        && get(/databases/$(database)/documents/animais/$(animalId)).data.status == 'disponivel'
+        && request.resource.data.keys().hasOnly(['animalId', 'createdAt'])
+        && request.resource.data.keys().hasAll(['animalId', 'createdAt'])
+        && request.resource.data.animalId == animalId
+        && request.resource.data.createdAt == request.time;
+      allow update: if false;
+    }
+
     match /adoption_profiles/{userId} {
       allow read, create, update: if signedIn() && request.auth.uid == userId;
       allow delete: if false;

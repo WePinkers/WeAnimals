@@ -46,6 +46,14 @@ import com.example.weanimals.reporting.details.repository.FirebaseDetailsReposit
 import com.example.weanimals.home.interactor.ObserveUserReportsInteractor
 import com.example.weanimals.home.repository.FirebaseHomeRepository
 import com.example.weanimals.home.presenter.HomePresenter
+import com.example.weanimals.profile.overview.repository.FirebaseProfileRepository
+import com.example.weanimals.profile.overview.interactor.GetProfileIdentityInteractor
+import com.example.weanimals.profile.overview.presenter.ProfilePresenter
+import com.example.weanimals.profile.reports.interactor.ObserveMyReportsInteractor
+import com.example.weanimals.profile.reports.presenter.MyReportsPresenter
+import com.example.weanimals.profile.favorites.repository.FirebaseFavoriteRepository
+import com.example.weanimals.profile.favorites.interactor.GetFavoriteAnimalsInteractor
+import com.example.weanimals.profile.favorites.presenter.FavoritesPresenter
 import com.example.weanimals.reporting.locationsearch.interactor.GetCurrentLocationInteractor
 import com.example.weanimals.reporting.locationsearch.interactor.SearchLocationsInteractor
 import com.example.weanimals.reporting.locationsearch.repository.AndroidLocationRepository
@@ -115,6 +123,12 @@ class AppContainer(context: Context) {
             FirebaseFirestore.getInstance(),
             FirebaseAuth.getInstance()
         )
+    }
+
+    private val profileRepository by lazy { FirebaseProfileRepository(FirebaseAuth.getInstance()) }
+
+    private val favoriteRepository by lazy {
+        FirebaseFavoriteRepository(FirebaseAuth.getInstance(), FirebaseFirestore.getInstance())
     }
 
     private val animalDetailsRepository by lazy {
@@ -229,6 +243,16 @@ class AppContainer(context: Context) {
         markReportAsViewedInteractor = markReportAsViewedInteractor
     )
 
+    fun createProfilePresenter() = ProfilePresenter(
+        GetProfileIdentityInteractor(profileRepository), reportRepository
+    )
+
+    fun createMyReportsPresenter() = MyReportsPresenter(ObserveMyReportsInteractor(reportRepository))
+
+    fun createFavoritesPresenter() = FavoritesPresenter(
+        GetFavoriteAnimalsInteractor(favoriteRepository, adoptionListingRepository)
+    )
+
     fun createAdoptionPresenter() = AdoptionPresenter(
         getAvailableAnimals = GetAvailableAnimalsInteractor(adoptionListingRepository),
         getUserLocation = getUserLocationInteractor,
@@ -244,7 +268,8 @@ class AppContainer(context: Context) {
                 calculateDistance = calculateDistanceInteractor
             ),
             getAdoptionProfile = getAdoptionProfileInteractor,
-            createAnimalSharePdf = CreateAnimalSharePdfInteractor(animalShareRepository)
+            createAnimalSharePdf = CreateAnimalSharePdfInteractor(animalShareRepository),
+            favoriteRepository = favoriteRepository
         )
 
     fun createAdoptionQuestionnairePresenter(

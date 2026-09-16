@@ -9,9 +9,10 @@ import com.example.weanimals.R
 import com.example.weanimals.adoption.listing.presentation.AdoptionActivity
 import com.example.weanimals.databinding.ViewMainNavigationBinding
 import com.example.weanimals.home.presentation.HomeActivity
+import com.example.weanimals.profile.overview.presentation.ProfileActivity
 
 object MainNavigation {
-    enum class Destination { HOME, ADOPTION }
+    enum class Destination { HOME, ADOPTION, PROFILE, MAP }
 
     fun bind(
         activity: Activity,
@@ -28,8 +29,18 @@ object MainNavigation {
             binding.navAdoptionIcon, ColorStateList.valueOf(if (selected == Destination.ADOPTION) active else muted)
         )
         binding.navAdoptionLabel.setTextColor(if (selected == Destination.ADOPTION) active else muted)
+        ImageViewCompat.setImageTintList(
+            binding.navProfileIcon, ColorStateList.valueOf(if (selected == Destination.PROFILE) active else muted)
+        )
+        binding.navProfileLabel.setTextColor(if (selected == Destination.PROFILE) active else muted)
+        ImageViewCompat.setImageTintList(
+            binding.navMapIcon, ColorStateList.valueOf(if (selected == Destination.MAP) active else muted)
+        )
+        binding.navMapLabel.setTextColor(if (selected == Destination.MAP) active else muted)
         binding.navHome.isSelected = selected == Destination.HOME
         binding.navAdoption.isSelected = selected == Destination.ADOPTION
+        binding.navProfile.isSelected = selected == Destination.PROFILE
+        binding.navMap.isSelected = selected == Destination.MAP
         // The navigation background consumes taps for destinations that are not
         // implemented yet, preventing them from reaching content behind the bar.
         binding.root.setOnClickListener { }
@@ -42,6 +53,12 @@ object MainNavigation {
         binding.navAdoption.setOnClickListener {
             if (selected != Destination.ADOPTION) activity.startActivity(
                 Intent(activity, AdoptionActivity::class.java)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            )
+        }
+        binding.navProfile.setOnClickListener {
+            if (selected != Destination.PROFILE) activity.startActivity(
+                Intent(activity, ProfileActivity::class.java)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
             )
         }

@@ -241,6 +241,10 @@ class AnimalDetailsActivity : AppCompatActivity(), AnimalDetailsContract.View {
         )
     }
 
+    override fun showFavoriteError() {
+        Snackbar.make(binding.root, R.string.profile_favorite_save_error, Snackbar.LENGTH_LONG).show()
+    }
+
     override fun showShareLoading(loading: Boolean) {
         binding.shareButton.isEnabled = !loading
         binding.shareButton.alpha = if (loading) DISABLED_ALPHA else ENABLED_ALPHA

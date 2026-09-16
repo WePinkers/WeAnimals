@@ -419,4 +419,31 @@
     <string name="adoption_follow_up_submit_success">Check-in enviado com sucesso!</string>
     <string name="adoption_follow_up_next">O próximo check-in estará disponível próximo de %1$s.</string>
     <string name="adoption_follow_up_all_done">Todos os check-ins foram respondidos. Obrigado por acompanhar a adaptação!</string>
+
+    <!-- Profile -->
+    <string name="profile_default_name">Meu perfil</string>
+    <string name="profile_default_avatar">?</string>
+    <string name="profile_account_info">Sua atividade no WeAnimals</string>
+    <string name="profile_stat_reports">denúncias</string>
+    <string name="profile_stat_campaigns">campanhas</string>
+    <string name="profile_activity_label">ATIVIDADE</string>
+    <string name="profile_activity_my_reports">Minhas denúncias</string>
+    <string name="profile_activity_my_reports_desc">Acompanhe seus protocolos</string>
+    <string name="profile_activity_campaigns">Campanhas</string>
+    <string name="profile_activity_campaigns_desc">Nenhuma participação registrada</string>
+    <string name="profile_activity_favorites">Animais favoritados</string>
+    <string name="title_my_reports">Minhas denúncias</string>
+    <string name="profile_reports_loading">Carregando suas denúncias…</string>
+    <string name="profile_reports_empty">Você ainda não fez denúncias.</string>
+    <string name="title_campaigns">Campanhas</string>
+    <string name="profile_campaigns_empty">Nenhuma campanha registrada por enquanto. As campanhas aparecerão aqui quando as organizações disponibilizarem essa função.</string>
+    <string name="title_favorites">Favoritos</string>
+    <string name="profile_favorites_loading">Carregando seus animais favoritos…</string>
+    <string name="profile_favorites_empty">Você ainda não favoritou nenhum animal disponível.</string>
+    <string name="profile_favorites_error">Não foi possível carregar seus favoritos. Tente novamente.</string>
+    <string name="profile_favorite_save_error">Não foi possível atualizar seus favoritos. Tente novamente.</string>
+    <plurals name="profile_reports_count">
+        <item quantity="one">%d protocolo</item>
+        <item quantity="other">%d protocolos</item>
+    </plurals>
 </resources>

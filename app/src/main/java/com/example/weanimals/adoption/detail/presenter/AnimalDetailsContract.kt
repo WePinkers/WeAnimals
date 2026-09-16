@@ -10,6 +10,7 @@ interface AnimalDetailsContract {
         fun showDistance(distanceKm: Double?, shelterAddress: String)
         fun showError(error: Throwable)
         fun showFavorite(favorite: Boolean)
+        fun showFavoriteError()
         fun showShareLoading(loading: Boolean)
         fun shareAnimalDocument(document: AnimalShareDocument)
         fun showShareError(error: Throwable)

@@ -82,6 +82,10 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/share_file_paths" />
         </provider>
+        <activity android:name=".profile.overview.presentation.ProfileActivity" android:exported="false" />
+        <activity android:name=".profile.reports.presentation.MyReportsActivity" android:exported="false" />
+        <activity android:name=".profile.campaigns.presentation.CampaignsActivity" android:exported="false" />
+        <activity android:name=".profile.favorites.presentation.FavoritesActivity" android:exported="false" />
     </application>
 
 </manifest>
