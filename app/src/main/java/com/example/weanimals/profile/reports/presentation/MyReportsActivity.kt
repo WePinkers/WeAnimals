@@ -21,7 +21,8 @@ class MyReportsActivity : AppCompatActivity(), MyReportsContract.View {
         super.onCreate(savedInstanceState)
         binding = ActivityMyReportsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        binding.btnBack.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
+        binding.screenHeader.headerTitle.setText(R.string.title_my_reports)
+        binding.screenHeader.backButton.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
     }
 
     override fun onStart() {

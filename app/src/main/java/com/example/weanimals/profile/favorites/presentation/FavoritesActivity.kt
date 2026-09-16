@@ -23,7 +23,8 @@ class FavoritesActivity : AppCompatActivity(), FavoritesContract.View {
         super.onCreate(savedInstanceState)
         binding = ActivityFavoritesBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        binding.btnBack.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
+        binding.screenHeader.headerTitle.setText(R.string.title_favorites)
+        binding.screenHeader.backButton.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
         binding.favoritesList.layoutManager = LinearLayoutManager(this)
         binding.favoritesList.adapter = adapter
     }
