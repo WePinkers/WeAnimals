@@ -446,4 +446,24 @@
         <item quantity="one">%d protocolo</item>
         <item quantity="other">%d protocolos</item>
     </plurals>
+    <!-- Public map -->
+    <string name="map_filter_all">Todas</string>
+    <string name="map_filter_high">Alta</string>
+    <string name="map_filter_medium">Média</string>
+    <string name="map_filter_low">Baixa</string>
+    <string name="map_loading">Buscando ocorrências próximas…</string>
+    <string name="map_location_unavailable">Ative a localização para ver ocorrências próximas. Os pontos exibidos são aproximados.</string>
+    <string name="map_empty">Nenhuma ocorrência pública próxima neste filtro.</string>
+    <string name="map_error">Não foi possível carregar o mapa de ocorrências. Tente novamente.</string>
+    <string name="map_occurrence_icon">Ocorrência</string>
+    <string name="map_your_location">Sua localização</string>
+    <string name="map_animal_dog">Cão</string>
+    <string name="map_animal_cat">Gato</string>
+    <string name="map_animal_other">Animal</string>
+    <string name="map_point_title">%1$s · localização aproximada</string>
+    <string name="map_point_distance">%1$s km · posição aproximada</string>
+    <plurals name="map_occurrences_nearby">
+        <item quantity="one">%d ocorrência em até 2 km</item>
+        <item quantity="other">%d ocorrências em até 2 km</item>
+    </plurals>
 </resources>

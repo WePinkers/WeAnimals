@@ -65,6 +65,46 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // A public point contains only an animal category, urgency and a 0.01° grid cell.
+    // It is created atomically with its private report; exact coordinates never leave reports.
+    function matchesPrivateReport(reportId) {
+      let report = getAfter(/databases/$(database)/documents/reports/$(reportId)).data;
+      let publicData = request.resource.data;
+      return report.userId == request.auth.uid
+        && report.status == 'new'
+        && report.animalType == publicData.animalType
+        && report.urgency == publicData.urgency
+        && report.latitude is number
+        && report.longitude is number
+        && report.latitude >= publicData.latitudeCell / 100.0
+        && report.latitude < (publicData.latitudeCell + 1) / 100.0
+        && report.longitude >= publicData.longitudeCell / 100.0
+        && report.longitude < (publicData.longitudeCell + 1) / 100.0;
+    }
+
+    match /public_occurrences/{reportId} {
+      allow read: if signedIn();
+      allow create: if signedIn()
+        && existsAfter(/databases/$(database)/documents/reports/$(reportId))
+        && request.resource.data.keys().hasOnly([
+          'animalType', 'urgency', 'latitudeCell', 'longitudeCell', 'createdAt'
+        ])
+        && request.resource.data.keys().hasAll([
+          'animalType', 'urgency', 'latitudeCell', 'longitudeCell', 'createdAt'
+        ])
+        && request.resource.data.animalType in ['dog', 'cat', 'other']
+        && request.resource.data.urgency in ['low', 'medium', 'high']
+        && request.resource.data.latitudeCell is int
+        && request.resource.data.latitudeCell >= -9000
+        && request.resource.data.latitudeCell < 9000
+        && request.resource.data.longitudeCell is int
+        && request.resource.data.longitudeCell >= -18000
+        && request.resource.data.longitudeCell < 18000
+        && request.resource.data.createdAt == request.time
+        && matchesPrivateReport(reportId);
+      allow update, delete: if false;
+    }
+
     match /user_favorites/{userId}/animals/{animalId} {
       allow read, delete: if signedIn() && request.auth.uid == userId;
       allow create: if signedIn() && request.auth.uid == userId

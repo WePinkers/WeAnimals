@@ -54,6 +54,9 @@ import com.example.weanimals.profile.reports.presenter.MyReportsPresenter
 import com.example.weanimals.profile.favorites.repository.FirebaseFavoriteRepository
 import com.example.weanimals.profile.favorites.interactor.GetFavoriteAnimalsInteractor
 import com.example.weanimals.profile.favorites.presenter.FavoritesPresenter
+import com.example.weanimals.map.overview.repository.FirebasePublicOccurrenceRepository
+import com.example.weanimals.map.overview.interactor.GetNearbyOccurrencesInteractor
+import com.example.weanimals.map.overview.presenter.MapPresenter
 import com.example.weanimals.reporting.locationsearch.interactor.GetCurrentLocationInteractor
 import com.example.weanimals.reporting.locationsearch.interactor.SearchLocationsInteractor
 import com.example.weanimals.reporting.locationsearch.repository.AndroidLocationRepository
@@ -129,6 +132,10 @@ class AppContainer(context: Context) {
 
     private val favoriteRepository by lazy {
         FirebaseFavoriteRepository(FirebaseAuth.getInstance(), FirebaseFirestore.getInstance())
+    }
+
+    private val publicOccurrenceRepository by lazy {
+        FirebasePublicOccurrenceRepository(FirebaseAuth.getInstance(), FirebaseFirestore.getInstance())
     }
 
     private val animalDetailsRepository by lazy {
@@ -251,6 +258,12 @@ class AppContainer(context: Context) {
 
     fun createFavoritesPresenter() = FavoritesPresenter(
         GetFavoriteAnimalsInteractor(favoriteRepository, adoptionListingRepository)
+    )
+
+    fun createMapPresenter() = MapPresenter(
+        GetNearbyOccurrencesInteractor(
+            publicOccurrenceRepository, getUserLocationInteractor, calculateDistanceInteractor
+        )
     )
 
     fun createAdoptionPresenter() = AdoptionPresenter(

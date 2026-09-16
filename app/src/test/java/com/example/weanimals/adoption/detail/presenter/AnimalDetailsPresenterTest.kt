@@ -23,6 +23,7 @@ import com.example.weanimals.core.location.domain.Coordinates
 import com.example.weanimals.core.location.interactor.CalculateDistanceInteractor
 import com.example.weanimals.core.location.interactor.GetUserLocationInteractor
 import com.example.weanimals.core.location.repository.UserLocationRepository
+import com.example.weanimals.profile.favorites.repository.FavoriteRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -48,6 +49,7 @@ class AnimalDetailsPresenterTest {
     )
     private val profileRepository = FakeProfileRepository()
     private val shareRepository = FakeShareRepository()
+    private val favoriteRepository = FakeFavoriteRepository()
     private val view = RecordingView()
     private lateinit var presenter: AnimalDetailsPresenter
 
@@ -62,7 +64,8 @@ class AnimalDetailsPresenterTest {
                 CalculateDistanceInteractor()
             ),
             getAdoptionProfile = GetAdoptionProfileInteractor(profileRepository),
-            createAnimalSharePdf = CreateAnimalSharePdfInteractor(shareRepository)
+            createAnimalSharePdf = CreateAnimalSharePdfInteractor(shareRepository),
+            favoriteRepository = favoriteRepository
         )
         presenter.attachView(view)
     }
@@ -205,6 +208,19 @@ class AnimalDetailsPresenterTest {
         override suspend fun saveProfile(profile: AdoptionProfile) = Result.success(Unit)
     }
 
+    private class FakeFavoriteRepository : FavoriteRepository {
+        private var saved = false
+        override suspend fun getFavoriteAnimalIds(): Result<List<String>> =
+            Result.success(if (saved) listOf("animal-1") else emptyList())
+
+        override suspend fun isFavorite(animalId: String): Result<Boolean> = Result.success(saved)
+
+        override suspend fun setFavorite(animalId: String, favorite: Boolean): Result<Unit> {
+            saved = favorite
+            return Result.success(Unit)
+        }
+    }
+
     private class FakeShareRepository : AnimalShareRepository {
         var requests = 0
         var details: AnimalDetails? = null
@@ -255,6 +271,7 @@ class AnimalDetailsPresenterTest {
             this.error = error
         }
         override fun showFavorite(favorite: Boolean) { this.favorite = favorite }
+        override fun showFavoriteError() = Unit
         override fun showShareLoading(loading: Boolean) { shareLoading = loading }
         override fun shareAnimalDocument(document: AnimalShareDocument) {
             sharedDocument = document

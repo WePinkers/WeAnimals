@@ -10,6 +10,7 @@ import androidx.core.view.WindowCompat
 import com.example.weanimals.R
 import com.example.weanimals.WeAnimalsApplication
 import com.example.weanimals.core.navigation.MainNavigation
+import com.example.weanimals.map.overview.presentation.MapActivity
 import com.example.weanimals.databinding.ActivityHomeBinding
 import com.example.weanimals.databinding.ItemReportBinding
 import com.example.weanimals.home.presenter.HomeContract
@@ -55,7 +56,7 @@ class HomeActivity : AppCompatActivity(), HomeContract.View {
             startActivity(Intent(this, ReportActivity::class.java))
         }
         binding.viewMapButton.setOnClickListener {
-            binding.contentScroll.smoothScrollTo(0, binding.mapPreview.mapRoot.top)
+            startActivity(Intent(this, MapActivity::class.java))
         }
     }
 

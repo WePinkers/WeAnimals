@@ -54,6 +54,7 @@ dependencies {
     implementation(libs.play.services.location)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
+    implementation("org.osmdroid:osmdroid-android:6.1.18")
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.androidx.junit)

@@ -9,11 +9,14 @@ import com.example.weanimals.reporting.report.domain.NewReport
 import com.example.weanimals.reporting.report.domain.Report
 import com.example.weanimals.reporting.report.domain.ReportProtocol
 import com.example.weanimals.reporting.report.domain.ReportStatus
+import com.example.weanimals.core.location.domain.Coordinates
+import com.example.weanimals.map.overview.domain.PublicOccurrence
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.Blob
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import kotlinx.coroutines.Dispatchers
@@ -245,7 +248,23 @@ class FirebaseReportRepository(
             data[FIELD_PHOTO_DATA] = Blob.fromBytes(it)
             data[FIELD_PHOTO_NAME] = photoFileName ?: DEFAULT_PHOTO_FILE_NAME
         }
-        documentReference.set(data).await()
+        val batch = firestore.batch()
+        batch.set(documentReference, data)
+        Coordinates.fromOrNull(report.latitude, report.longitude)
+            ?.takeIf { it.latitude < 90.0 && it.longitude < 180.0 }
+            ?.let { coordinates ->
+            batch.set(
+                firestore.collection(PUBLIC_OCCURRENCES_COLLECTION).document(documentReference.id),
+                mapOf(
+                    "animalType" to report.animalType,
+                    "urgency" to report.urgency,
+                    "latitudeCell" to PublicOccurrence.cell(coordinates.latitude),
+                    "longitudeCell" to PublicOccurrence.cell(coordinates.longitude),
+                    "createdAt" to FieldValue.serverTimestamp()
+                )
+            )
+        }
+        batch.commit().await()
 
         return Report(
             id = documentReference.id,
@@ -310,6 +329,7 @@ class FirebaseReportRepository(
 
     private companion object {
         const val REPORTS_COLLECTION = "reports"
+        const val PUBLIC_OCCURRENCES_COLLECTION = "public_occurrences"
         const val METADATA_COLLECTION = "metadata"
         const val REPORT_COUNTER_DOCUMENT = "reports_counter"
         const val FIELD_PROTOCOL = "protocolNumber"

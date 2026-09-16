@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -86,6 +87,7 @@
         <activity android:name=".profile.reports.presentation.MyReportsActivity" android:exported="false" />
         <activity android:name=".profile.campaigns.presentation.CampaignsActivity" android:exported="false" />
         <activity android:name=".profile.favorites.presentation.FavoritesActivity" android:exported="false" />
+        <activity android:name=".map.overview.presentation.MapActivity" android:exported="false" />
     </application>
 
 </manifest>

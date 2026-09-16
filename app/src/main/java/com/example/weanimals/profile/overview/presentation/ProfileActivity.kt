@@ -59,7 +59,8 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
     override fun showIdentity(name: String?) {
         val displayName = name ?: getString(R.string.profile_default_name)
         binding.profileContent.userName.text = displayName
-        binding.profileContent.avatarText.text = displayName.firstOrNull()?.uppercase() ?: "?"
+        binding.profileContent.avatarText.text =
+            name?.firstOrNull()?.uppercase() ?: getString(R.string.profile_default_avatar)
         binding.profileContent.userInfo.text = getString(R.string.profile_account_info)
     }
 

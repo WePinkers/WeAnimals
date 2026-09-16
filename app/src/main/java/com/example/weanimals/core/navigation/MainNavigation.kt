@@ -10,6 +10,7 @@ import com.example.weanimals.adoption.listing.presentation.AdoptionActivity
 import com.example.weanimals.databinding.ViewMainNavigationBinding
 import com.example.weanimals.home.presentation.HomeActivity
 import com.example.weanimals.profile.overview.presentation.ProfileActivity
+import com.example.weanimals.map.overview.presentation.MapActivity
 
 object MainNavigation {
     enum class Destination { HOME, ADOPTION, PROFILE, MAP }
@@ -59,6 +60,12 @@ object MainNavigation {
         binding.navProfile.setOnClickListener {
             if (selected != Destination.PROFILE) activity.startActivity(
                 Intent(activity, ProfileActivity::class.java)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            )
+        }
+        binding.navMap.setOnClickListener {
+            if (selected != Destination.MAP) activity.startActivity(
+                Intent(activity, MapActivity::class.java)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
             )
         }
