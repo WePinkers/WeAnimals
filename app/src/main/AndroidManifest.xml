@@ -90,6 +90,10 @@
         <activity android:name=".map.overview.presentation.MapActivity" android:exported="false" />
         <activity android:name=".community.feed.presentation.CommunityActivity" android:exported="false" />
         <activity
+            android:name=".community.detail.presentation.CommunityPostDetailActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
             android:name=".community.create.presentation.CreateCommunityPostActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />

@@ -127,7 +127,7 @@ class CreateCommunityPostActivity : AppCompatActivity(), CreateCommunityPostCont
             )
         }
         binding.storyEdit.doAfterTextChanged {
-            if (!it.isNullOrBlank()) binding.storyEdit.error = null
+            if (!it.isNullOrBlank()) binding.storyError.visibility = View.GONE
         }
         binding.publishButton.setOnClickListener {
             presenter.publish(binding.storyEdit.text?.toString().orEmpty(), selectedPhotoUri?.toString())
@@ -201,7 +201,8 @@ class CreateCommunityPostActivity : AppCompatActivity(), CreateCommunityPostCont
     }
 
     override fun showDescriptionRequired() {
-        binding.storyEdit.error = getString(R.string.community_story_required)
+        binding.storyError.setText(R.string.community_story_required)
+        binding.storyError.visibility = View.VISIBLE
         binding.storyEdit.requestFocus()
     }
 

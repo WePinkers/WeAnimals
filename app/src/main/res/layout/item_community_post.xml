@@ -95,37 +95,57 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:contentDescription="@null"
-                android:src="@drawable/ic_heart_outline"
-                app:tint="@color/muted" />
-
-            <TextView
-                android:id="@+id/post_likes"
+            <LinearLayout
+                android:id="@+id/post_like_action"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:textColor="@color/ink600"
-                android:textSize="@dimen/text_size_card_protocol"
-                tools:text="18" />
+                android:layout_height="32dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="4dp">
 
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:layout_marginStart="14dp"
-                android:contentDescription="@null"
-                android:src="@drawable/ic_community_comment" />
+                <ImageView
+                    android:id="@+id/post_like_icon"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:contentDescription="@string/community_like"
+                    android:src="@drawable/ic_heart_outline"
+                    app:tint="@color/muted" />
 
-            <TextView
-                android:id="@+id/post_comments"
+                <TextView
+                    android:id="@+id/post_likes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:textColor="@color/ink600"
+                    android:textSize="@dimen/text_size_card_protocol"
+                    tools:text="18" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/post_comment_action"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:textColor="@color/ink600"
-                android:textSize="@dimen/text_size_card_protocol"
-                tools:text="7" />
+                android:layout_height="32dp"
+                android:layout_marginStart="10dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="4dp">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:contentDescription="@string/community_comment"
+                    android:src="@drawable/ic_community_comment" />
+
+                <TextView
+                    android:id="@+id/post_comments"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:textColor="@color/ink600"
+                    android:textSize="@dimen/text_size_card_protocol"
+                    tools:text="7" />
+            </LinearLayout>
+
         </LinearLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

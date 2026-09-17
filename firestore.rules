@@ -121,14 +121,17 @@ service cloud.firestore {
     // Only authenticated users may create their own posts. Campaign writes remain blocked.
     match /community_posts/{postId} {
       allow read: if signedIn();
-      allow create: if signedIn()
-        && request.resource.data.keys().hasAll([
-          'authorId', 'category', 'body', 'locationLabel', 'createdAt'
-        ])
+        allow create: if signedIn()
+          && request.resource.data.keys().hasAll([
+            'authorId', 'authorName', 'category', 'body', 'locationLabel', 'createdAt'
+          ])
         && request.resource.data.keys().hasOnly([
-          'authorId', 'category', 'body', 'locationLabel', 'createdAt', 'photoData'
-        ])
+            'authorId', 'authorName', 'category', 'body', 'locationLabel', 'createdAt', 'photoData'
+          ])
         && request.resource.data.authorId == request.auth.uid
+        && request.resource.data.authorName is string
+        && request.resource.data.authorName.size() > 0
+        && request.resource.data.authorName.size() <= 100
         && request.resource.data.category in ['FOUND', 'QUESTION', 'NOTICE', 'OTHER']
         && request.resource.data.body is string
         && request.resource.data.body.size() > 0
@@ -140,8 +143,64 @@ service cloud.firestore {
         && (!request.resource.data.keys().hasAny(['photoData'])
           || (request.resource.data.photoData is bytes
             && request.resource.data.photoData.size() <= 200000));
-      allow update, delete: if false;
-    }
+        allow update: if signedIn()
+          && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['likesCount', 'commentsCount'])
+          && request.resource.data.likesCount is int
+          && request.resource.data.commentsCount is int
+          && request.resource.data.likesCount >= 0
+          && request.resource.data.commentsCount >= 0
+          && (
+            request.resource.data.likesCount == resource.data.get('likesCount', 0)
+            || request.resource.data.likesCount == resource.data.get('likesCount', 0) + 1
+            || request.resource.data.likesCount == resource.data.get('likesCount', 0) - 1
+          )
+          && (
+            request.resource.data.commentsCount == resource.data.get('commentsCount', 0)
+            || request.resource.data.commentsCount == resource.data.get('commentsCount', 0) + 1
+          )
+          && (
+            request.resource.data.likesCount != resource.data.get('likesCount', 0)
+            || request.resource.data.commentsCount != resource.data.get('commentsCount', 0)
+          );
+        allow delete: if false;
+
+        match /comments/{commentId} {
+          allow read: if signedIn();
+          allow create: if signedIn()
+            && request.resource.data.keys().hasOnly([
+              'authorId', 'authorName', 'text', 'createdAt', 'parentCommentId'
+            ])
+            && request.resource.data.authorId == request.auth.uid
+            && request.resource.data.authorName is string
+            && request.resource.data.authorName.size() > 0
+            && request.resource.data.authorName.size() <= 100
+            && request.resource.data.text is string
+            && request.resource.data.text.size() > 0
+            && request.resource.data.text.size() <= 500
+            && (
+              !request.resource.data.keys().hasAny(['parentCommentId'])
+              || (
+                request.resource.data.parentCommentId is string
+                && request.resource.data.parentCommentId.size() > 0
+                && request.resource.data.parentCommentId.size() <= 100
+              )
+            )
+            && request.resource.data.createdAt == request.time;
+          allow update, delete: if false;
+        }
+
+        match /likes/{userId} {
+          allow read: if signedIn();
+          allow create: if signedIn()
+            && request.auth.uid == userId
+            && request.resource.data.keys().hasOnly(['userId', 'createdAt'])
+            && request.resource.data.userId == request.auth.uid
+            && request.resource.data.createdAt == request.time;
+          allow delete: if signedIn() && request.auth.uid == userId;
+          allow update: if false;
+        }
+      }
 
     match /adoption_profiles/{userId} {
       allow read, create, update: if signedIn() && request.auth.uid == userId;

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="14dp"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/comment_avatar"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
+        android:background="@drawable/bg_community_avatar"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_size_badge"
+        android:textStyle="bold"
+        tools:text="R" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/comment_author"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/ink"
+                android:textSize="@dimen/text_size_card_protocol"
+                android:textStyle="bold"
+                tools:text="Renata Ferreira" />
+
+            <TextView
+                android:id="@+id/comment_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:textColor="@color/ink600"
+                android:textSize="@dimen/text_size_card_protocol"
+                tools:text="há 1h" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/comment_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/ink600"
+            android:textSize="@dimen/text_size_report_body"
+            tools:text="Já vi ela rondando lá perto de casa também! Bem dócil." />
+
+        <TextView
+            android:id="@+id/comment_reply"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:text="@string/community_reply"
+            android:textColor="@color/clay600"
+            android:textSize="@dimen/text_size_link" />
+    </LinearLayout>
+</LinearLayout>

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/surface"
+    android:background="@color/background"
     android:orientation="vertical"
     tools:context=".community.create.presentation.CreateCommunityPostActivity">
 
@@ -60,7 +60,8 @@
                     android:gravity="center"
                     android:text="@string/community_tab_campaign"
                     android:textColor="@color/muted"
-                    android:textSize="@dimen/text_size_report_chip" />
+                    android:textSize="@dimen/text_size_report_chip"
+                    android:visibility="gone" />
             </LinearLayout>
 
             <TextView
@@ -199,6 +200,17 @@
                 android:text="@string/community_story_label"
                 android:textColor="@color/ink600"
                 android:textSize="@dimen/text_size_report_label" />
+
+            <TextView
+                android:id="@+id/story_error"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:fontFamily="sans-serif"
+                android:includeFontPadding="false"
+                android:textColor="@color/red"
+                android:textSize="@dimen/text_size_chat_error"
+                android:visibility="gone" />
 
             <EditText
                 android:id="@+id/story_edit"

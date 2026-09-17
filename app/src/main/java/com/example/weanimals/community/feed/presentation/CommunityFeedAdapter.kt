@@ -15,7 +15,9 @@ import com.example.weanimals.databinding.ItemCommunityCampaignBinding
 import com.example.weanimals.databinding.ItemCommunityPostBinding
 
 class CommunityFeedAdapter(
-    private val onJoinClick: () -> Unit
+    private val onJoinClick: () -> Unit,
+    private val onPostCommentClick: (CommunityFeedItem.Post) -> Unit,
+    private val onPostLikeClick: (CommunityFeedItem.Post) -> Unit
 ) : ListAdapter<CommunityFeedItem, RecyclerView.ViewHolder>(DIFF) {
 
     override fun getItemViewType(position: Int): Int = when (getItem(position)) {
@@ -76,7 +78,7 @@ class CommunityFeedAdapter(
         }
     }
 
-    private class PostHolder(private val binding: ItemCommunityPostBinding) :
+    private inner class PostHolder(private val binding: ItemCommunityPostBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: CommunityFeedItem.Post) {
             val context = binding.root.context
@@ -94,6 +96,19 @@ class CommunityFeedAdapter(
             binding.postPhoto.visibility = if (bitmap == null) android.view.View.GONE else android.view.View.VISIBLE
             binding.postLikes.text = item.likes.toString()
             binding.postComments.text = item.comments.toString()
+            binding.postLikeIcon.setImageResource(
+                if (item.likedByCurrentUser) R.drawable.ic_favorite_filled
+                else R.drawable.ic_heart_outline
+            )
+            binding.postLikeIcon.imageTintList = ColorStateList.valueOf(
+                ContextCompat.getColor(
+                    context,
+                    if (item.likedByCurrentUser) R.color.terracotta else R.color.muted
+                )
+            )
+            binding.root.setOnClickListener { onPostCommentClick(item) }
+            binding.postLikeAction.setOnClickListener { onPostLikeClick(item) }
+            binding.postCommentAction.setOnClickListener { onPostCommentClick(item) }
         }
     }
 

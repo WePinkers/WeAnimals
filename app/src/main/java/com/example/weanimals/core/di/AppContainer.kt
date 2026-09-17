@@ -83,6 +83,8 @@ import com.example.weanimals.community.feed.repository.CommunityRepositoryFactor
 import com.example.weanimals.community.create.interactor.PublishCommunityPostInteractor
 import com.example.weanimals.community.create.presenter.CreateCommunityPostPresenter
 import com.example.weanimals.community.create.repository.FirebaseCommunityPostRepository
+import com.example.weanimals.community.detail.repository.CommunityPostEngagementRepository
+import com.example.weanimals.community.detail.repository.FirebaseCommunityPostEngagementRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -269,6 +271,11 @@ class AppContainer(context: Context) {
             )
         )
     )
+
+    fun createCommunityPostEngagementRepository(): CommunityPostEngagementRepository =
+        FirebaseCommunityPostEngagementRepository(
+            FirebaseAuth.getInstance(), FirebaseFirestore.getInstance()
+        )
 
     fun createProfilePresenter() = ProfilePresenter(
         GetProfileIdentityInteractor(profileRepository), reportRepository

@@ -29,6 +29,7 @@ sealed interface CommunityFeedItem {
         val body: String,
         val likes: Int,
         val comments: Int,
-        val photoData: ByteArray? = null
+        val photoData: ByteArray? = null,
+        val likedByCurrentUser: Boolean = false
     ) : CommunityFeedItem
 }

@@ -14,39 +14,50 @@ class FirebaseCommunityRepository(
     private val firestore: FirebaseFirestore
 ) : CommunityRepository {
     override suspend fun getFeed(): Result<List<CommunityFeedItem>> = runCatching {
-        if (auth.currentUser == null) auth.signInAnonymously().await()
+        val user = auth.currentUser ?: auth.signInAnonymously().await().user
+            ?: error("Firebase user was not created.")
         val posts = firestore.collection(COLLECTION)
             .orderBy("createdAt", Query.Direction.DESCENDING)
             .limit(50)
             .get()
             .await()
-        posts.documents.mapNotNull { document ->
+        val feed = mutableListOf<CommunityFeedItem>()
+        posts.documents.forEach { document ->
             val category = runCatching {
                 CommunityCategory.valueOf(document.getString("category").orEmpty())
-            }.getOrNull() ?: return@mapNotNull null
+            }.getOrNull() ?: return@forEach
             val body = document.getString("body")?.takeIf(String::isNotBlank)
-                ?: return@mapNotNull null
+                ?: return@forEach
             val createdAt = document.getTimestamp("createdAt")?.toDate()?.time
                 ?: System.currentTimeMillis()
-            CommunityFeedItem.Post(
+            val likedByCurrentUser = document.reference
+                .collection(LIKES_COLLECTION)
+                .document(user.uid)
+                .get()
+                .await()
+                .exists()
+            feed += CommunityFeedItem.Post(
                 id = document.id,
                 category = category,
                 neighborhood = document.getString("locationLabel"),
-                author = "",
+                author = document.getString("authorName").orEmpty(),
                 timeText = DateUtils.getRelativeTimeSpanString(
                     createdAt,
                     System.currentTimeMillis(),
                     DateUtils.MINUTE_IN_MILLIS
                 ).toString(),
                 body = body,
-                likes = 0,
-                comments = 0,
-                photoData = (document.get("photoData") as? Blob)?.toBytes()
+                likes = document.getLong("likesCount")?.toInt() ?: 0,
+                comments = document.getLong("commentsCount")?.toInt() ?: 0,
+                photoData = (document.get("photoData") as? Blob)?.toBytes(),
+                likedByCurrentUser = likedByCurrentUser
             )
         }
+        feed
     }
 
     private companion object {
         const val COLLECTION = "community_posts"
+        const val LIKES_COLLECTION = "likes"
     }
 }

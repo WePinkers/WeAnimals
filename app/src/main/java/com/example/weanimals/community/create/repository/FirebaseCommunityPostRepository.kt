@@ -36,6 +36,8 @@ class FirebaseCommunityPostRepository(
         val document = firestore.collection(COLLECTION).document()
         val data = mutableMapOf<String, Any>(
             "authorId" to user.uid,
+            "authorName" to (user.displayName?.trim().takeIf { !it.isNullOrEmpty() }
+                ?: applicationContext.getString(R.string.community_post_author_default)),
             "category" to draft.category.name,
             "body" to body,
             "locationLabel" to (draft.location.publicLocationLabel()

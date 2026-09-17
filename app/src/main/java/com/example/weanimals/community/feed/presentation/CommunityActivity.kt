@@ -16,13 +16,17 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.core.widget.doAfterTextChanged
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import kotlinx.coroutines.launch
 import com.example.weanimals.R
 import com.example.weanimals.WeAnimalsApplication
 import com.example.weanimals.community.create.presentation.CreateCommunityPostActivity
+import com.example.weanimals.community.detail.presentation.CommunityPostDetailActivity
 import com.example.weanimals.community.feed.domain.CommunityFeedItem
 import com.example.weanimals.community.feed.domain.CommunityFilter
 import com.example.weanimals.community.feed.presenter.CommunityContract
+import com.example.weanimals.community.detail.repository.CommunityPostEngagementRepository
 import com.example.weanimals.core.navigation.MainNavigation
 import com.example.weanimals.databinding.ActivityCommunityBinding
 import com.google.android.material.chip.Chip
@@ -38,11 +42,36 @@ class CommunityActivity : AppCompatActivity(), CommunityContract.View {
     private val presenter by lazy {
         (application as WeAnimalsApplication).appContainer.createCommunityPresenter()
     }
-    private val feedAdapter = CommunityFeedAdapter {
-        Toast.makeText(this, R.string.community_join_unavailable, Toast.LENGTH_SHORT).show()
+    private val engagementRepository: CommunityPostEngagementRepository by lazy {
+        (application as WeAnimalsApplication).appContainer
+            .createCommunityPostEngagementRepository()
     }
+    private val feedAdapter = CommunityFeedAdapter(
+        onJoinClick = {
+            Toast.makeText(this, R.string.community_join_unavailable, Toast.LENGTH_SHORT).show()
+        },
+        onPostCommentClick = ::openPostDetail,
+        onPostLikeClick = ::toggleLike
+    )
+    private val engagementOverrides = mutableMapOf<String, EngagementOverride>()
+    private var currentItems: List<CommunityFeedItem> = emptyList()
     private var selectedFilterId = R.id.filter_all
     private var neighborhoodPermissionPending = false
+
+    private val postDetailLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode != RESULT_OK) return@registerForActivityResult
+        val data = result.data ?: return@registerForActivityResult
+        val postId = data.getStringExtra(CommunityPostDetailActivity.EXTRA_POST_ID)
+            ?: return@registerForActivityResult
+        updatePost(
+            postId = postId,
+            likes = data.getIntExtra(CommunityPostDetailActivity.EXTRA_LIKES, 0),
+            comments = data.getIntExtra(CommunityPostDetailActivity.EXTRA_COMMENTS, 0),
+            liked = data.getBooleanExtra(CommunityPostDetailActivity.EXTRA_LIKED, false)
+        )
+    }
 
     private val neighborhoodPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -199,12 +228,26 @@ class CommunityActivity : AppCompatActivity(), CommunityContract.View {
     }
 
     override fun showItems(items: List<CommunityFeedItem>) {
-        feedAdapter.submitList(items)
+        currentItems = items.map { item ->
+            if (item is CommunityFeedItem.Post) {
+                engagementOverrides[item.id]?.let { override ->
+                    item.copy(
+                        likes = override.likes,
+                        comments = override.comments,
+                        likedByCurrentUser = override.liked
+                    )
+                } ?: item
+            } else {
+                item
+            }
+        }
+        feedAdapter.submitList(currentItems)
         binding.feedState.isVisible = false
         binding.feedList.isVisible = true
     }
 
     override fun showEmpty(filter: CommunityFilter, query: String) {
+        currentItems = emptyList()
         feedAdapter.submitList(emptyList())
         binding.feedList.isVisible = false
         binding.feedState.isVisible = true
@@ -238,6 +281,74 @@ class CommunityActivity : AppCompatActivity(), CommunityContract.View {
         binding.stateTitle.setText(R.string.community_empty_title)
         binding.stateMessage.setText(R.string.community_load_error)
     }
+
+    private fun openPostDetail(item: CommunityFeedItem.Post) {
+        val intent = Intent(this, CommunityPostDetailActivity::class.java)
+            .putExtra(CommunityPostDetailActivity.EXTRA_POST_ID, item.id)
+            .putExtra(CommunityPostDetailActivity.EXTRA_AUTHOR, item.author)
+            .putExtra(CommunityPostDetailActivity.EXTRA_TIME, item.timeText)
+            .putExtra(CommunityPostDetailActivity.EXTRA_NEIGHBORHOOD, item.neighborhood.orEmpty())
+            .putExtra(CommunityPostDetailActivity.EXTRA_BODY, item.body)
+            .putExtra(CommunityPostDetailActivity.EXTRA_LIKES, item.likes)
+            .putExtra(CommunityPostDetailActivity.EXTRA_COMMENTS, item.comments)
+            .putExtra(CommunityPostDetailActivity.EXTRA_LIKED, item.likedByCurrentUser)
+        item.photoData?.let { intent.putExtra(CommunityPostDetailActivity.EXTRA_PHOTO, it) }
+        postDetailLauncher.launch(intent)
+    }
+
+    private fun toggleLike(item: CommunityFeedItem.Post) {
+        if (item.id.startsWith("debug-")) {
+            val liked = !item.likedByCurrentUser
+            updatePost(
+                postId = item.id,
+                likes = (item.likes + if (liked) 1 else -1).coerceAtLeast(0),
+                comments = item.comments,
+                liked = liked
+            )
+            return
+        }
+
+        lifecycleScope.launch {
+            engagementRepository.toggleLike(item.id, !item.likedByCurrentUser)
+                .onSuccess { engagement ->
+                    updatePost(
+                        postId = item.id,
+                        likes = engagement.likes,
+                        comments = engagement.comments,
+                        liked = engagement.likedByCurrentUser
+                    )
+                }
+                .onFailure {
+                    Toast.makeText(
+                        this@CommunityActivity,
+                        R.string.community_like_error,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+        }
+    }
+
+    private fun updatePost(postId: String, likes: Int, comments: Int, liked: Boolean) {
+        engagementOverrides[postId] = EngagementOverride(likes, comments, liked)
+        currentItems = currentItems.map { item ->
+            if (item is CommunityFeedItem.Post && item.id == postId) {
+                item.copy(
+                    likes = likes,
+                    comments = comments,
+                    likedByCurrentUser = liked
+                )
+            } else {
+                item
+            }
+        }
+        feedAdapter.submitList(currentItems)
+    }
+
+    private data class EngagementOverride(
+        val likes: Int,
+        val comments: Int,
+        val liked: Boolean
+    )
 
     private fun selectedFilter() = when (selectedFilterId) {
         R.id.filter_campaigns -> CommunityFilter.CAMPAIGNS
