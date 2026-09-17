@@ -77,6 +77,12 @@ import com.example.weanimals.reporting.tracking.repository.FirebaseTrackingRepos
 import com.example.weanimals.core.location.interactor.CalculateDistanceInteractor
 import com.example.weanimals.core.location.interactor.GetUserLocationInteractor
 import com.example.weanimals.core.location.repository.AndroidUserLocationRepository
+import com.example.weanimals.community.feed.interactor.GetCommunityFeedInteractor
+import com.example.weanimals.community.feed.presenter.CommunityPresenter
+import com.example.weanimals.community.feed.repository.CommunityRepositoryFactory
+import com.example.weanimals.community.create.interactor.PublishCommunityPostInteractor
+import com.example.weanimals.community.create.presenter.CreateCommunityPostPresenter
+import com.example.weanimals.community.create.repository.FirebaseCommunityPostRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -248,6 +254,20 @@ class AppContainer(context: Context) {
     fun createHomePresenter() = HomePresenter(
         observeUserReportsInteractor = observeUserReportsInteractor,
         markReportAsViewedInteractor = markReportAsViewedInteractor
+    )
+
+    fun createCommunityPresenter() = CommunityPresenter(
+        GetCommunityFeedInteractor(CommunityRepositoryFactory.create()),
+        getCurrentLocationInteractor
+    )
+
+    fun createCommunityPostPresenter() = CreateCommunityPostPresenter(
+        getCurrentLocation = getCurrentLocationInteractor,
+        publishPost = PublishCommunityPostInteractor(
+            FirebaseCommunityPostRepository(
+                applicationContext, FirebaseAuth.getInstance(), FirebaseFirestore.getInstance()
+            )
+        )
     )
 
     fun createProfilePresenter() = ProfilePresenter(

@@ -38,4 +38,7 @@
     <color name="map_grid">#FFDFDCCD</color>
     <color name="triage_background">#FFF8ECE9</color>
     <color name="adoption_primary">#FF1F3D2E</color>
+    <color name="community_vaccination_tint">#FF517D7C</color>
+    <color name="community_vaccination_bg">#FFE7F1F1</color>
+    <color name="community_campaign_border">#FFAEBBAA</color>
 </resources>

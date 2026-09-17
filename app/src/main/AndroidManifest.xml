@@ -88,6 +88,11 @@
         <activity android:name=".profile.campaigns.presentation.CampaignsActivity" android:exported="false" />
         <activity android:name=".profile.favorites.presentation.FavoritesActivity" android:exported="false" />
         <activity android:name=".map.overview.presentation.MapActivity" android:exported="false" />
+        <activity android:name=".community.feed.presentation.CommunityActivity" android:exported="false" />
+        <activity
+            android:name=".community.create.presentation.CreateCommunityPostActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
     </application>
 
 </manifest>

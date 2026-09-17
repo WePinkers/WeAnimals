@@ -117,6 +117,32 @@ service cloud.firestore {
       allow update: if false;
     }
 
+    // Public community posts reveal a broad region, never exact coordinates or street address.
+    // Only authenticated users may create their own posts. Campaign writes remain blocked.
+    match /community_posts/{postId} {
+      allow read: if signedIn();
+      allow create: if signedIn()
+        && request.resource.data.keys().hasAll([
+          'authorId', 'category', 'body', 'locationLabel', 'createdAt'
+        ])
+        && request.resource.data.keys().hasOnly([
+          'authorId', 'category', 'body', 'locationLabel', 'createdAt', 'photoData'
+        ])
+        && request.resource.data.authorId == request.auth.uid
+        && request.resource.data.category in ['FOUND', 'QUESTION', 'NOTICE', 'OTHER']
+        && request.resource.data.body is string
+        && request.resource.data.body.size() > 0
+        && request.resource.data.body.size() <= 1000
+        && request.resource.data.locationLabel is string
+        && request.resource.data.locationLabel.size() > 0
+        && request.resource.data.locationLabel.size() <= 80
+        && request.resource.data.createdAt == request.time
+        && (!request.resource.data.keys().hasAny(['photoData'])
+          || (request.resource.data.photoData is bytes
+            && request.resource.data.photoData.size() <= 200000));
+      allow update, delete: if false;
+    }
+
     match /adoption_profiles/{userId} {
       allow read, create, update: if signedIn() && request.auth.uid == userId;
       allow delete: if false;
