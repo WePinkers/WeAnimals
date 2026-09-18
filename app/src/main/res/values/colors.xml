@@ -6,8 +6,14 @@
     <color name="surface">#FFFFFFFF</color>
     <color name="ink">#FF12271F</color>
 
+    <color name="pine900">#FF132A20</color>
+    <color name="pine_900">#FF132A20</color>
     <color name="pine800">#FF1F3D2E</color>
+    <color name="pine_800">#FF1F3D2E</color>
     <color name="pine700">#FF2C5240</color>
+    <color name="pine_700">#FF2C5240</color>
+    <color name="pine100">#FFE2EBE5</color>
+    <color name="pine_100">#FFE2EBE5</color>
     <color name="sand50">#FFFAF8F2</color>
 
     <color name="clay600">#FFA85C3C</color>

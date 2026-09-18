@@ -9,9 +9,10 @@
     android:elevation="10dp"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:paddingTop="5dp"
-    android:paddingBottom="3dp">
+    android:paddingTop="4dp"
+    android:paddingBottom="4dp">
 
+    <!-- Item 1: Início -->
     <LinearLayout
         android:id="@+id/nav_home"
         android:layout_width="0dp"
@@ -20,13 +21,21 @@
         android:gravity="center"
         android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/nav_home_icon"
-            android:layout_width="21dp"
-            android:layout_height="21dp"
-            android:contentDescription="@string/nav_home"
-            android:src="@drawable/ic_home"
-            app:tint="@color/muted" />
+        <FrameLayout
+            android:id="@+id/nav_home_indicator"
+            android:layout_width="60dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center">
+
+            <ImageView
+                android:id="@+id/nav_home_icon"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center"
+                android:contentDescription="@string/nav_home"
+                android:src="@drawable/ic_home"
+                app:tint="@color/muted" />
+        </FrameLayout>
 
         <TextView
             android:id="@+id/nav_home_label"
@@ -37,10 +46,10 @@
             android:includeFontPadding="false"
             android:text="@string/nav_home"
             android:textColor="@color/muted"
-            android:textSize="@dimen/text_size_navigation"
-            android:textStyle="bold" />
+            android:textSize="11sp" />
     </LinearLayout>
 
+    <!-- Item 2: Mapa -->
     <LinearLayout
         android:id="@+id/nav_map"
         android:layout_width="0dp"
@@ -49,13 +58,21 @@
         android:gravity="center"
         android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/nav_map_icon"
-            android:layout_width="21dp"
-            android:layout_height="21dp"
-            android:contentDescription="@string/nav_map"
-            android:src="@drawable/ic_map"
-            app:tint="@color/muted" />
+        <FrameLayout
+            android:id="@+id/nav_map_indicator"
+            android:layout_width="60dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center">
+
+            <ImageView
+                android:id="@+id/nav_map_icon"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center"
+                android:contentDescription="@string/nav_map"
+                android:src="@drawable/ic_map"
+                app:tint="@color/muted" />
+        </FrameLayout>
 
         <TextView
             android:id="@+id/nav_map_label"
@@ -66,9 +83,10 @@
             android:includeFontPadding="false"
             android:text="@string/nav_map"
             android:textColor="@color/muted"
-            android:textSize="@dimen/text_size_navigation" />
+            android:textSize="11sp" />
     </LinearLayout>
 
+    <!-- Item 3: Comunidade -->
     <LinearLayout
         android:id="@+id/nav_community"
         android:layout_width="0dp"
@@ -77,13 +95,21 @@
         android:gravity="center"
         android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/nav_community_icon"
-            android:layout_width="21dp"
-            android:layout_height="21dp"
-            android:contentDescription="@string/nav_community"
-            android:src="@drawable/ic_community"
-            app:tint="@color/muted" />
+        <FrameLayout
+            android:id="@+id/nav_community_indicator"
+            android:layout_width="60dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center">
+
+            <ImageView
+                android:id="@+id/nav_community_icon"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center"
+                android:contentDescription="@string/nav_community"
+                android:src="@drawable/ic_community"
+                app:tint="@color/muted" />
+        </FrameLayout>
 
         <TextView
             android:id="@+id/nav_community_label"
@@ -94,9 +120,10 @@
             android:includeFontPadding="false"
             android:text="@string/nav_community"
             android:textColor="@color/muted"
-            android:textSize="@dimen/text_size_navigation" />
+            android:textSize="11sp" />
     </LinearLayout>
 
+    <!-- Item 4: Adoção -->
     <LinearLayout
         android:id="@+id/nav_adoption"
         android:layout_width="0dp"
@@ -105,13 +132,21 @@
         android:gravity="center"
         android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/nav_adoption_icon"
-            android:layout_width="21dp"
-            android:layout_height="21dp"
-            android:contentDescription="@string/nav_adoption"
-            android:src="@drawable/ic_paw"
-            app:tint="@color/muted" />
+        <FrameLayout
+            android:id="@+id/nav_adoption_indicator"
+            android:layout_width="60dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center">
+
+            <ImageView
+                android:id="@+id/nav_adoption_icon"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center"
+                android:contentDescription="@string/nav_adoption"
+                android:src="@drawable/ic_paw"
+                app:tint="@color/muted" />
+        </FrameLayout>
 
         <TextView
             android:id="@+id/nav_adoption_label"
@@ -122,9 +157,10 @@
             android:includeFontPadding="false"
             android:text="@string/nav_adoption"
             android:textColor="@color/muted"
-            android:textSize="@dimen/text_size_navigation" />
+            android:textSize="11sp" />
     </LinearLayout>
 
+    <!-- Item 5: Perfil -->
     <LinearLayout
         android:id="@+id/nav_profile"
         android:layout_width="0dp"
@@ -133,13 +169,21 @@
         android:gravity="center"
         android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/nav_profile_icon"
-            android:layout_width="21dp"
-            android:layout_height="21dp"
-            android:contentDescription="@string/nav_profile"
-            android:src="@drawable/ic_profile"
-            app:tint="@color/muted" />
+        <FrameLayout
+            android:id="@+id/nav_profile_indicator"
+            android:layout_width="60dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center">
+
+            <ImageView
+                android:id="@+id/nav_profile_icon"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center"
+                android:contentDescription="@string/nav_profile"
+                android:src="@drawable/ic_profile"
+                app:tint="@color/muted" />
+        </FrameLayout>
 
         <TextView
             android:id="@+id/nav_profile_label"
@@ -150,6 +194,6 @@
             android:includeFontPadding="false"
             android:text="@string/nav_profile"
             android:textColor="@color/muted"
-            android:textSize="@dimen/text_size_navigation" />
+            android:textSize="11sp" />
     </LinearLayout>
 </LinearLayout>

@@ -27,6 +27,7 @@ import com.example.weanimals.databinding.ItemOccurrenceBinding
 import com.example.weanimals.map.overview.domain.PublicOccurrence
 import com.example.weanimals.map.overview.interactor.NearbyOccurrences
 import com.example.weanimals.map.overview.presenter.MapContract
+import com.example.weanimals.reporting.tracking.presentation.TrackingActivity
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import org.maplibre.android.MapLibre
 import org.maplibre.android.annotations.IconFactory
@@ -40,9 +41,10 @@ import java.util.Locale
 class MapActivity : AppCompatActivity(), MapContract.View {
     private lateinit var binding: ActivityMapBinding
     private val presenter by lazy { (application as WeAnimalsApplication).appContainer.createMapPresenter() }
-    private val adapter = OccurrenceAdapter(::selectOccurrence)
+    private val adapter = OccurrenceAdapter(::onCardClicked)
     private var nearby = NearbyOccurrences(null, emptyList())
     private var selectedUrgency: String? = null
+    private var selectedOccurrence: PublicOccurrence? = null
     private var sheet: BottomSheetBehavior<LinearLayout>? = null
     private var map: MapLibreMap? = null
     private val markerOccurrences = mutableMapOf<Long, PublicOccurrence>()
@@ -83,6 +85,7 @@ class MapActivity : AppCompatActivity(), MapContract.View {
                 R.id.chip_low -> "low"
                 else -> null
             }
+            selectedOccurrence = null
             updateChips()
             renderOccurrences()
         }
@@ -143,9 +146,17 @@ class MapActivity : AppCompatActivity(), MapContract.View {
             readyMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(0.0, 0.0), 2.0))
             readyMap.setOnMarkerClickListener { marker ->
                 markerOccurrences[marker.id]?.let {
-                    selectOccurrence(it)
+                    selectSingleOccurrenceOnMap(it)
                     true
                 } ?: false
+            }
+            readyMap.addOnMapClickListener {
+                if (selectedOccurrence != null) {
+                    resetSingleOccurrenceSelection()
+                    true
+                } else {
+                    false
+                }
             }
             readyMap.setStyle(MAP_STYLE_URL) {
                 nearby.userLocation?.let { location ->
@@ -185,16 +196,24 @@ class MapActivity : AppCompatActivity(), MapContract.View {
     }
 
     private fun renderOccurrences() {
-        val items = filteredOccurrences()
-        adapter.submitList(items)
-        binding.mapContent.occurrenceCountText.text = resources.getQuantityString(
-            R.plurals.map_occurrences_nearby, items.size, items.size
-        )
-        binding.mapContent.mapStateText.visibility = if (items.isEmpty()) View.VISIBLE else View.GONE
-        binding.mapContent.mapStateText.setText(
-            if (nearby.userLocation == null) R.string.map_location_unavailable else R.string.map_empty
-        )
-        updateMarkers(items)
+        if (selectedOccurrence != null) {
+            val single = listOf(selectedOccurrence!!)
+            adapter.submitList(single)
+            binding.mapContent.occurrenceCountText.text = "1 ocorrência selecionada"
+            binding.mapContent.mapStateText.visibility = View.GONE
+            updateMarkers(single)
+        } else {
+            val items = filteredOccurrences()
+            adapter.submitList(items)
+            binding.mapContent.occurrenceCountText.text = resources.getQuantityString(
+                R.plurals.map_occurrences_nearby, items.size, items.size
+            )
+            binding.mapContent.mapStateText.visibility = if (items.isEmpty()) View.VISIBLE else View.GONE
+            binding.mapContent.mapStateText.setText(
+                if (nearby.userLocation == null) R.string.map_location_unavailable else R.string.map_empty
+            )
+            updateMarkers(items)
+        }
     }
 
     private fun filteredOccurrences() = nearby.occurrences.filter {
@@ -227,13 +246,46 @@ class MapActivity : AppCompatActivity(), MapContract.View {
         }
     }
 
-    private fun selectOccurrence(item: PublicOccurrence) {
-        val index = adapter.currentList.indexOfFirst { it.id == item.id }
-        if (index >= 0) binding.mapContent.recyclerOccurrences.smoothScrollToPosition(index)
-        sheet?.state = BottomSheetBehavior.STATE_EXPANDED
+    private fun selectSingleOccurrenceOnMap(item: PublicOccurrence) {
+        selectedOccurrence = item
+        adapter.submitList(listOf(item))
+        binding.mapContent.occurrenceCountText.text = "1 ocorrência selecionada"
+        binding.mapContent.mapStateText.visibility = View.GONE
+
+        highlightLegendCategory(item.urgency)
+
         map?.animateCamera(CameraUpdateFactory.newLatLng(
             LatLng(item.coordinates.latitude, item.coordinates.longitude)
         ))
+    }
+
+    private fun resetSingleOccurrenceSelection() {
+        selectedOccurrence = null
+        highlightLegendCategory(null)
+        renderOccurrences()
+    }
+
+    private fun highlightLegendCategory(urgency: String?) {
+        val isHigh = urgency == "high"
+        val isMedium = urgency == "medium"
+        val isLow = urgency == "low"
+
+        binding.mapContent.indicatorRed.visibility = if (isHigh) View.VISIBLE else View.INVISIBLE
+        binding.mapContent.indicatorYellow.visibility = if (isMedium) View.VISIBLE else View.INVISIBLE
+        binding.mapContent.indicatorGreen.visibility = if (isLow) View.VISIBLE else View.INVISIBLE
+
+        binding.mapContent.legendRed.alpha = if (urgency == null || isHigh) 1.0f else 0.5f
+        binding.mapContent.legendYellow.alpha = if (urgency == null || isMedium) 1.0f else 0.5f
+        binding.mapContent.legendGreen.alpha = if (urgency == null || isLow) 1.0f else 0.5f
+    }
+
+    private fun onCardClicked(item: PublicOccurrence) {
+        val intent = TrackingActivity.newIntent(this, item.id).apply {
+            putExtra("extra_protocol", "#4487")
+            putExtra("extra_title", title(item))
+            putExtra("extra_urgency", item.urgency)
+        }
+        startActivity(intent)
     }
 
     private fun updateChips() {

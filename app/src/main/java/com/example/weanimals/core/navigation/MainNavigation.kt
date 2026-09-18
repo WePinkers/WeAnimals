@@ -3,6 +3,11 @@ package com.example.weanimals.core.navigation
 import android.app.Activity
 import android.content.Intent
 import android.content.res.ColorStateList
+import android.graphics.Typeface
+import android.util.TypedValue
+import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.widget.ImageViewCompat
 import com.example.weanimals.R
@@ -20,31 +25,44 @@ object MainNavigation {
         binding: ViewMainNavigationBinding,
         selected: Destination? = null
     ) {
-        val active = ContextCompat.getColor(activity, R.color.adoption_primary)
-        val muted = ContextCompat.getColor(activity, R.color.muted)
-        ImageViewCompat.setImageTintList(
-            binding.navHomeIcon, ColorStateList.valueOf(if (selected == Destination.HOME) active else muted)
-        )
-        binding.navHomeLabel.setTextColor(if (selected == Destination.HOME) active else muted)
-        ImageViewCompat.setImageTintList(
-            binding.navAdoptionIcon, ColorStateList.valueOf(if (selected == Destination.ADOPTION) active else muted)
-        )
-        binding.navAdoptionLabel.setTextColor(if (selected == Destination.ADOPTION) active else muted)
-        ImageViewCompat.setImageTintList(
-            binding.navProfileIcon, ColorStateList.valueOf(if (selected == Destination.PROFILE) active else muted)
-        )
-        binding.navProfileLabel.setTextColor(if (selected == Destination.PROFILE) active else muted)
-        ImageViewCompat.setImageTintList(
-            binding.navMapIcon, ColorStateList.valueOf(if (selected == Destination.MAP) active else muted)
-        )
-        binding.navMapLabel.setTextColor(if (selected == Destination.MAP) active else muted)
+        val activeColor = ContextCompat.getColor(activity, R.color.pine800)
+        val mutedColor = ContextCompat.getColor(activity, R.color.muted)
+
+        fun setupItem(
+            indicator: FrameLayout,
+            icon: ImageView,
+            label: TextView,
+            isCurrent: Boolean
+        ) {
+            if (isCurrent) {
+                indicator.setBackgroundResource(R.drawable.bg_nav_active_indicator)
+                indicator.animate().scaleX(1.05f).scaleY(1.05f).alpha(1.0f).setDuration(150).start()
+                ImageViewCompat.setImageTintList(icon, ColorStateList.valueOf(activeColor))
+                label.setTextColor(activeColor)
+                label.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
+                label.setTypeface(null, Typeface.BOLD)
+            } else {
+                indicator.setBackgroundResource(0)
+                indicator.animate().scaleX(1.0f).scaleY(1.0f).alpha(1.0f).setDuration(150).start()
+                ImageViewCompat.setImageTintList(icon, ColorStateList.valueOf(mutedColor))
+                label.setTextColor(mutedColor)
+                label.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f)
+                label.setTypeface(null, Typeface.NORMAL)
+            }
+        }
+
+        setupItem(binding.navHomeIndicator, binding.navHomeIcon, binding.navHomeLabel, selected == Destination.HOME)
+        setupItem(binding.navAdoptionIndicator, binding.navAdoptionIcon, binding.navAdoptionLabel, selected == Destination.ADOPTION)
+        setupItem(binding.navProfileIndicator, binding.navProfileIcon, binding.navProfileLabel, selected == Destination.PROFILE)
+        setupItem(binding.navMapIndicator, binding.navMapIcon, binding.navMapLabel, selected == Destination.MAP)
+
         binding.navHome.isSelected = selected == Destination.HOME
         binding.navAdoption.isSelected = selected == Destination.ADOPTION
         binding.navProfile.isSelected = selected == Destination.PROFILE
         binding.navMap.isSelected = selected == Destination.MAP
-        // The navigation background consumes taps for destinations that are not
-        // implemented yet, preventing them from reaching content behind the bar.
+
         binding.root.setOnClickListener { }
+
         binding.navHome.setOnClickListener {
             if (selected != Destination.HOME) activity.startActivity(
                 Intent(activity, HomeActivity::class.java)

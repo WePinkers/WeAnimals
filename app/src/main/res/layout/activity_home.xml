@@ -112,15 +112,15 @@
                         app:icon="@drawable/ic_add"
                         app:iconGravity="textStart"
                         app:iconPadding="7dp"
-                        app:iconTint="@color/terracotta_dark"
-                        />
+                        app:iconTint="@color/terracotta_dark" />
                 </LinearLayout>
             </FrameLayout>
 
+            <!-- "Perto de você" Header with "ver mapa" action -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="20dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
@@ -142,18 +142,22 @@
                     android:layout_height="wrap_content"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:clickable="true"
-                    android:fontFamily="sans-serif"
+                    app:drawableEndCompat="@drawable/ic_chevron_right"
+                    android:drawablePadding="4dp"
                     android:focusable="true"
+                    android:fontFamily="sans-serif"
+                    android:gravity="center_vertical"
                     android:includeFontPadding="false"
-                    android:minHeight="36dp"
-                    android:paddingStart="8dp"
+                    android:minHeight="40dp"
+                    android:paddingStart="12dp"
                     android:paddingTop="8dp"
-                    android:paddingEnd="0dp"
+                    android:paddingEnd="4dp"
                     android:paddingBottom="8dp"
                     android:text="@string/view_map"
-                    android:textColor="@color/ink"
-                    android:textSize="@dimen/text_size_link"
-                    android:textStyle="bold" />
+                    android:textColor="@color/pine800"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    app:drawableTint="@color/pine800" />
             </LinearLayout>
 
             <include
