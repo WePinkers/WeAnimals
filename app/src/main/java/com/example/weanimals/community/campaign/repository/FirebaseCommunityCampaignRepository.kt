@@ -10,7 +10,6 @@ import com.example.weanimals.community.campaign.domain.CommunityCampaignAnimalDr
 import com.example.weanimals.community.campaign.domain.CommunityCampaignDonationResult
 import com.example.weanimals.community.campaign.domain.CommunityCampaignDraft
 import com.example.weanimals.community.campaign.domain.CommunityCampaignParticipationResult
-import com.example.weanimals.community.campaign.domain.DebugCampaignState
 import com.example.weanimals.community.create.domain.publicLocationLabel
 import com.example.weanimals.community.feed.domain.CommunityCategory
 import com.google.firebase.auth.FirebaseAuth
@@ -155,14 +154,6 @@ class FirebaseCommunityCampaignRepository(
     override suspend fun participate(
         campaignId: String
     ): Result<CommunityCampaignParticipationResult> = runCatching {
-        if (isDebugCampaign(campaignId)) {
-            return@runCatching DebugCampaignState.participate(
-                campaignId = campaignId,
-                defaultFilledSlots = DEBUG_NEUTERING_FILLED,
-                totalSlots = DEBUG_NEUTERING_TOTAL.takeIf { campaignId == DEBUG_NEUTERING_CAMPAIGN_ID },
-                incrementSlots = campaignId == DEBUG_NEUTERING_CAMPAIGN_ID
-            )
-        }
         val user = auth.currentUser ?: auth.signInAnonymously().await().user
             ?: error("Could not sign in to participate.")
         val campaignReference = firestore.collection(COLLECTION).document(campaignId)
@@ -200,9 +191,6 @@ class FirebaseCommunityCampaignRepository(
     }
 
     override suspend fun isParticipating(campaignId: String): Result<Boolean> = runCatching {
-        if (isDebugCampaign(campaignId)) {
-            return@runCatching DebugCampaignState.snapshot(campaignId).participated
-        }
         val user = auth.currentUser ?: auth.signInAnonymously().await().user
             ?: error("Could not sign in to check participation.")
         firestore.collection(COLLECTION)
@@ -219,14 +207,6 @@ class FirebaseCommunityCampaignRepository(
         amountCents: Long
     ): Result<CommunityCampaignDonationResult> = runCatching {
         require(amountCents in 100..100_000_000_00L) { "Invalid donation amount." }
-        if (isDebugCampaign(campaignId)) {
-            return@runCatching DebugCampaignState.donate(
-                campaignId = campaignId,
-                defaultRaisedCents = DEBUG_DONATION_RAISED,
-                goalCents = DEBUG_DONATION_GOAL,
-                amountCents = amountCents
-            )
-        }
         val user = auth.currentUser ?: auth.signInAnonymously().await().user
             ?: error("Could not sign in to donate.")
         val campaignReference = firestore.collection(COLLECTION).document(campaignId)
@@ -268,7 +248,6 @@ class FirebaseCommunityCampaignRepository(
         require(cleanItems.isNotEmpty() || cleanOtherItem.isNotBlank()) {
             "Select at least one item."
         }
-        if (isDebugCampaign(campaignId)) return@runCatching Unit
 
         val user = auth.currentUser ?: auth.signInAnonymously().await().user
             ?: error("Could not sign in to notify the organization.")
@@ -286,10 +265,6 @@ class FirebaseCommunityCampaignRepository(
             )
         ).await()
     }
-
-    private fun isDebugCampaign(campaignId: String): Boolean =
-        (applicationContext.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0
-            && campaignId.startsWith("debug-")
 
     private fun validateAnimal(animal: CommunityCampaignAnimalDraft): CommunityCampaignAnimalDraft {
         val name = animal.name.trim()
@@ -339,11 +314,6 @@ class FirebaseCommunityCampaignRepository(
         const val PARTICIPANTS_COLLECTION = "participants"
         const val DONATIONS_COLLECTION = "donations"
         const val ITEM_DONATIONS_COLLECTION = "item_donations"
-        const val DEBUG_NEUTERING_FILLED = 28
-        const val DEBUG_NEUTERING_TOTAL = 60
-        const val DEBUG_NEUTERING_CAMPAIGN_ID = "debug-neutering"
-        const val DEBUG_DONATION_RAISED = 234_000L
-        const val DEBUG_DONATION_GOAL = 500_000L
         const val MAX_DIMENSION = 1200
         const val MAX_SAMPLE_SIZE = 64
         const val MAX_PHOTO_BYTES = 200_000

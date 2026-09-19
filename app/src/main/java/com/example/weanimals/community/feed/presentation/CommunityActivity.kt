@@ -398,17 +398,6 @@ class CommunityActivity : AppCompatActivity(), CommunityContract.View {
     }
 
     private fun toggleLike(item: CommunityFeedItem.Post) {
-        if (item.id.startsWith("debug-")) {
-            val liked = !item.likedByCurrentUser
-            updatePost(
-                postId = item.id,
-                likes = (item.likes + if (liked) 1 else -1).coerceAtLeast(0),
-                comments = item.comments,
-                liked = liked
-            )
-            return
-        }
-
         lifecycleScope.launch {
             engagementRepository.toggleLike(item.id, !item.likedByCurrentUser)
                 .onSuccess { engagement ->

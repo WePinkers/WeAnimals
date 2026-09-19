@@ -16,14 +16,12 @@ import com.example.weanimals.WeAnimalsApplication
 import com.example.weanimals.community.detail.domain.CommunityComment
 import com.example.weanimals.databinding.ActivityCommunityPostDetailBinding
 import com.example.weanimals.databinding.ItemCommunityCommentBinding
-import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 
 class CommunityPostDetailActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityCommunityPostDetailBinding
     private val postId by lazy { intent.getStringExtra(EXTRA_POST_ID).orEmpty() }
-    private val debugPost by lazy { postId.startsWith("debug-") }
     private val engagementRepository by lazy {
         (application as WeAnimalsApplication).appContainer
             .createCommunityPostEngagementRepository()
@@ -83,12 +81,6 @@ class CommunityPostDetailActivity : AppCompatActivity() {
     }
 
     private fun loadEngagement() {
-        if (debugPost) {
-            comments = debugComments()
-            showComments()
-            return
-        }
-
         binding.commentsState.isVisible = true
         binding.commentsState.setText(R.string.community_loading)
         lifecycleScope.launch {
@@ -109,13 +101,6 @@ class CommunityPostDetailActivity : AppCompatActivity() {
     }
 
     private fun toggleLike() {
-        if (debugPost) {
-            liked = !liked
-            likes = (likes + if (liked) 1 else -1).coerceAtLeast(0)
-            renderEngagement()
-            return
-        }
-
         binding.postLikeAction.isEnabled = false
         lifecycleScope.launch {
             engagementRepository.toggleLike(postId, !liked)
@@ -144,23 +129,6 @@ class CommunityPostDetailActivity : AppCompatActivity() {
         }
 
         binding.sendCommentButton.isEnabled = false
-        if (debugPost) {
-            comments = comments + CommunityComment(
-                id = "local-${comments.size}",
-                author = FirebaseAuth.getInstance().currentUser?.displayName
-                    ?.takeIf(String::isNotBlank) ?: "Você",
-                timeText = "agora",
-                text = text,
-                parentCommentId = replyingToCommentId
-            )
-            commentsCount += 1
-            replyingToCommentId = null
-            binding.commentInput.text?.clear()
-            showComments()
-            binding.sendCommentButton.isEnabled = true
-            return
-        }
-
         lifecycleScope.launch {
             engagementRepository.addComment(postId, text, replyingToCommentId)
                 .onSuccess { comment ->
@@ -255,16 +223,6 @@ class CommunityPostDetailActivity : AppCompatActivity() {
         return ordered
     }
 
-    private fun debugComments(): List<CommunityComment> = if (postId == DEBUG_MARTA_POST) {
-        listOf(
-            CommunityComment("debug-comment-1", "Renata Ferreira", "há 1h", "Já vi ela rondando lá perto de casa também! Bem dócil."),
-            CommunityComment("debug-comment-2", "João Paulo", "há 45min", "Acho que é a gata da Dona Célia, do prédio azul. Vou perguntar pra ela."),
-            CommunityComment("debug-comment-3", "Marta Nunes", "há 30min", "Que bom, João! Fico no aguardo então 🙏")
-        )
-    } else {
-        emptyList()
-    }
-
     private fun finishWithResult() {
         setResult(
             RESULT_OK,
@@ -287,6 +245,5 @@ class CommunityPostDetailActivity : AppCompatActivity() {
         const val EXTRA_COMMENTS = "community_post_comments"
         const val EXTRA_LIKED = "community_post_liked"
         const val EXTRA_PHOTO = "community_post_photo"
-        private const val DEBUG_MARTA_POST = "debug-marta"
     }
 }
