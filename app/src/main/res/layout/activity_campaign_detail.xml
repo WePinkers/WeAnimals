@@ -1,0 +1,519 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    tools:context=".community.campaign.presentation.CampaignDetailActivity">
+
+    <LinearLayout
+        android:id="@+id/content_root"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <ScrollView
+            android:id="@+id/campaign_scroll"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:fillViewport="true"
+            android:overScrollMode="never"
+            android:scrollbars="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <FrameLayout
+                    android:id="@+id/campaign_hero"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:background="@color/clay600">
+
+                    <ImageButton
+                        android:id="@+id/back_button"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:background="@drawable/bg_adoption_detail_action"
+                        android:contentDescription="@string/back"
+                        android:padding="7dp"
+                        android:src="@drawable/ic_arrow_back"
+                        app:tint="@color/ink" />
+
+                    <ImageView
+                        android:id="@+id/hero_icon"
+                        android:layout_width="52dp"
+                        android:layout_height="52dp"
+                        android:layout_gravity="center"
+                        android:contentDescription="@null"
+                        android:padding="4dp"
+                        android:src="@drawable/ic_community_neutering"
+                        app:tint="@color/white" />
+                </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingStart="18dp"
+                    android:paddingTop="16dp"
+                    android:paddingEnd="18dp"
+                    android:paddingBottom="28dp">
+
+                    <TextView
+                        android:id="@+id/campaign_eyebrow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="monospace"
+                        android:includeFontPadding="false"
+                        android:letterSpacing="0.08"
+                        android:textColor="@color/clay600"
+                        android:textSize="@dimen/text_size_report_label"
+                        tools:text="CAMPANHA · CASTRAÇÃO" />
+
+                    <TextView
+                        android:id="@+id/campaign_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:fontFamily="serif"
+                        android:includeFontPadding="false"
+                        android:textColor="@color/ink"
+                        android:textSize="@dimen/text_size_sent_title"
+                        android:textStyle="bold"
+                        tools:text="Castração gratuita — mutirão de sábado" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/organization_avatar"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:background="@drawable/bg_community_avatar"
+                            android:gravity="center"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/text_size_report_chip"
+                            android:textStyle="bold"
+                            tools:text="AE" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="9dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/organization_name"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/ink"
+                                android:textSize="@dimen/text_size_card_title"
+                                android:textStyle="bold"
+                                tools:text="Abrigo Esperança" />
+
+                            <TextView
+                                android:id="@+id/organization_verified"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="1dp"
+                                android:text="@string/community_organization_verified"
+                                android:textColor="@color/muted"
+                                android:textSize="@dimen/text_size_details_body" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/campaign_info_card"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        android:background="@drawable/bg_campaign_info"
+                        android:orientation="vertical"
+                        android:padding="14dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:contentDescription="@null"
+                                android:src="@drawable/ic_calendar_outline"
+                                app:tint="@color/clay600" />
+
+                            <TextView
+                                android:id="@+id/campaign_date"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:layout_weight="1"
+                                android:textColor="@color/ink"
+                                android:textSize="@dimen/text_size_details_body"
+                                tools:text="Sábado, 6 de setembro · 8h às 13h" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="9dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:contentDescription="@null"
+                                android:src="@drawable/ic_location_pin"
+                                app:tint="@color/clay600" />
+
+                            <TextView
+                                android:id="@+id/campaign_location"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:layout_weight="1"
+                                android:textColor="@color/ink"
+                                android:textSize="@dimen/text_size_details_body"
+                                tools:text="Sede do abrigo · Vila Marlene" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/audience_row"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="9dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:contentDescription="@null"
+                                android:src="@drawable/ic_community"
+                                app:tint="@color/clay600" />
+
+                            <TextView
+                                android:id="@+id/campaign_audience"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:layout_weight="1"
+                                android:textColor="@color/ink"
+                                android:textSize="@dimen/text_size_details_body"
+                                tools:text="Cães e gatos, a partir de 4 meses" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/confirmed_animals_card"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        android:background="@drawable/bg_campaign_confirmed_animals"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground"
+                        android:gravity="center_vertical"
+                        android:minHeight="62dp"
+                        android:orientation="horizontal"
+                        android:paddingStart="14dp"
+                        android:paddingTop="11dp"
+                        android:paddingEnd="10dp"
+                        android:paddingBottom="11dp"
+                        android:visibility="gone">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:contentDescription="@null"
+                            android:src="@drawable/ic_adoption_heart"
+                            app:tint="@color/white" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/community_campaign_confirmed_animals"
+                                android:textColor="@color/white"
+                                android:textSize="@dimen/text_size_card_title"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/confirmed_animals_subtitle"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="1dp"
+                                android:text="@string/community_campaign_confirmed_animals_subtitle"
+                                android:textColor="@color/white"
+                                android:textSize="@dimen/text_size_details_body" />
+                        </LinearLayout>
+
+                        <ImageView
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:contentDescription="@null"
+                            android:src="@drawable/ic_chevron_right"
+                            app:tint="@color/white" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/campaign_availability_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="18dp"
+                        android:fontFamily="monospace"
+                        android:includeFontPadding="false"
+                        android:letterSpacing="0.08"
+                        android:textColor="@color/muted"
+                        android:textSize="@dimen/text_size_report_label"
+                        android:visibility="gone"
+                        tools:text="VAGAS DISPONÍVEIS" />
+
+                    <TextView
+                        android:id="@+id/campaign_availability_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:textColor="@color/ink"
+                        android:textSize="@dimen/text_size_report_body"
+                        android:visibility="gone"
+                        tools:text="32 vagas restantes" />
+
+                    <LinearLayout
+                        android:id="@+id/highlight_card"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        android:background="@drawable/bg_campaign_info"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="14dp"
+                        android:visibility="gone">
+
+                        <ImageView
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:contentDescription="@null"
+                            android:src="@drawable/ic_check"
+                            app:tint="@color/pine800" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/highlight_label"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="monospace"
+                                android:letterSpacing="0.08"
+                                android:textColor="@color/pine800"
+                                android:textSize="@dimen/text_size_report_label"
+                                android:visibility="gone"
+                                tools:text="SEM AGENDAMENTO" />
+
+                            <TextView
+                                android:id="@+id/highlight_text"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:textColor="@color/ink"
+                                android:textSize="@dimen/text_size_details_body"
+                                android:textStyle="bold"
+                                tools:text="Chegue em qualquer horário" />
+
+                            <TextView
+                                android:id="@+id/highlight_body"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="3dp"
+                                android:textColor="@color/muted"
+                                android:textSize="@dimen/text_size_details_body"
+                                android:visibility="gone"
+                                tools:text="Vagas ilimitadas — confirmar presença ajuda a calcular quantas doses levar." />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/progress_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="18dp"
+                        android:fontFamily="monospace"
+                        android:includeFontPadding="false"
+                        android:letterSpacing="0.08"
+                        android:textColor="@color/muted"
+                        android:textSize="@dimen/text_size_report_label"
+                        android:visibility="gone"
+                        tools:text="VAGAS PREENCHIDAS" />
+
+                    <ProgressBar
+                        android:id="@+id/campaign_progress"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="6dp"
+                        android:layout_marginTop="7dp"
+                        android:max="100"
+                        android:progressBackgroundTint="@color/border"
+                        android:progressTint="@color/clay600"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/progress_detail"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:textColor="@color/muted"
+                        android:textSize="@dimen/text_size_details_body"
+                        android:visibility="gone"
+                        tools:text="28 de 60 vagas preenchidas · 32 restantes" />
+
+                    <LinearLayout
+                        android:id="@+id/donation_needs_group"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="18dp"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="monospace"
+                            android:includeFontPadding="false"
+                            android:letterSpacing="0.08"
+                            android:text="@string/community_campaign_donation_needs_label"
+                            android:textColor="@color/muted"
+                            android:textSize="@dimen/text_size_report_label" />
+
+                        <TextView
+                            android:id="@+id/donation_needs_text"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="7dp"
+                            android:lineSpacingExtra="3dp"
+                            android:textColor="@color/muted"
+                            android:textSize="@dimen/text_size_details_body" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/about_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:fontFamily="monospace"
+                        android:includeFontPadding="false"
+                        android:letterSpacing="0.08"
+                        android:text="@string/community_campaign_about"
+                        android:textColor="@color/muted"
+                        android:textSize="@dimen/text_size_report_label" />
+
+                    <TextView
+                        android:id="@+id/about_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:fontFamily="sans-serif"
+                        android:includeFontPadding="false"
+                        android:lineSpacingExtra="2dp"
+                        android:textColor="@color/muted"
+                        android:textSize="@dimen/text_size_report_body"
+                        tools:text="Castração gratuita para cães e gatos de moradores da região. Leve o animal em jejum de 8 horas." />
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/border" />
+
+        <LinearLayout
+            android:id="@+id/action_bar"
+            android:layout_width="match_parent"
+            android:layout_height="68dp"
+            android:background="@color/surface"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/share_button"
+                android:layout_width="0dp"
+                android:layout_height="42dp"
+                android:layout_weight="1"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="@string/community_campaign_share"
+                android:textAllCaps="false"
+                android:textColor="@color/ink"
+                android:textSize="@dimen/text_size_button"
+                app:backgroundTint="@color/surface"
+                app:cornerRadius="14dp"
+                app:strokeColor="@color/border"
+                app:strokeWidth="1dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/action_button"
+                android:layout_width="0dp"
+                android:layout_height="42dp"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1.15"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_button"
+                android:textStyle="bold"
+                app:backgroundTint="@color/clay600"
+                app:cornerRadius="14dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/loading_state"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/background"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminateTint="@color/clay600" />
+
+        <TextView
+            android:id="@+id/state_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/community_campaign_loading"
+            android:textColor="@color/muted"
+            android:textSize="@dimen/text_size_report_body" />
+    </LinearLayout>
+</FrameLayout>

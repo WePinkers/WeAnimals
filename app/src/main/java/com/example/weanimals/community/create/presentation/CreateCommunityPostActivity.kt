@@ -12,12 +12,15 @@ import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.core.view.WindowCompat
 import androidx.core.widget.doAfterTextChanged
+import androidx.lifecycle.lifecycleScope
 import com.example.weanimals.R
 import com.example.weanimals.WeAnimalsApplication
 import com.example.weanimals.community.create.presenter.CreateCommunityPostContract
 import com.example.weanimals.community.feed.domain.CommunityCategory
+import com.example.weanimals.community.campaign.presentation.CreateCommunityCampaignActivity
 import com.example.weanimals.databinding.ActivityCreateCommunityPostBinding
 import com.example.weanimals.reporting.locationsearch.domain.LocationDetails
 import com.example.weanimals.reporting.locationsearch.presentation.LocationSearchActivity
@@ -28,6 +31,9 @@ import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.LocationSettingsStatusCodes
 import com.google.android.gms.location.Priority
 import com.google.android.material.chip.Chip
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class CreateCommunityPostActivity : AppCompatActivity(), CreateCommunityPostContract.View {
     private lateinit var binding: ActivityCreateCommunityPostBinding
@@ -112,7 +118,7 @@ class CreateCommunityPostActivity : AppCompatActivity(), CreateCommunityPostCont
         presenter.selectCategory(category)
 
         binding.campaignTab.setOnClickListener {
-            Toast.makeText(this, R.string.community_campaign_ngo_only, Toast.LENGTH_LONG).show()
+            startActivity(Intent(this, CreateCommunityCampaignActivity::class.java))
         }
         categoryChips().forEach { (chip, categoryValue) ->
             chip.setOnClickListener { presenter.selectCategory(categoryValue) }
@@ -137,6 +143,7 @@ class CreateCommunityPostActivity : AppCompatActivity(), CreateCommunityPostCont
     override fun onStart() {
         super.onStart()
         presenter.attachView(this)
+        showCampaignTabForOrganization()
         if (!locationRequestStarted && selectedLocation == null) {
             locationRequestStarted = true
             if (hasLocationPermission()) checkLocationSettingsAndLoad()
@@ -251,6 +258,16 @@ class CreateCommunityPostActivity : AppCompatActivity(), CreateCommunityPostCont
         locationPermissionLauncher.launch(
             arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
         )
+    }
+
+    private fun showCampaignTabForOrganization() {
+        lifecycleScope.launch {
+            val user = FirebaseAuth.getInstance().currentUser
+            val isOrganization = runCatching {
+                user?.getIdToken(false)?.await()?.claims?.get("teamMember") == true
+            }.getOrDefault(false)
+            binding.campaignTab.isVisible = isOrganization
+        }
     }
 
     private fun checkLocationSettingsAndLoad() {

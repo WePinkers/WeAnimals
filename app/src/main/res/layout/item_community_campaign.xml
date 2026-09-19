@@ -106,6 +106,44 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/campaign_progress_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/campaign_progress_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="monospace"
+                android:letterSpacing="0.08"
+                android:textColor="@color/muted"
+                android:textSize="@dimen/text_size_report_label"
+                tools:text="VAGAS PREENCHIDAS" />
+
+            <ProgressBar
+                android:id="@+id/campaign_progress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:layout_marginTop="6dp"
+                android:max="100"
+                android:progressBackgroundTint="@color/border"
+                android:progressTint="@color/clay600" />
+
+            <TextView
+                android:id="@+id/campaign_progress_detail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textColor="@color/muted"
+                android:textSize="@dimen/text_size_details_body"
+                tools:text="28 de 60 vagas preenchidas · 32 restantes" />
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"

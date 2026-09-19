@@ -4,20 +4,25 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
+import androidx.lifecycle.lifecycleScope
 import com.example.weanimals.R
 import com.example.weanimals.WeAnimalsApplication
+import com.example.weanimals.community.feed.domain.CommunityFeedItem
+import com.example.weanimals.community.feed.repository.CommunityRepositoryFactory
 import com.example.weanimals.core.navigation.MainNavigation
 import com.example.weanimals.databinding.ActivityProfileBinding
 import com.example.weanimals.profile.campaigns.presentation.CampaignsActivity
 import com.example.weanimals.profile.favorites.presentation.FavoritesActivity
 import com.example.weanimals.profile.overview.presenter.ProfileContract
 import com.example.weanimals.profile.reports.presentation.MyReportsActivity
+import kotlinx.coroutines.launch
 
 class ProfileActivity : AppCompatActivity(), ProfileContract.View {
     private lateinit var binding: ActivityProfileBinding
     private val presenter by lazy {
         (application as WeAnimalsApplication).appContainer.createProfilePresenter()
     }
+    private val communityRepository by lazy { CommunityRepositoryFactory.create() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,6 +49,7 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
         super.onStart()
         presenter.attachView(this)
         presenter.start()
+        loadCampaignSummary()
     }
 
     override fun onStop() {
@@ -70,5 +76,33 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
 
     override fun showReportsError() {
         binding.profileContent.reportCount.text = "—"
+    }
+
+    private fun loadCampaignSummary() {
+        lifecycleScope.launch {
+            communityRepository.getFeed().fold(
+                onSuccess = { items ->
+                    val count = items
+                        .filterIsInstance<CommunityFeedItem.Campaign>()
+                        .count { it.participatingByCurrentUser }
+                    binding.profileContent.campaignCount.text = count.toString()
+                    binding.profileContent.itemCampaigns.campaignsDescription.text = if (count == 0) {
+                        getString(R.string.profile_activity_campaigns_desc)
+                    } else {
+                        resources.getQuantityString(
+                            R.plurals.profile_campaigns_participation_count,
+                            count,
+                            count
+                        )
+                    }
+                },
+                onFailure = {
+                    binding.profileContent.campaignCount.text = "—"
+                    binding.profileContent.itemCampaigns.campaignsDescription.setText(
+                        R.string.profile_campaigns_count_error
+                    )
+                }
+            )
+        }
     }
 }

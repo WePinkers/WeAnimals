@@ -2,6 +2,7 @@ package com.example.weanimals.community.feed.repository
 
 import com.example.weanimals.community.feed.domain.CommunityCategory
 import com.example.weanimals.community.feed.domain.CommunityFeedItem
+import com.example.weanimals.community.campaign.domain.DebugCampaignState
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -22,7 +23,12 @@ object CommunityRepositoryFactory {
                     title = "Castração gratuita — mutirão de sábado",
                     dateText = "Sáb, 6 set · 8h às 13h",
                     locationText = "Vila Marlene · 2,3 km",
-                    availabilityText = "32 vagas restantes"
+                    availabilityText = "32 vagas restantes",
+                    totalSlots = 60,
+                    filledSlots = DebugCampaignState.snapshot("debug-neutering", 28).filledSlots,
+                    participatingByCurrentUser = DebugCampaignState
+                        .snapshot("debug-neutering", 28)
+                        .participated
                 ),
                 CommunityFeedItem.Post(
                     id = "debug-marta",
@@ -42,7 +48,55 @@ object CommunityRepositoryFactory {
                     title = "Vacinação antirrábica gratuita",
                     dateText = "Dom, 14 set · 9h às 16h",
                     locationText = "Praça Central · 3,8 km",
-                    availabilityText = "Sem limite de vagas"
+                    availabilityText = "Sem limite de vagas",
+                    audienceText = "Cães e gatos de qualquer idade",
+                    description = "Vacinação antirrábica gratuita para cães e gatos, sem necessidade de castração prévia ou jejum. Leve a carteirinha de vacinação, se tiver.",
+                    highlightText = "Vagas ilimitadas — confirme sua presença para ajudar a ONG a calcular quantas doses levar.",
+                    participatingByCurrentUser = DebugCampaignState
+                        .snapshot("debug-vaccination")
+                        .participated
+                ),
+                CommunityFeedItem.Campaign(
+                    id = "debug-adoption-campaign",
+                    category = CommunityCategory.ADOPTION,
+                    neighborhood = "Praça Central",
+                    organization = "Abrigo Esperança",
+                    title = "Feira de adoção — encontre seu novo melhor amigo",
+                    dateText = "Sáb, 20 set · 10h às 17h",
+                    locationText = "Praça Central · 3,8 km",
+                    availabilityText = "14 animais confirmados para o evento",
+                    audienceText = "Animais de 3 abrigos parceiros",
+                    description = "Feira de adoção reunindo animais de abrigos parceiros. Não precisa agendar — leve um documento e, se possível, comprovante de endereço para agilizar a adoção no local.",
+                    highlightText = "Veja quais animais estarão no evento antes de sair de casa.",
+                    participatingByCurrentUser = DebugCampaignState
+                        .snapshot("debug-adoption-campaign")
+                        .participated,
+                    confirmedAnimalsCount = 6
+                ),
+                CommunityFeedItem.Campaign(
+                    id = "debug-donation-campaign",
+                    category = CommunityCategory.DONATION,
+                    neighborhood = "Vila Marlene",
+                    organization = "ONG Patas Unidas",
+                    title = "Arrecadação de ração e cobertores para o inverno",
+                    dateText = "Até 30 de setembro",
+                    locationText = "Entrega na sede · Vila Marlene",
+                    availabilityText = "Meta: R$ 5.000 · R$ 2.340 arrecadados",
+                    audienceText = "Ração, cobertores e itens para os animais",
+                    description = "Ajude os animais acolhidos pela ONG durante o inverno. Você pode entregar doações na sede ou contribuir via Pix.",
+                    highlightText = "Também aceitamos doação via Pix.",
+                    donationGoalCents = 500_000L,
+                    donationRaisedCents = DebugCampaignState.snapshot(
+                        "debug-donation-campaign",
+                        defaultRaisedCents = 234_000L
+                    ).raisedCents,
+                    donationNeeds = listOf(
+                        "Ração para cães adultos (20kg) — mais urgente",
+                        "Cobertores e mantas",
+                        "Coleiras e guias"
+                    ),
+                    pixKey = "doacoes@patasunidas.org.br",
+                    distanceKm = 2.3
                 ),
                 CommunityFeedItem.Post(
                     id = "debug-joao",

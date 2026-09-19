@@ -39,7 +39,7 @@ class CommunityPresenter(
 
     override fun onFilterSelected(filter: CommunityFilter) {
         this.filter = filter
-        if (filter != CommunityFilter.MY_NEIGHBORHOOD) {
+        if (!filter.requiresNeighborhood()) {
             neighborhoodJob?.cancel()
             neighborhoodJob = null
             render()
@@ -84,8 +84,16 @@ class CommunityPresenter(
                 CommunityFilter.CAMPAIGNS -> item is CommunityFeedItem.Campaign
                 CommunityFilter.POSTS -> item is CommunityFeedItem.Post
                 CommunityFilter.FOUND -> item.category == CommunityCategory.FOUND
+                CommunityFilter.QUESTION -> item.category == CommunityCategory.QUESTION
+                CommunityFilter.NOTICE -> item.category == CommunityCategory.NOTICE
                 CommunityFilter.NEUTERING -> item.category == CommunityCategory.NEUTERING
                 CommunityFilter.VACCINATION -> item.category == CommunityCategory.VACCINATION
+                CommunityFilter.ADOPTION -> item.category == CommunityCategory.ADOPTION
+                CommunityFilter.DONATION -> item.category == CommunityCategory.DONATION
+                CommunityFilter.CAMPAIGN_NEIGHBORHOOD ->
+                    item is CommunityFeedItem.Campaign && sameNeighborhood(item)
+                CommunityFilter.POST_NEIGHBORHOOD ->
+                    item is CommunityFeedItem.Post && sameNeighborhood(item)
                 CommunityFilter.MY_NEIGHBORHOOD -> sameNeighborhood(item)
             }
             categoryMatches && (query.isEmpty() || when (item) {
@@ -120,4 +128,8 @@ class CommunityPresenter(
             .trim()
             .lowercase(Locale.ROOT)
     }
+
+    private fun CommunityFilter.requiresNeighborhood(): Boolean = this ==
+        CommunityFilter.MY_NEIGHBORHOOD || this == CommunityFilter.CAMPAIGN_NEIGHBORHOOD ||
+        this == CommunityFilter.POST_NEIGHBORHOOD
 }

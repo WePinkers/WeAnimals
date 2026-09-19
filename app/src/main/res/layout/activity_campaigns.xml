@@ -1,10 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    android:background="@color/background" android:orientation="vertical">
-    <include android:id="@+id/screen_header" layout="@layout/view_screen_header" />
-    <TextView android:layout_width="match_parent" android:layout_height="0dp"
-        android:layout_weight="1" android:gravity="center" android:padding="32dp"
-        android:text="@string/profile_campaigns_empty" android:textAlignment="center"
-        android:textColor="@color/muted" android:textSize="15sp" />
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/screen_header"
+        layout="@layout/view_screen_header" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/campaigns_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:padding="16dp"
+            android:visibility="gone" />
+
+        <ProgressBar
+            android:id="@+id/campaigns_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
+
+        <TextView
+            android:id="@+id/campaigns_empty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:padding="32dp"
+            android:text="@string/profile_campaigns_empty"
+            android:textAlignment="center"
+            android:textColor="@color/muted"
+            android:textSize="15sp"
+            android:visibility="gone" />
+    </FrameLayout>
 </LinearLayout>

@@ -32,6 +32,7 @@
             android:textSize="14sp" />
 
         <TextView
+            android:id="@+id/campaigns_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/profile_activity_campaigns_desc"

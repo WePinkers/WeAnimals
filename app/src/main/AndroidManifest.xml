@@ -97,6 +97,30 @@
             android:name=".community.create.presentation.CreateCommunityPostActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".community.campaign.presentation.CampaignDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".community.campaign.presentation.DonationHelpActivity"
+            android:exported="false" />
+        <activity
+            android:name=".community.campaign.presentation.DonationPixActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".community.campaign.presentation.DonationConfirmationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".community.campaign.presentation.DonationItemsActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".community.campaign.presentation.CampaignAnimalsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".community.campaign.presentation.CreateCommunityCampaignActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
     </application>
 
 </manifest>

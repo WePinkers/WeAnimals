@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:orientation="vertical"
+    tools:context=".community.campaign.presentation.DonationItemsActivity">
+
+    <include
+        android:id="@+id/items_header"
+        layout="@layout/view_screen_header" />
+
+    <ScrollView
+        android:id="@+id/items_scroll"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true"
+        android:overScrollMode="never"
+        android:scrollbars="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="18dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="18dp"
+            android:paddingBottom="18dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="monospace"
+                android:letterSpacing="0.08"
+                android:text="@string/community_items_question"
+                android:textColor="@color/clay600"
+                android:textSize="@dimen/text_size_report_label" />
+
+            <LinearLayout
+                android:id="@+id/item_options_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:fontFamily="monospace"
+                android:letterSpacing="0.08"
+                android:text="@string/community_items_location_label"
+                android:textColor="@color/clay600"
+                android:textSize="@dimen/text_size_report_label" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_report_card"
+                android:gravity="center_vertical"
+                android:padding="12dp">
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_location_pin"
+                    app:tint="@color/clay600" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/delivery_location"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/ink"
+                        android:textSize="@dimen/text_size_card_title"
+                        android:textStyle="bold"
+                        tools:text="Sede da ONG Patas Unidas" />
+
+                    <TextView
+                        android:id="@+id/delivery_distance"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:textColor="@color/ink600"
+                        android:textSize="@dimen/text_size_details_body"
+                        tools:text="Vila Marlene · 2,3 km · Seg a sáb, 9h às 17h" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:background="@drawable/bg_campaign_info"
+                android:padding="12dp"
+                android:text="@string/community_items_note"
+                android:textColor="@color/muted"
+                android:textSize="@dimen/text_size_details_body" />
+
+            <TextView
+                android:id="@+id/items_error"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:textColor="@color/alert600"
+                android:textSize="@dimen/text_size_details_body"
+                android:visibility="gone" />
+        </LinearLayout>
+    </ScrollView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/items_notify_button"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginEnd="18dp"
+        android:layout_marginBottom="14dp"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:text="@string/community_items_notify"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_size_button"
+        android:textStyle="bold"
+        app:backgroundTint="@color/clay600"
+        app:cornerRadius="14dp" />
+</LinearLayout>

@@ -117,6 +117,181 @@ service cloud.firestore {
       allow update: if false;
     }
 
+    // Public campaigns are created by verified NGO/organization accounts.
+    // Their event details are public because they are intended for participation.
+    match /community_campaigns/{campaignId} {
+      allow read: if signedIn();
+      allow create: if signedIn()
+        && isTeamMember()
+        && request.resource.data.keys().hasAll([
+          'organizationId', 'organizationName', 'createdBy', 'category',
+          'title', 'dateText', 'locationText', 'locationLabel',
+          'availabilityText', 'audienceText', 'description', 'highlightText',
+          'createdAt'
+        ])
+        && request.resource.data.keys().hasOnly([
+          'organizationId', 'organizationName', 'createdBy', 'category',
+          'title', 'dateText', 'locationText', 'locationLabel',
+          'availabilityText', 'audienceText', 'description', 'highlightText',
+          'createdAt', 'totalSlots', 'filledSlots', 'donationGoalCents',
+          'donationRaisedCents', 'donationNeeds', 'pixKey',
+          'locationLatitude', 'locationLongitude'
+        ])
+        && request.resource.data.organizationId == request.auth.token.ngoId
+        && request.resource.data.organizationName is string
+        && request.resource.data.organizationName.size() > 0
+        && request.resource.data.organizationName.size() <= 100
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.category in [
+          'NEUTERING', 'VACCINATION', 'ADOPTION', 'DONATION'
+        ]
+        && request.resource.data.title is string
+        && request.resource.data.title.size() > 0
+        && request.resource.data.title.size() <= 120
+        && request.resource.data.dateText is string
+        && request.resource.data.dateText.size() > 0
+        && request.resource.data.dateText.size() <= 120
+        && request.resource.data.locationText is string
+        && request.resource.data.locationText.size() > 0
+        && request.resource.data.locationText.size() <= 160
+        && request.resource.data.locationLabel is string
+        && request.resource.data.locationLabel.size() > 0
+        && request.resource.data.locationLabel.size() <= 100
+        && request.resource.data.availabilityText is string
+        && request.resource.data.availabilityText.size() <= 120
+        && request.resource.data.audienceText is string
+        && request.resource.data.audienceText.size() <= 160
+        && request.resource.data.description is string
+        && request.resource.data.description.size() > 0
+        && request.resource.data.description.size() <= 1200
+        && request.resource.data.highlightText is string
+        && request.resource.data.highlightText.size() <= 240
+        && (!request.resource.data.keys().hasAny(['totalSlots'])
+          || (request.resource.data.totalSlots is int
+            && request.resource.data.totalSlots > 0
+            && request.resource.data.totalSlots <= 100000))
+        && (!request.resource.data.keys().hasAny(['filledSlots'])
+          || (request.resource.data.filledSlots is int
+            && request.resource.data.filledSlots >= 0
+            && (!request.resource.data.keys().hasAny(['totalSlots'])
+              || request.resource.data.filledSlots <= request.resource.data.totalSlots)))
+        && (!request.resource.data.keys().hasAny(['donationGoalCents'])
+          || (request.resource.data.donationGoalCents is int
+            && request.resource.data.donationGoalCents > 0
+            && request.resource.data.donationGoalCents <= 10000000000))
+        && (!request.resource.data.keys().hasAny(['donationRaisedCents'])
+          || (request.resource.data.donationRaisedCents is int
+            && request.resource.data.donationRaisedCents >= 0
+            && (!request.resource.data.keys().hasAny(['donationGoalCents'])
+              || request.resource.data.donationRaisedCents <= request.resource.data.donationGoalCents)))
+        && (!request.resource.data.keys().hasAny(['donationNeeds'])
+          || (request.resource.data.donationNeeds is list
+            && request.resource.data.donationNeeds.size() <= 20))
+        && (!request.resource.data.keys().hasAny(['pixKey'])
+          || (request.resource.data.pixKey is string
+            && request.resource.data.pixKey.size() <= 200))
+        && (!request.resource.data.keys().hasAny(['locationLatitude'])
+          || (request.resource.data.locationLatitude is number
+            && request.resource.data.locationLatitude >= -90
+            && request.resource.data.locationLatitude <= 90))
+        && (!request.resource.data.keys().hasAny(['locationLongitude'])
+          || (request.resource.data.locationLongitude is number
+            && request.resource.data.locationLongitude >= -180
+            && request.resource.data.locationLongitude <= 180))
+        && request.resource.data.createdAt == request.time;
+      allow update: if signedIn()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['filledSlots'])
+        && resource.data.category == 'NEUTERING'
+        && request.resource.data.filledSlots is int
+        && request.resource.data.filledSlots == resource.data.get('filledSlots', 0) + 1
+        && (!resource.data.keys().hasAny(['totalSlots'])
+          || request.resource.data.filledSlots <= resource.data.totalSlots);
+      allow update: if signedIn()
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['donationRaisedCents'])
+        && resource.data.category == 'DONATION'
+        && request.resource.data.donationRaisedCents is int
+        && request.resource.data.donationRaisedCents > resource.data.get('donationRaisedCents', 0)
+        && (!resource.data.keys().hasAny(['donationGoalCents'])
+          || request.resource.data.donationRaisedCents <= resource.data.donationGoalCents);
+      allow delete: if false;
+    }
+
+    match /community_campaigns/{campaignId}/animals/{animalId} {
+      allow read: if signedIn();
+      allow create: if signedIn()
+        && isTeamMember()
+        && existsAfter(/databases/$(database)/documents/community_campaigns/$(campaignId))
+        && getAfter(/databases/$(database)/documents/community_campaigns/$(campaignId)).data.organizationId
+          == request.auth.token.ngoId
+        && getAfter(/databases/$(database)/documents/community_campaigns/$(campaignId)).data.category == 'ADOPTION'
+        && request.resource.data.keys().hasAll([
+          'name', 'breed', 'ageText', 'createdAt'
+        ])
+        && request.resource.data.keys().hasOnly([
+          'name', 'breed', 'ageText', 'photoData', 'createdAt'
+        ])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 80
+        && request.resource.data.breed is string
+        && request.resource.data.breed.size() <= 80
+        && request.resource.data.ageText is string
+        && request.resource.data.ageText.size() <= 80
+        && (!request.resource.data.keys().hasAny(['photoData'])
+          || (request.resource.data.photoData is bytes
+            && request.resource.data.photoData.size() <= 200000))
+        && request.resource.data.createdAt == request.time;
+      allow update, delete: if false;
+    }
+
+    match /community_campaigns/{campaignId}/participants/{userId} {
+      allow read: if signedIn() && request.auth.uid == userId;
+      allow create: if signedIn()
+        && request.auth.uid == userId
+        && existsAfter(/databases/$(database)/documents/community_campaigns/$(campaignId))
+        && getAfter(/databases/$(database)/documents/community_campaigns/$(campaignId)).data.category in [
+          'NEUTERING', 'VACCINATION', 'ADOPTION'
+        ]
+        && request.resource.data.keys().hasOnly(['userId', 'createdAt'])
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.createdAt == request.time;
+      allow update, delete: if false;
+    }
+
+    match /community_campaigns/{campaignId}/donations/{donationId} {
+      allow read: if signedIn();
+      allow create: if signedIn()
+        && existsAfter(/databases/$(database)/documents/community_campaigns/$(campaignId))
+        && getAfter(/databases/$(database)/documents/community_campaigns/$(campaignId)).data.category == 'DONATION'
+        && request.resource.data.keys().hasOnly(['userId', 'amountCents', 'createdAt'])
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.amountCents is int
+        && request.resource.data.amountCents >= 100
+        && request.resource.data.amountCents <= 10000000000
+        && request.resource.data.createdAt == request.time;
+      allow update, delete: if false;
+    }
+
+    match /community_campaigns/{campaignId}/item_donations/{donationId} {
+      allow read: if signedIn()
+        && (request.auth.uid == resource.data.userId || isTeamMember());
+      allow create: if signedIn()
+        && existsAfter(/databases/$(database)/documents/community_campaigns/$(campaignId))
+        && getAfter(/databases/$(database)/documents/community_campaigns/$(campaignId)).data.category == 'DONATION'
+        && request.resource.data.keys().hasOnly([
+          'userId', 'items', 'otherItem', 'status', 'createdAt'
+        ])
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.items is list
+        && request.resource.data.items.size() <= 20
+        && request.resource.data.otherItem is string
+        && request.resource.data.otherItem.size() <= 160
+        && request.resource.data.status == 'PENDING'
+        && request.resource.data.createdAt == request.time;
+      allow update, delete: if false;
+    }
+
     // Public community posts reveal a broad region, never exact coordinates or street address.
     // Only authenticated users may create their own posts. Campaign writes remain blocked.
     match /community_posts/{postId} {
