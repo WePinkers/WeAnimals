@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="36dp"
+    android:height="36dp"
+    android:viewportWidth="36"
+    android:viewportHeight="36">
+
+    <!-- Outer GPS Precision Halo -->
+    <path
+        android:fillColor="#331E88E5"
+        android:pathData="M18,18m-17,0a17,17 0,1 1,34 0a17,17 0,1 1,-34 0" />
+
+    <!-- Inner Blue Dot Container with White Border -->
+    <path
+        android:fillColor="#1E88E5"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="1.5"
+        android:pathData="M18,18m-11,0a11,11 0,1 1,22 0a11,11 0,1 1,-22 0" />
+
+    <!-- Humanoid Avatar Silhouette (Head) -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M18,14m-3,0a3,3 0,1 1,6 0a3,3 0,1 1,-6 0" />
+
+    <!-- Humanoid Avatar Silhouette (Shoulders / Bust) -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M12.5,23.5 C12.5,20 15,19 18,19 C21,19 23.5,20 23.5,23.5 Z" />
+</vector>
