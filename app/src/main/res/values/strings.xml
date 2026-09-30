@@ -422,7 +422,7 @@
 
     <!-- Profile -->
     <string name="profile_default_name">Meu perfil</string>
-    <string name="profile_default_avatar">?</string>
+    <string name="profile_default_avatar">U</string>
     <string name="profile_account_info">Sua atividade no WeAnimals</string>
     <string name="profile_stat_reports">denúncias</string>
     <string name="profile_stat_campaigns">campanhas</string>
