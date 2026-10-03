@@ -27,12 +27,13 @@
             android:paddingBottom="24dp">
 
             <TextView
+                android:id="@+id/greeting_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="monospace"
                 android:includeFontPadding="false"
                 android:letterSpacing="0.14"
-                android:text="@string/greeting"
+                android:text="@string/greeting_boa_tarde"
                 android:textColor="@color/muted"
                 android:textSize="@dimen/text_size_eyebrow" />
 
@@ -164,7 +165,7 @@
                 android:id="@+id/map_preview"
                 layout="@layout/map_preview"
                 android:layout_width="match_parent"
-                android:layout_height="110dp"
+                android:layout_height="160dp"
                 android:layout_marginTop="12dp" />
 
             <TextView

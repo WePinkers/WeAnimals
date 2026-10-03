@@ -135,6 +135,7 @@ class TriageActivity : AppCompatActivity(), TriageContract.View {
     }
 
     override fun showSubmitted(report: Report) {
+        setResult(RESULT_OK)
         startActivity(
             Intent(this, ReportSentActivity::class.java)
                 .putExtra(ReportSentActivity.EXTRA_PROTOCOL_NUMBER, report.protocolNumber)

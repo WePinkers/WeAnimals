@@ -245,9 +245,14 @@ class AppContainer(context: Context) {
         SearchLocationsInteractor(locationRepository)
     }
 
+    private val getProfileIdentityInteractor by lazy {
+        GetProfileIdentityInteractor(profileRepository)
+    }
+
     fun createHomePresenter() = HomePresenter(
         observeUserReportsInteractor = observeUserReportsInteractor,
-        markReportAsViewedInteractor = markReportAsViewedInteractor
+        markReportAsViewedInteractor = markReportAsViewedInteractor,
+        getProfileIdentityInteractor = getProfileIdentityInteractor
     )
 
     fun createProfilePresenter() = ProfilePresenter(

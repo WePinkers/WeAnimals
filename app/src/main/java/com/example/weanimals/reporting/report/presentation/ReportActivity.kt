@@ -50,6 +50,14 @@ class ReportActivity : AppCompatActivity(), ReportContract.View {
     private var selectedPhotoUri: Uri? = null
     private var locationRequestStarted = false
 
+    private val triageLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            finish()
+        }
+    }
+
     private val photoPicker = registerForActivityResult(
         ActivityResultContracts.OpenDocument()
     ) { selectedPhoto: Uri? ->
@@ -232,7 +240,7 @@ class ReportActivity : AppCompatActivity(), ReportContract.View {
     }
 
     override fun showTriage(draft: ReportDraft) {
-        startActivity(TriageActivity.newIntent(this, draft))
+        triageLauncher.launch(TriageActivity.newIntent(this, draft))
     }
 
     private fun requestLocationIfNeeded() {

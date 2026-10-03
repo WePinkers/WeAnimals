@@ -1,6 +1,11 @@
 <resources>
     <string name="app_name">WeAnimals</string>
     <string name="greeting">BOA TARDE, RENATA</string>
+    <string name="greeting_bom_dia">BOM DIA</string>
+    <string name="greeting_boa_tarde">BOA TARDE</string>
+    <string name="greeting_boa_noite">BOA NOITE</string>
+    <string name="home_greeting_with_name">%1$s, %2$s</string>
+    <string name="home_greeting_fallback">%1$s</string>
     <string name="home_title">O que você viu hoje?</string>
     <string name="emergency_label">EMERGÊNCIA</string>
     <string name="emergency_title">Encontrou um animal em risco?</string>

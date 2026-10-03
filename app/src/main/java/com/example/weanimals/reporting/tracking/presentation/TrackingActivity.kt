@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
@@ -13,6 +14,7 @@ import com.example.weanimals.WeAnimalsApplication
 import com.example.weanimals.core.navigation.MainNavigation
 import com.example.weanimals.databinding.ActivityTrackingBinding
 import com.example.weanimals.databinding.ItemTrackingStepBinding
+import com.example.weanimals.home.presentation.HomeActivity
 import com.example.weanimals.reporting.chat.presentation.CaseChatActivity
 import com.example.weanimals.reporting.details.presentation.ReportDetailsActivity
 import com.example.weanimals.reporting.report.domain.Report
@@ -27,6 +29,7 @@ class TrackingActivity : AppCompatActivity(), TrackingContract.View {
 
     private lateinit var binding: ActivityTrackingBinding
     private val reportId: String by lazy { intent.getStringExtra(EXTRA_REPORT_ID).orEmpty() }
+    private val isFromCreation: Boolean by lazy { intent.getBooleanExtra(EXTRA_FROM_CREATION, false) }
     private val presenter: TrackingPresenter by lazy {
         (application as WeAnimalsApplication).appContainer.createTrackingPresenter(reportId)
     }
@@ -38,14 +41,27 @@ class TrackingActivity : AppCompatActivity(), TrackingContract.View {
         setContentView(binding.root)
         MainNavigation.bind(this, binding.mainNavigation)
 
-        binding.btnBackContainer.setOnClickListener {
-            onBackPressedDispatcher.onBackPressed()
-        }
-        binding.btnBack.setOnClickListener {
-            onBackPressedDispatcher.onBackPressed()
-        }
-        binding.btnBackLabel.setOnClickListener {
-            onBackPressedDispatcher.onBackPressed()
+        val backAction = { navigateBackCleanly() }
+        binding.btnBackContainer.setOnClickListener { backAction() }
+        binding.btnBack.setOnClickListener { backAction() }
+        binding.btnBackLabel.setOnClickListener { backAction() }
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                navigateBackCleanly()
+            }
+        })
+    }
+
+    private fun navigateBackCleanly() {
+        if (isFromCreation || isTaskRoot) {
+            val intent = Intent(this, HomeActivity::class.java).apply {
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            startActivity(intent)
+            finish()
+        } else {
+            finish()
         }
     }
 
@@ -261,9 +277,11 @@ class TrackingActivity : AppCompatActivity(), TrackingContract.View {
     companion object {
         private const val TAG = "TrackingActivity"
         private const val EXTRA_REPORT_ID = "extra_report_id"
+        const val EXTRA_FROM_CREATION = "extra_from_creation"
 
-        fun newIntent(context: Context, reportId: String) =
+        fun newIntent(context: Context, reportId: String, isFromCreation: Boolean = false) =
             Intent(context, TrackingActivity::class.java)
                 .putExtra(EXTRA_REPORT_ID, reportId)
+                .putExtra(EXTRA_FROM_CREATION, isFromCreation)
     }
 }
