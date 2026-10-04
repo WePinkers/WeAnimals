@@ -20,6 +20,86 @@ service cloud.firestore {
       return signedIn() && request.auth.token.teamMember == true;
     }
 
+    match /user_profiles/{userId} {
+      allow read: if signedIn() && request.auth.uid == userId;
+      allow create: if signedIn()
+        && request.auth.uid == userId
+        && request.resource.data.keys().hasOnly([
+          'fullName', 'cpf', 'email', 'createdAt',
+          'termsAcceptedAt', 'privacyAcceptedAt', 'legalVersion'
+        ])
+        && request.resource.data.fullName is string
+        && request.resource.data.fullName.size() > 0
+        && request.resource.data.cpf is string
+        && request.resource.data.cpf.size() == 11
+        && request.resource.data.email is string
+        && request.resource.data.email.size() > 0
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.termsAcceptedAt == request.time
+        && request.resource.data.privacyAcceptedAt == request.time
+        && request.resource.data.legalVersion == '2026-10-02';
+      allow update, delete: if false;
+    }
+
+    // Stores only a hashed CPF as the document id so CPF login can resolve the e-mail.
+    match /auth_identifiers/{identifierId} {
+      allow read: if signedIn();
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['email', 'userId'])
+        && request.resource.data.email is string
+        && request.resource.data.email.size() > 0
+        && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if false;
+    }
+
+    // CNPJ lookup for the institutional login. Records are provisioned by the
+    // administrative/credenciamento flow, never by the mobile client.
+    match /organization_identifiers/{identifierId} {
+      allow read: if signedIn();
+      allow create, update, delete: if false;
+    }
+
+    // Accreditation requests are created by the requester and reviewed by admins.
+    match /organization_verification_requests/{requestId} {
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly([
+          'requesterId', 'cnpj', 'legalName', 'institutionalEmail', 'documentName', 'documentSizeBytes',
+          'documentContentType', 'pixKey', 'status', 'createdAt',
+          'termsAcceptedAt', 'privacyAcceptedAt', 'legalVersion'
+        ])
+        && request.resource.data.requesterId == request.auth.uid
+        && request.auth.token.email_verified == true
+        && request.resource.data.cnpj is string
+        && request.resource.data.cnpj.size() == 14
+        && request.resource.data.legalName is string
+        && request.resource.data.legalName.size() > 0
+        && request.resource.data.legalName.size() <= 160
+        && request.resource.data.institutionalEmail is string
+        && request.resource.data.institutionalEmail.size() > 3
+        && request.resource.data.institutionalEmail.size() <= 160
+        && request.resource.data.institutionalEmail == request.auth.token.email
+        && request.resource.data.documentName is string
+        && request.resource.data.documentName.size() > 0
+        && request.resource.data.documentName.size() <= 255
+        && request.resource.data.documentSizeBytes is int
+        && request.resource.data.documentSizeBytes >= 0
+        && request.resource.data.documentSizeBytes <= 10 * 1024 * 1024
+        && request.resource.data.documentContentType in ['application/pdf', 'image/jpeg', 'image/png', 'image/webp']
+        && request.resource.data.pixKey is string
+        && request.resource.data.pixKey.size() > 0
+        && request.resource.data.pixKey.size() <= 180
+        && request.resource.data.status == 'pending'
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.termsAcceptedAt == request.time
+        && request.resource.data.privacyAcceptedAt == request.time
+        && request.resource.data.legalVersion == '2026-10-02';
+
+      allow read: if signedIn()
+        && (resource.data.requesterId == request.auth.uid || request.auth.token.admin == true);
+      allow update: if signedIn() && request.auth.token.admin == true;
+      allow delete: if false;
+    }
+
     match /reports/{reportId} {
       allow create: if ownsReport(request.resource.data)
         && request.resource.data.protocolNumber is int

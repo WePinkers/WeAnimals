@@ -176,6 +176,35 @@
 
             <include android:id="@+id/item_favorites" layout="@layout/item_profile_activity_favorites" />
 
+            <LinearLayout
+                android:id="@+id/logout_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:minHeight="56dp"
+                android:orientation="horizontal"
+                android:paddingVertical="12dp">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_logout" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="@string/profile_logout"
+                    android:textColor="@color/alert600"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
         </LinearLayout>
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

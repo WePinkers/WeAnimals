@@ -18,7 +18,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.WeAnimals">
         <activity
-            android:name=".home.presentation.HomeActivity"
+            android:name=".entry.presentation.EntryActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,6 +26,56 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".entry.presentation.LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".entry.presentation.PasswordRecoveryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".entry.presentation.PasswordRecoverySentActivity"
+            android:exported="false" />
+        <activity
+            android:name=".entry.presentation.PasswordResetCompletedActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:host="weanimals-642a9.web.app"
+                    android:pathPrefix="/password-reset-complete"
+                    android:scheme="https" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:host="password-reset-complete"
+                    android:scheme="weanimals" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".entry.presentation.CitizenRegistrationActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".entry.presentation.LegalDocumentActivity"
+            android:exported="false" />
+        <activity
+            android:name=".organization.accreditation.presentation.OrganizationAccreditationActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".organization.accreditation.presentation.OrganizationVerificationPendingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".organization.accreditation.presentation.OrganizationLoginBlockedActivity"
+            android:exported="false" />
+        <activity
+            android:name=".home.presentation.HomeActivity"
+            android:exported="false" />
         <activity
             android:name=".adoption.listing.presentation.AdoptionActivity"
             android:exported="false" />

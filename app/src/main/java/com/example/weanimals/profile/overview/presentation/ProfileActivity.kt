@@ -1,7 +1,12 @@
 package com.example.weanimals.profile.overview.presentation
 
+import android.app.Dialog
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.view.Window
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
@@ -10,15 +15,21 @@ import com.example.weanimals.WeAnimalsApplication
 import com.example.weanimals.community.feed.domain.CommunityFeedItem
 import com.example.weanimals.community.feed.repository.CommunityRepositoryFactory
 import com.example.weanimals.core.navigation.MainNavigation
+import com.example.weanimals.databinding.DialogLogoutConfirmationBinding
 import com.example.weanimals.databinding.ActivityProfileBinding
+import com.example.weanimals.entry.presentation.EntryActivity
 import com.example.weanimals.profile.campaigns.presentation.CampaignsActivity
 import com.example.weanimals.profile.favorites.presentation.FavoritesActivity
 import com.example.weanimals.profile.overview.presenter.ProfileContract
 import com.example.weanimals.profile.reports.presentation.MyReportsActivity
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 
 class ProfileActivity : AppCompatActivity(), ProfileContract.View {
     private lateinit var binding: ActivityProfileBinding
+    private var logoutDialog: Dialog? = null
     private val presenter by lazy {
         (application as WeAnimalsApplication).appContainer.createProfilePresenter()
     }
@@ -42,6 +53,9 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
         }
         binding.profileContent.itemFavorites.root.setOnClickListener {
             startActivity(Intent(this, FavoritesActivity::class.java))
+        }
+        binding.profileContent.logoutButton.setOnClickListener {
+            showLogoutConfirmation()
         }
     }
 
@@ -104,5 +118,53 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
                 }
             )
         }
+    }
+
+    private fun showLogoutConfirmation() {
+        logoutDialog?.dismiss()
+
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        val dialogBinding = DialogLogoutConfirmationBinding.inflate(layoutInflater)
+        dialog.setContentView(dialogBinding.root)
+        dialog.setCancelable(true)
+        dialogBinding.dialogLogoutCancel.setOnClickListener { dialog.dismiss() }
+        dialogBinding.dialogLogoutConfirm.setOnClickListener {
+            dialog.dismiss()
+            signOut()
+        }
+        dialog.setOnDismissListener {
+            if (logoutDialog === dialog) logoutDialog = null
+        }
+        dialog.setOnShowListener {
+            dialog.window?.apply {
+                setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                setLayout(
+                    (resources.displayMetrics.widthPixels * 0.86f).toInt(),
+                    WindowManager.LayoutParams.WRAP_CONTENT
+                )
+                addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+                attributes = attributes.apply { dimAmount = 0.58f }
+            }
+        }
+        logoutDialog = dialog
+        dialog.show()
+    }
+
+    private fun signOut() {
+        FirebaseAuth.getInstance().signOut()
+        GoogleSignIn.getClient(this, GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .signOut()
+            .addOnCompleteListener {
+                openEntry()
+            }
+    }
+
+    private fun openEntry() {
+        startActivity(
+            Intent(this, EntryActivity::class.java).addFlags(
+                Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            )
+        )
     }
 }

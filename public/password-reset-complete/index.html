@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Voltando para o WeAnimals</title>
+  <style>
+    body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #f6f1e7; color: #12382b; font-family: Arial, sans-serif; text-align: center; }
+    main { max-width: 320px; padding: 24px; }
+    a { display: inline-block; margin-top: 18px; padding: 13px 22px; border: 1px solid #12382b; border-radius: 12px; color: #12382b; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <main>
+    <p>Senha alterada. Voltando para o WeAnimals…</p>
+    <a id="open-app" href="#">Abrir o aplicativo</a>
+  </main>
+  <script>
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var account = params.get("account") === "organization" ? "organization" : "citizen";
+      var appUrl = "weanimals://password-reset-complete?account=" + encodeURIComponent(account);
+      document.getElementById("open-app").href = appUrl;
+      window.location.replace(appUrl);
+    })();
+  </script>
+</body>
+</html>
