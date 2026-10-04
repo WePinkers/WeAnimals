@@ -37,7 +37,7 @@ service cloud.firestore {
         && request.resource.data.createdAt == request.time
         && request.resource.data.termsAcceptedAt == request.time
         && request.resource.data.privacyAcceptedAt == request.time
-        && request.resource.data.legalVersion == '2026-10-02';
+        && request.resource.data.legalVersion == '2026-10-04';
       allow update, delete: if false;
     }
 
@@ -92,7 +92,7 @@ service cloud.firestore {
         && request.resource.data.createdAt == request.time
         && request.resource.data.termsAcceptedAt == request.time
         && request.resource.data.privacyAcceptedAt == request.time
-        && request.resource.data.legalVersion == '2026-10-02';
+        && request.resource.data.legalVersion == '2026-10-04';
 
       allow read: if signedIn()
         && (resource.data.requesterId == request.auth.uid || request.auth.token.admin == true);

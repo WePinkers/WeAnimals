@@ -1,13 +1,15 @@
 package com.example.weanimals.entry.auth.repository
 
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import java.security.MessageDigest
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.tasks.await
-
+import kotlinx.coroutines.withContext
 class FirebaseAuthRepository(
     private val auth: FirebaseAuth,
     private val firestore: FirebaseFirestore
@@ -58,38 +60,51 @@ class FirebaseAuthRepository(
         password: String
     ) {
         val normalizedCpf = normalizeCpf(cpf)
-        val authResult = auth.createUserWithEmailAndPassword(email, password).await()
-        val user = requireNotNull(authResult.user) { "Firebase user was not created." }
+        val initialUserId = auth.currentUser?.uid
+        var createdUser: FirebaseUser? = null
 
-        user.updateProfile(
-            UserProfileChangeRequest.Builder()
-                .setDisplayName(fullName)
-                .build()
-        ).await()
+        try {
+            val authResult = auth.createUserWithEmailAndPassword(email, password).await()
+            val user = requireNotNull(authResult.user) { "Firebase user was not created." }
+            createdUser = user
 
-        val profile = mapOf(
-            "fullName" to fullName,
-            "cpf" to normalizedCpf,
-            "email" to email,
-            "createdAt" to FieldValue.serverTimestamp(),
-            "termsAcceptedAt" to FieldValue.serverTimestamp(),
-            "privacyAcceptedAt" to FieldValue.serverTimestamp(),
-            "legalVersion" to LEGAL_VERSION
-        )
-        val identifier = mapOf(
-            "email" to email,
-            "userId" to user.uid
-        )
+            user.updateProfile(
+                UserProfileChangeRequest.Builder()
+                    .setDisplayName(fullName)
+                    .build()
+            ).await()
 
-        firestore.runBatch { batch ->
-            batch.set(firestore.collection(PROFILES_COLLECTION).document(user.uid), profile)
-            batch.set(
-                firestore.collection(AUTH_IDENTIFIERS_COLLECTION).document(hash(normalizedCpf)),
-                identifier
+            val profile = mapOf(
+                "fullName" to fullName,
+                "cpf" to normalizedCpf,
+                "email" to email,
+                "createdAt" to FieldValue.serverTimestamp(),
+                "termsAcceptedAt" to FieldValue.serverTimestamp(),
+                "privacyAcceptedAt" to FieldValue.serverTimestamp(),
+                "legalVersion" to LEGAL_VERSION
             )
-        }.await()
-    }
+            val identifier = mapOf(
+                "email" to email,
+                "userId" to user.uid
+            )
 
+            firestore.runBatch { batch ->
+                batch.set(firestore.collection(PROFILES_COLLECTION).document(user.uid), profile)
+                batch.set(
+                    firestore.collection(AUTH_IDENTIFIERS_COLLECTION).document(hash(normalizedCpf)),
+                    identifier
+                )
+            }.await()
+        } catch (error: Throwable) {
+            val failedUser = createdUser
+                ?: auth.currentUser?.takeIf { initialUserId == null }
+            if (failedUser != null && auth.currentUser?.uid == failedUser.uid) {
+                runCatching { withContext(NonCancellable) { failedUser.delete().await() } }
+                auth.signOut()
+            }
+            throw error
+        }
+    }
     private suspend fun resolveEmail(identifier: String): String {
         val trimmedIdentifier = identifier.trim()
         if (trimmedIdentifier.contains('@')) {
@@ -166,7 +181,7 @@ class FirebaseAuthRepository(
         const val ORGANIZATION_IDENTIFIERS_COLLECTION = "organization_identifiers"
         const val ORGANIZATION_VERIFICATION_REQUESTS_COLLECTION = "organization_verification_requests"
         const val STATUS_PENDING = "pending"
-        const val LEGAL_VERSION = "2026-10-02"
+        const val LEGAL_VERSION = "2026-10-04"
         const val CPF_LENGTH = 11
         const val CNPJ_LENGTH = 14
     }

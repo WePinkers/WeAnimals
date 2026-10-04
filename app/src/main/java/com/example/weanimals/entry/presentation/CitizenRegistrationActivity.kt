@@ -1,6 +1,9 @@
 package com.example.weanimals.entry.presentation
 
+import android.app.Dialog
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.Spanned
@@ -8,12 +11,16 @@ import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.text.TextPaint
+import android.util.Log
 import android.view.View
+import android.view.Window
+import android.view.WindowManager
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.weanimals.R
+import com.example.weanimals.databinding.DialogAuthMessageBinding
 import com.example.weanimals.core.formatting.BrazilianDocumentMask
 import com.example.weanimals.entry.auth.repository.FirebaseAuthRepository
 import com.example.weanimals.databinding.ActivityCitizenRegistrationBinding
@@ -21,15 +28,19 @@ import com.example.weanimals.home.presentation.HomeActivity
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreException
 import java.util.regex.Pattern
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.launch
-
+import kotlinx.coroutines.withTimeout
 class CitizenRegistrationActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityCitizenRegistrationBinding
+    private var registrationDialog: Dialog? = null
     private val authRepository by lazy {
         FirebaseAuthRepository(FirebaseAuth.getInstance(), FirebaseFirestore.getInstance())
     }
@@ -92,23 +103,72 @@ class CitizenRegistrationActivity : AppCompatActivity() {
         setLoading(true)
         lifecycleScope.launch {
             runCatching {
-                authRepository.register(fullName, cpf, email, password)
+                withTimeout(REGISTRATION_TIMEOUT_MS) {
+                    authRepository.register(fullName, cpf, email, password)
+                }
             }.onSuccess {
                 startActivity(Intent(this@CitizenRegistrationActivity, HomeActivity::class.java))
                 finishAffinity()
             }.onFailure { error ->
                 setLoading(false)
-                val message = when (error) {
-                    is FirebaseAuthUserCollisionException -> R.string.register_email_exists
-                    is FirebaseAuthWeakPasswordException -> R.string.register_password_invalid
-                    is FirebaseNetworkException -> R.string.login_network_error
-                    else -> R.string.register_error_generic
-                }
-                Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
+                showRegistrationError(error)
             }
         }
     }
 
+    private fun showRegistrationError(error: Throwable) {
+        val messageRes = registrationErrorMessage(error)
+        registrationDialog?.dismiss()
+
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        val dialogBinding = DialogAuthMessageBinding.inflate(layoutInflater)
+        dialogBinding.dialogAuthTitle.setText(R.string.register_error_title)
+        dialogBinding.dialogAuthMessage.setText(messageRes)
+        dialogBinding.dialogAuthButton.setOnClickListener { dialog.dismiss() }
+        dialog.setContentView(dialogBinding.root)
+        dialog.setCancelable(true)
+        dialog.setOnDismissListener {
+            if (registrationDialog === dialog) registrationDialog = null
+        }
+        dialog.setOnShowListener {
+            dialog.window?.apply {
+                setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                setLayout(
+                    (resources.displayMetrics.widthPixels * 0.86f).toInt(),
+                    WindowManager.LayoutParams.WRAP_CONTENT
+                )
+                addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+                attributes = attributes.apply { dimAmount = 0.58f }
+            }
+        }
+        registrationDialog = dialog
+        dialog.show()
+    }
+    private fun registrationErrorMessage(error: Throwable): Int {
+        Log.e(TAG, "Citizen registration failed", error)
+        val authCode = (error as? FirebaseAuthException)?.errorCode
+        val firestoreCode = (error as? FirebaseFirestoreException)?.code
+
+        return when {
+            error is FirebaseAuthUserCollisionException ||
+                authCode == "ERROR_EMAIL_ALREADY_IN_USE" ->
+                R.string.register_email_exists
+            error is FirebaseAuthWeakPasswordException ||
+                authCode == "ERROR_WEAK_PASSWORD" ->
+                R.string.register_password_invalid
+            error is TimeoutCancellationException ->
+                R.string.register_timeout
+            error is FirebaseNetworkException ||
+                authCode == "ERROR_NETWORK_REQUEST_FAILED" ->
+                R.string.login_network_error
+            authCode == "ERROR_OPERATION_NOT_ALLOWED" ->
+                R.string.register_auth_disabled
+            firestoreCode == FirebaseFirestoreException.Code.PERMISSION_DENIED ->
+                R.string.register_database_error
+            else -> R.string.register_error_generic
+        }
+    }
     private fun showFieldError(field: android.widget.EditText, messageRes: Int) {
         field.error = getString(messageRes)
         field.requestFocus()
@@ -253,11 +313,22 @@ class CitizenRegistrationActivity : AppCompatActivity() {
 
     private fun setLoading(loading: Boolean) {
         binding.registerButton.isEnabled = !loading
+        binding.registerHeader.backButton.isEnabled = !loading
+        binding.registerNameInput.isEnabled = !loading
+        binding.registerCpfInput.isEnabled = !loading
+        binding.registerEmailInput.isEnabled = !loading
+        binding.registerPasswordInput.isEnabled = !loading
+        binding.legalAcceptanceCheckbox.isEnabled = !loading
         binding.registerButton.setText(
             if (loading) R.string.register_loading else R.string.register_button
         )
+        binding.registerLoadingOverlay.visibility = if (loading) View.VISIBLE else View.GONE
+        if (loading) {
+            binding.registerLoadingSilhouette.startAnimation()
+        } else {
+            binding.registerLoadingSilhouette.stopAnimation()
+        }
     }
-
     private fun configureSystemBars() {
         WindowCompat.setDecorFitsSystemWindows(window, true)
         WindowCompat.getInsetsController(window, window.decorView).apply {
@@ -267,6 +338,8 @@ class CitizenRegistrationActivity : AppCompatActivity() {
     }
 
     private companion object {
+        private const val TAG = "CitizenRegistration"
+        private const val REGISTRATION_TIMEOUT_MS = 20_000L
         const val CPF_LENGTH = 11
         const val MIN_PASSWORD_LENGTH = 6
         val EMAIL_PATTERN = Pattern.compile("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")

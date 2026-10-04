@@ -24,6 +24,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.weanimals.R
 import com.example.weanimals.databinding.DialogAuthMessageBinding
 import com.example.weanimals.entry.auth.repository.FirebaseAuthRepository
+import com.example.weanimals.entry.auth.security.LocalLoginAttemptLock
 import com.example.weanimals.databinding.ActivityLoginBinding
 import com.example.weanimals.home.presentation.HomeActivity
 import com.example.weanimals.organization.accreditation.OrganizationAccreditationDraft
@@ -51,6 +52,7 @@ class LoginActivity : AppCompatActivity() {
     private val authRepository by lazy {
         FirebaseAuthRepository(FirebaseAuth.getInstance(), FirebaseFirestore.getInstance())
     }
+    private val localLoginAttemptLock by lazy { LocalLoginAttemptLock(this) }
     private var isPasswordVisible = false
     private val googleSignInLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -183,6 +185,13 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
+        val lockIdentifier = loginAttemptIdentifier(identifier)
+        val existingLock = localLoginAttemptLock.check(lockIdentifier)
+        if (existingLock.isLocked) {
+            showLocalLockMessage(existingLock)
+            return
+        }
+
         setLoading(true)
         lifecycleScope.launch {
             runCatching {
@@ -198,6 +207,7 @@ class LoginActivity : AppCompatActivity() {
                     }
                 }
             }.onSuccess {
+                localLoginAttemptLock.clear(lockIdentifier)
                 if (isOrganization && hasLocalPendingAccreditation(identifier)) {
                     openPendingAccreditation()
                 } else {
@@ -209,11 +219,46 @@ class LoginActivity : AppCompatActivity() {
                     openOrganizationPending()
                     return@onFailure
                 }
+                if (isCredentialFailure(error)) {
+                    val lockState = localLoginAttemptLock.registerFailure(lockIdentifier)
+                    if (lockState.isLocked) {
+                        showLocalLockMessage(lockState)
+                        return@onFailure
+                    }
+                }
                 showAuthError(error)
             }
         }
     }
 
+    private fun loginAttemptIdentifier(identifier: String): String {
+        val normalized = if (identifier.contains('@')) {
+            identifier.lowercase()
+        } else {
+            identifier.filter(Char::isDigit)
+        }
+        val accountType = if (isOrganization) "organization" else "citizen"
+        return "$accountType:$normalized"
+    }
+
+    private fun isCredentialFailure(error: Throwable): Boolean {
+        val firebaseCode = (error as? FirebaseAuthException)?.errorCode
+        return error is FirebaseAuthRepository.AccountNotFoundException ||
+            error is FirebaseAuthRepository.OrganizationAccountNotFoundException ||
+            error is FirebaseAuthInvalidCredentialsException ||
+            error is FirebaseAuthInvalidUserException ||
+            firebaseCode == "ERROR_USER_NOT_FOUND" ||
+            firebaseCode == "ERROR_WRONG_PASSWORD" ||
+            firebaseCode == "ERROR_INVALID_CREDENTIAL" ||
+            firebaseCode == "ERROR_INVALID_LOGIN_CREDENTIALS"
+    }
+
+    private fun showLocalLockMessage(lockState: LocalLoginAttemptLock.LockState) {
+        showMessage(
+            R.string.login_local_lock_title,
+            getString(R.string.login_local_lock_message, lockState.remainingMinutes)
+        )
+    }
     private fun pendingOrganizationEmail(identifier: String): String? {
         val normalizedIdentifier = identifier.filter(Char::isDigit)
         if (normalizedIdentifier.length != ORGANIZATION_CNPJ_LENGTH) return null
@@ -375,12 +420,24 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun showMessage(messageRes: Int) {
+        showMessage(
+            getString(R.string.login_error_title),
+            getString(messageRes)
+        )
+    }
+
+    private fun showMessage(titleRes: Int, message: CharSequence) {
+        showMessage(getString(titleRes), message)
+    }
+
+    private fun showMessage(title: CharSequence, message: CharSequence) {
         authDialog?.dismiss()
 
         val dialog = Dialog(this)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         val dialogBinding = DialogAuthMessageBinding.inflate(layoutInflater)
-        dialogBinding.dialogAuthMessage.setText(messageRes)
+        dialogBinding.dialogAuthTitle.text = title
+        dialogBinding.dialogAuthMessage.text = message
         dialogBinding.dialogAuthButton.setOnClickListener { dialog.dismiss() }
         dialog.setContentView(dialogBinding.root)
         dialog.setCancelable(true)
@@ -401,7 +458,6 @@ class LoginActivity : AppCompatActivity() {
         authDialog = dialog
         dialog.show()
     }
-
     private fun openApp() {
         startActivity(Intent(this, HomeActivity::class.java))
         finishAffinity()

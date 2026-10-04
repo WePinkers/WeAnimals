@@ -98,7 +98,7 @@ class FirebaseOrganizationAccreditationRepository(
 
     private companion object {
         const val REQUESTS_COLLECTION = "organization_verification_requests"
-        const val LEGAL_VERSION = "2026-10-02"
+        const val LEGAL_VERSION = "2026-10-04"
         const val CITIZEN_PROFILES_COLLECTION = "user_profiles"
         const val STATUS_PENDING = "pending"
     }
