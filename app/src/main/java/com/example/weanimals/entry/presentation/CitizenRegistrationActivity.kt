@@ -39,6 +39,7 @@ class CitizenRegistrationActivity : AppCompatActivity() {
         configureSystemBars()
         binding = ActivityCitizenRegistrationBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        binding.legalAcceptanceCheckbox.buttonTintList = null
 
         binding.registerHeader.backButton.setOnClickListener { finish() }
         binding.registerHeader.headerTitle.setText(R.string.register_title)
@@ -50,7 +51,11 @@ class CitizenRegistrationActivity : AppCompatActivity() {
         binding.registerButton.setOnClickListener {
             register()
         }
+        binding.legalAcceptanceCheckbox.setOnCheckedChangeListener { _, checked ->
+            if (checked) clearLegalAcceptanceError()
+        }
         configureLegalLinks()
+        configureCheckboxTouchTarget(binding.legalAcceptanceCheckbox)
     }
 
     private fun register() {
@@ -110,9 +115,20 @@ class CitizenRegistrationActivity : AppCompatActivity() {
     }
 
     private fun showLegalAcceptanceError() {
-        binding.legalAcceptanceCheckbox.error = getString(R.string.legal_acceptance_required)
-        binding.legalAcceptanceCheckbox.requestFocus()
+        binding.legalAcceptanceCheckbox.background =
+            getDrawable(R.drawable.bg_legal_acceptance_error)
+        binding.legalAcceptanceCheckbox.buttonDrawable =
+            getDrawable(R.drawable.checkbox_legal_error_selector)
+        binding.legalAcceptanceError.visibility = View.VISIBLE
         Snackbar.make(binding.root, R.string.legal_acceptance_required, Snackbar.LENGTH_LONG).show()
+    }
+
+    private fun clearLegalAcceptanceError() {
+        binding.legalAcceptanceCheckbox.background =
+            getDrawable(R.drawable.bg_legal_acceptance)
+        binding.legalAcceptanceCheckbox.buttonDrawable =
+            getDrawable(R.drawable.checkbox_donation_selector)
+        binding.legalAcceptanceError.visibility = View.GONE
     }
 
     private fun isValidCpf(value: String): Boolean {
@@ -132,6 +148,51 @@ class CitizenRegistrationActivity : AppCompatActivity() {
         return if (remainder < 2) 0 else 11 - remainder
     }
 
+
+    private fun configureCheckboxTouchTarget(checkBox: android.widget.CompoundButton) {
+        checkBox.isClickable = false
+        val density = resources.displayMetrics.density
+
+        checkBox.setOnTouchListener { _, event ->
+            val visibleRect = android.graphics.Rect()
+            checkBox.getGlobalVisibleRect(visibleRect)
+            val iconLeft = visibleRect.left + (12 * density).toInt()
+            val iconRight = visibleRect.left + (64 * density).toInt()
+            val insideIcon = event.rawX >= iconLeft && event.rawX <= iconRight
+
+            if (insideIcon) {
+                when (event.actionMasked) {
+                    android.view.MotionEvent.ACTION_DOWN -> true
+                    android.view.MotionEvent.ACTION_UP -> {
+                        checkBox.isChecked = !checkBox.isChecked
+                        true
+                    }
+                    android.view.MotionEvent.ACTION_CANCEL -> true
+                    else -> true
+                }
+            } else {
+                !isTouchOnLegalLink(checkBox, event)
+            }
+        }
+    }
+
+    private fun isTouchOnLegalLink(
+        checkBox: android.widget.CompoundButton,
+        event: android.view.MotionEvent
+    ): Boolean {
+        val text = checkBox.text
+        val textLayout = checkBox.layout
+        if (text !is Spanned || textLayout == null) return false
+
+        val textX = event.x - checkBox.totalPaddingLeft + checkBox.scrollX
+        val textY = event.y - checkBox.totalPaddingTop + checkBox.scrollY
+        if (textX < 0 || textY < 0 || textY >= textLayout.height) return false
+
+        val line = textLayout.getLineForVertical(textY.toInt())
+        val offset = textLayout.getOffsetForHorizontal(line, textX)
+        val spanEnd = minOf(offset + 1, text.length)
+        return text.getSpans(offset, spanEnd, ClickableSpan::class.java).isNotEmpty()
+    }
     private fun setRequiredLabel(label: TextView, textRes: Int) {
         val text = getString(textRes)
         val styledText = SpannableString(text)
@@ -148,7 +209,7 @@ class CitizenRegistrationActivity : AppCompatActivity() {
     }
 
     private fun configureLegalLinks() {
-        val fullText = getString(R.string.register_terms)
+        val fullText = getString(R.string.legal_acceptance_checkbox)
         val termsLabel = getString(R.string.legal_terms_label)
         val privacyLabel = getString(R.string.legal_privacy_label)
         val styledText = SpannableString(fullText)
@@ -160,9 +221,9 @@ class CitizenRegistrationActivity : AppCompatActivity() {
             openLegalDocument(LegalDocumentActivity.DOCUMENT_PRIVACY)
         }
 
-        binding.termsLink.text = styledText
-        binding.termsLink.movementMethod = LinkMovementMethod.getInstance()
-        binding.termsLink.highlightColor = android.graphics.Color.TRANSPARENT
+        binding.legalAcceptanceCheckbox.text = styledText
+        binding.legalAcceptanceCheckbox.movementMethod = LinkMovementMethod.getInstance()
+        binding.legalAcceptanceCheckbox.highlightColor = android.graphics.Color.TRANSPARENT
     }
 
     private fun addLegalLink(text: SpannableString, label: String, action: () -> Unit) {

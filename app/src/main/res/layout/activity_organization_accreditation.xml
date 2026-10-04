@@ -238,11 +238,31 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:buttonTint="@color/pine700"
+                android:background="@drawable/bg_legal_acceptance"
+                android:button="@drawable/checkbox_donation_selector"
+                android:drawablePadding="0dp"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:gravity="center_vertical"
                 android:minHeight="48dp"
-                android:text="@string/legal_acceptance_checkbox"
+                android:paddingStart="16dp"
+                android:paddingTop="4dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="4dp"
+                android:text="@string/legal_acceptance_checkbox_short"
                 android:textColor="@color/ink"
-                android:textSize="@dimen/text_size_location_address" />
+                android:textSize="@dimen/text_size_details_body" />
+
+            <TextView
+                android:id="@+id/accreditation_legal_acceptance_error"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="2dp"
+                android:text="@string/legal_acceptance_required_short"
+                android:textColor="@color/alert600"
+                android:textSize="@dimen/text_size_details_body"
+                android:visibility="gone" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/accreditation_submit_button"

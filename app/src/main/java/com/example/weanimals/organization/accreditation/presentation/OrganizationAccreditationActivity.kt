@@ -85,6 +85,7 @@ class OrganizationAccreditationActivity : AppCompatActivity() {
         configureSystemBars()
         binding = ActivityOrganizationAccreditationBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        binding.accreditationLegalAcceptanceCheckbox.buttonTintList = null
 
         binding.accreditationHeader.headerTitle.setText(R.string.accreditation_title)
         binding.accreditationHeader.backButton.setOnClickListener { leaveAccreditation() }
@@ -110,7 +111,11 @@ class OrganizationAccreditationActivity : AppCompatActivity() {
         binding.accreditationPasswordToggleButton.setOnClickListener {
             togglePasswordVisibility()
         }
+        binding.accreditationLegalAcceptanceCheckbox.setOnCheckedChangeListener { _, checked ->
+            if (checked) clearLegalAcceptanceError()
+        }
         configureLegalLinks()
+        configureCheckboxTouchTarget(binding.accreditationLegalAcceptanceCheckbox)
         restorePendingDraft()
     }
 
@@ -345,10 +350,20 @@ class OrganizationAccreditationActivity : AppCompatActivity() {
     }
 
     private fun showLegalAcceptanceError() {
-        binding.accreditationLegalAcceptanceCheckbox.error =
-            getString(R.string.legal_acceptance_required)
-        binding.accreditationLegalAcceptanceCheckbox.requestFocus()
+        binding.accreditationLegalAcceptanceCheckbox.background =
+            getDrawable(R.drawable.bg_legal_acceptance_error)
+        binding.accreditationLegalAcceptanceCheckbox.buttonDrawable =
+            getDrawable(R.drawable.checkbox_legal_error_selector)
+        binding.accreditationLegalAcceptanceError.visibility = View.VISIBLE
         showErrorMessage(R.string.legal_acceptance_required)
+    }
+
+    private fun clearLegalAcceptanceError() {
+        binding.accreditationLegalAcceptanceCheckbox.background =
+            getDrawable(R.drawable.bg_legal_acceptance)
+        binding.accreditationLegalAcceptanceCheckbox.buttonDrawable =
+            getDrawable(R.drawable.checkbox_donation_selector)
+        binding.accreditationLegalAcceptanceError.visibility = View.GONE
     }
 
     private fun configureLegalLinks() {
@@ -394,6 +409,51 @@ class OrganizationAccreditationActivity : AppCompatActivity() {
         )
     }
 
+
+    private fun configureCheckboxTouchTarget(checkBox: android.widget.CompoundButton) {
+        checkBox.isClickable = false
+        val density = resources.displayMetrics.density
+
+        checkBox.setOnTouchListener { _, event ->
+            val visibleRect = android.graphics.Rect()
+            checkBox.getGlobalVisibleRect(visibleRect)
+            val iconLeft = visibleRect.left + (12 * density).toInt()
+            val iconRight = visibleRect.left + (64 * density).toInt()
+            val insideIcon = event.rawX >= iconLeft && event.rawX <= iconRight
+
+            if (insideIcon) {
+                when (event.actionMasked) {
+                    android.view.MotionEvent.ACTION_DOWN -> true
+                    android.view.MotionEvent.ACTION_UP -> {
+                        checkBox.isChecked = !checkBox.isChecked
+                        true
+                    }
+                    android.view.MotionEvent.ACTION_CANCEL -> true
+                    else -> true
+                }
+            } else {
+                !isTouchOnLegalLink(checkBox, event)
+            }
+        }
+    }
+
+    private fun isTouchOnLegalLink(
+        checkBox: android.widget.CompoundButton,
+        event: android.view.MotionEvent
+    ): Boolean {
+        val text = checkBox.text
+        val textLayout = checkBox.layout
+        if (text !is Spanned || textLayout == null) return false
+
+        val textX = event.x - checkBox.totalPaddingLeft + checkBox.scrollX
+        val textY = event.y - checkBox.totalPaddingTop + checkBox.scrollY
+        if (textX < 0 || textY < 0 || textY >= textLayout.height) return false
+
+        val line = textLayout.getLineForVertical(textY.toInt())
+        val offset = textLayout.getOffsetForHorizontal(line, textX)
+        val spanEnd = minOf(offset + 1, text.length)
+        return text.getSpans(offset, spanEnd, ClickableSpan::class.java).isNotEmpty()
+    }
     private fun setRequiredLabel(label: TextView, textRes: Int) {
         val text = getString(textRes)
         val styledText = SpannableString(text)

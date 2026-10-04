@@ -174,11 +174,31 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:buttonTint="@color/pine700"
+            android:background="@drawable/bg_legal_acceptance"
+            android:button="@drawable/checkbox_donation_selector"
+            android:drawablePadding="0dp"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:gravity="center_vertical"
             android:minHeight="48dp"
+            android:paddingStart="16dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="4dp"
             android:text="@string/legal_acceptance_checkbox"
             android:textColor="@color/ink"
-            android:textSize="@dimen/text_size_location_address" />
+            android:textSize="@dimen/text_size_details_body" />
+
+        <TextView
+            android:id="@+id/legal_acceptance_error"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="2dp"
+            android:text="@string/legal_acceptance_required_short"
+            android:textColor="@color/alert600"
+            android:textSize="@dimen/text_size_details_body"
+            android:visibility="gone" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/register_button"
@@ -195,16 +215,7 @@
             app:backgroundTint="@color/clay600"
             app:cornerRadius="14dp" />
 
-        <TextView
-            android:id="@+id/terms_link"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:gravity="center"
-            android:lineSpacingExtra="1dp"
-            android:text="@string/register_terms"
-            android:textColor="@color/ink600"
-            android:textSize="@dimen/text_size_location_address" />
+
     </LinearLayout>
     </ScrollView>
 </LinearLayout>

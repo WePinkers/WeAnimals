@@ -3,5 +3,5 @@
     <item
         android:drawable="@drawable/ic_checkbox_checked_inset"
         android:state_checked="true" />
-    <item android:drawable="@drawable/ic_checkbox_unchecked_inset" />
+    <item android:drawable="@drawable/ic_checkbox_unchecked_error_inset" />
 </selector>

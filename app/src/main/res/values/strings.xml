@@ -132,8 +132,10 @@
     <string name="register_password_hint">Crie uma senha forte</string>
     <string name="register_button">Concluir cadastro</string>
     <string name="register_terms">Ao continuar, você concorda com nossos Termos de Uso e Política de Privacidade.</string>
-    <string name="legal_acceptance_checkbox">Li e aceito os documentos acima.</string>
+    <string name="legal_acceptance_checkbox">Li e aceito os Termos de Uso e a Política de Privacidade.</string>
+    <string name="legal_acceptance_checkbox_short">Li e aceito os documentos acima.</string>
     <string name="legal_acceptance_required">Para continuar, aceite os Termos de Uso e a Política de Privacidade.</string>
+    <string name="legal_acceptance_required_short">Marque a caixa acima para continuar.</string>
     <string name="legal_terms_label">Termos de Uso</string>
     <string name="legal_privacy_label">Política de Privacidade</string>
     <string name="legal_terms_title">Termos de Uso</string>
