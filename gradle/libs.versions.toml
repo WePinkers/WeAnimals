@@ -1,5 +1,6 @@
 [versions]
 agp = "9.1.1"
+kotlin = "2.0.21"
 coreKtx = "1.18.0"
 firebaseBom = "34.18.0"
 junit = "4.13.2"
@@ -37,7 +38,9 @@ play-services-auth = { module = "com.google.android.gms:play-services-auth", ver
 androidx-recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerview" }
 androidx-viewpager2 = { module = "androidx.viewpager2:viewpager2", version.ref = "viewpager2" }
 coil = { module = "io.coil-kt:coil", version.ref = "coil" }
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

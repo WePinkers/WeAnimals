@@ -6,6 +6,8 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
 
     <application
         android:allowBackup="true"
@@ -131,9 +133,10 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/share_file_paths" />
+                android:resource="@xml/file_paths" />
         </provider>
         <activity android:name=".profile.overview.presentation.ProfileActivity" android:exported="false" />
+        <activity android:name=".lostandfound.presentation.ReportLostPetActivity" android:exported="false" />
         <activity android:name=".profile.reports.presentation.MyReportsActivity" android:exported="false" />
         <activity android:name=".profile.campaigns.presentation.CampaignsActivity" android:exported="false" />
         <activity android:name=".profile.favorites.presentation.FavoritesActivity" android:exported="false" />
