@@ -1,48 +1,33 @@
 package com.example.weanimals.profile.overview.presentation
 
+import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.net.Uri
 import android.os.Bundle
 import android.view.Window
 import android.view.WindowManager
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color as ComposeColor
-import androidx.compose.ui.unit.dp
 import com.example.weanimals.R
 import com.example.weanimals.WeAnimalsApplication
 import com.example.weanimals.community.feed.domain.CommunityFeedItem
 import com.example.weanimals.community.feed.repository.CommunityRepositoryFactory
 import com.example.weanimals.core.navigation.MainNavigation
-import com.example.weanimals.databinding.DialogLogoutConfirmationBinding
 import com.example.weanimals.databinding.ActivityProfileBinding
+import com.example.weanimals.databinding.DialogEditProfileBinding
+import com.example.weanimals.databinding.DialogLogoutConfirmationBinding
+import com.example.weanimals.databinding.DialogPhotoOptionsBinding
 import com.example.weanimals.entry.presentation.EntryActivity
 import com.example.weanimals.lostandfound.presentation.ReportLostPetActivity
 import com.example.weanimals.profile.campaigns.presentation.CampaignsActivity
 import com.example.weanimals.profile.favorites.presentation.FavoritesActivity
 import com.example.weanimals.profile.overview.presenter.ProfileContract
-import com.example.weanimals.profile.presentation.EditarPerfilBottomSheet
-import com.example.weanimals.profile.presentation.LostAndFoundSection
-import com.example.weanimals.profile.presentation.OpcoesFotoBottomSheet
-import com.example.weanimals.profile.presentation.ProfileHeaderCard
 import com.example.weanimals.profile.reports.presentation.MyReportsActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -57,11 +42,24 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
     }
     private val communityRepository by lazy { CommunityRepositoryFactory.create() }
 
-    private var nomeAtual by mutableStateOf("Usuario")
-    private var bioAtual by mutableStateOf<String?>(null)
-    private var fotoUrlState by mutableStateOf<String?>(null)
+    private var nomeAtual = "Usuário"
+    private var bioAtual: String? = null
+    private var fotoUri: Uri? = null
 
-    @OptIn(ExperimentalMaterial3Api::class)
+    private val galleryLauncher = registerForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri -> updatePhoto(uri) }
+
+    private val cameraLauncher = registerForActivityResult(
+        ActivityResultContracts.TakePicturePreview()
+    ) { bitmap ->
+        if (bitmap != null) {
+            binding.profileContent.profileHeader.profileAvatarImage.setImageBitmap(bitmap)
+            binding.profileContent.profileHeader.profileAvatarImage.visibility = android.view.View.VISIBLE
+            binding.profileContent.profileHeader.profileAvatarInitial.visibility = android.view.View.GONE
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, true)
@@ -73,77 +71,22 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
         binding = ActivityProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
         MainNavigation.bind(this, binding.mainNavigation, MainNavigation.Destination.PROFILE)
+        setupProfileActions()
+    }
 
-        binding.profileContent.composeProfileHeader.setContent {
-            var mostrarEdicaoPerfil by remember { mutableStateOf(false) }
-            var mostrarOpcoesFoto by remember { mutableStateOf(false) }
-
-            val snackbarHostState = remember { SnackbarHostState() }
-            val coroutineScope = rememberCoroutineScope()
-
-            Box(modifier = Modifier.fillMaxWidth()) {
-                ProfileHeaderCard(
-                    nome = nomeAtual,
-                    fotoUrl = fotoUrlState,
-                    bio = bioAtual,
-                    onEditarClick = { mostrarEdicaoPerfil = true },
-                    onEditarFotoClick = { mostrarOpcoesFoto = true },
-                )
-
-                SnackbarHost(
-                    hostState = snackbarHostState,
-                    modifier = Modifier.align(Alignment.BottomCenter),
-                ) { snackbarData ->
-                    Snackbar(
-                        snackbarData = snackbarData,
-                        containerColor = ComposeColor(0xFF1C3322),
-                        contentColor = ComposeColor.White,
-                        shape = RoundedCornerShape(12.dp),
-                    )
-                }
-
-                if (mostrarEdicaoPerfil) {
-                    EditarPerfilBottomSheet(
-                        nomeAtual = nomeAtual,
-                        bioAtual = bioAtual,
-                        fotoUrl = fotoUrlState,
-                        onDismissRequest = { mostrarEdicaoPerfil = false },
-                        onSalvarClick = { novoNome, novaBio ->
-                            nomeAtual = novoNome
-                            bioAtual = novaBio
-                            mostrarEdicaoPerfil = false
-                            coroutineScope.launch {
-                                snackbarHostState.showSnackbar("Perfil atualizado")
-                            }
-                        },
-                        onEditarFotoClick = {
-                            mostrarEdicaoPerfil = false
-                            mostrarOpcoesFoto = true
-                        },
-                        onCancelar = { mostrarEdicaoPerfil = false },
-                    )
-                }
-
-                if (mostrarOpcoesFoto) {
-                    OpcoesFotoBottomSheet(
-                        temFotoCustomizada = !fotoUrlState.isNullOrEmpty(),
-                        onDismissRequest = { mostrarOpcoesFoto = false },
-                        onTirarFotoClick = {
-                            mostrarOpcoesFoto = false
-                        },
-                        onEscolherGaleriaClick = {
-                            mostrarOpcoesFoto = false
-                        },
-                        onRemoverFotoClick = {
-                            fotoUrlState = null
-                            mostrarOpcoesFoto = false
-                        },
-                        onCancelar = { mostrarOpcoesFoto = false },
-                    )
-                }
-            }
+    private fun setupProfileActions() {
+        binding.profileContent.profileHeader.profileEdit.setOnClickListener {
+            showEditProfileDialog()
         }
-
+        binding.profileContent.profileHeader.profileBio.setOnClickListener {
+            showEditProfileDialog()
+        }
+        binding.profileContent.profileHeader.profileEditPhoto.setOnClickListener {
+            showPhotoOptions()
+        }
+        binding.profileContent.lostAndFoundSection.reportLostPet.setOnClickListener {
+            startActivity(Intent(this, ReportLostPetActivity::class.java))
+        }
         binding.profileContent.itemMyReports.root.setOnClickListener {
             startActivity(Intent(this, MyReportsActivity::class.java))
         }
@@ -156,11 +99,7 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
         binding.profileContent.logoutButton.setOnClickListener {
             showLogoutConfirmation()
         }
-        binding.profileContent.composeLostAndFound.setContent {
-            LostAndFoundSection {
-                startActivity(Intent(this, ReportLostPetActivity::class.java))
-            }
-        }
+        updateHeader()
     }
 
     override fun onStart() {
@@ -183,6 +122,7 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
     override fun showIdentity(name: String?) {
         if (!name.isNullOrBlank()) {
             nomeAtual = name
+            updateHeader()
         }
     }
 
@@ -192,6 +132,75 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
 
     override fun showReportsError() {
         binding.profileContent.reportCount.text = "—"
+    }
+
+    private fun updateHeader() {
+        binding.profileContent.profileHeader.profileName.text = nomeAtual
+        binding.profileContent.profileHeader.profileAvatarInitial.text =
+            nomeAtual.firstOrNull()?.uppercase() ?: "U"
+        binding.profileContent.profileHeader.profileBio.text =
+            bioAtual?.takeIf(String::isNotBlank) ?: "Toque para adicionar bio"
+    }
+
+    private fun updatePhoto(uri: Uri?) {
+        fotoUri = uri
+        val image = binding.profileContent.profileHeader.profileAvatarImage
+        val initial = binding.profileContent.profileHeader.profileAvatarInitial
+        if (uri == null) {
+            image.setImageDrawable(null)
+            image.visibility = android.view.View.GONE
+            initial.visibility = android.view.View.VISIBLE
+        } else {
+            image.setImageURI(uri)
+            image.visibility = android.view.View.VISIBLE
+            initial.visibility = android.view.View.GONE
+        }
+    }
+
+    private fun showEditProfileDialog() {
+        val dialogBinding = DialogEditProfileBinding.inflate(layoutInflater)
+        dialogBinding.editName.setText(nomeAtual)
+        dialogBinding.editBio.setText(bioAtual.orEmpty())
+        AlertDialog.Builder(this)
+            .setTitle("Editar perfil")
+            .setView(dialogBinding.root)
+            .setNegativeButton("Cancelar", null)
+            .setPositiveButton("Salvar") { _, _ ->
+                val newName = dialogBinding.editName.text.toString().trim()
+                if (newName.isNotBlank()) nomeAtual = newName
+                bioAtual = dialogBinding.editBio.text.toString().trim().takeIf(String::isNotBlank)
+                updateHeader()
+            }
+            .show()
+    }
+
+    private fun showPhotoOptions() {
+        val dialog = Dialog(this)
+        val dialogBinding = DialogPhotoOptionsBinding.inflate(layoutInflater)
+        dialog.setContentView(dialogBinding.root)
+        dialog.setTitle("Foto do perfil")
+        dialogBinding.takePhotoButton.setOnClickListener {
+            dialog.dismiss()
+            cameraLauncher.launch(null)
+        }
+        dialogBinding.choosePhotoButton.setOnClickListener {
+            dialog.dismiss()
+            galleryLauncher.launch("image/*")
+        }
+        dialogBinding.removePhotoButton.setOnClickListener {
+            dialog.dismiss()
+            updatePhoto(null)
+        }
+        dialog.setOnShowListener {
+            dialog.window?.apply {
+                setBackgroundDrawable(ColorDrawable(Color.WHITE))
+                setLayout(
+                    (resources.displayMetrics.widthPixels * 0.86f).toInt(),
+                    WindowManager.LayoutParams.WRAP_CONTENT
+                )
+            }
+        }
+        dialog.show()
     }
 
     private fun loadCampaignSummary() {
@@ -224,7 +233,6 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
 
     private fun showLogoutConfirmation() {
         logoutDialog?.dismiss()
-
         val dialog = Dialog(this)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         val dialogBinding = DialogLogoutConfirmationBinding.inflate(layoutInflater)
@@ -257,9 +265,7 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
         FirebaseAuth.getInstance().signOut()
         GoogleSignIn.getClient(this, GoogleSignInOptions.DEFAULT_SIGN_IN)
             .signOut()
-            .addOnCompleteListener {
-                openEntry()
-            }
+            .addOnCompleteListener { openEntry() }
     }
 
     private fun openEntry() {

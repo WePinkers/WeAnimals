@@ -14,18 +14,11 @@
         android:orientation="vertical"
         tools:ignore="BaselineAlignedChildLayout">
 
-        <!-- Header Section (Fundo Verde Escuro Topo) -->
-        <FrameLayout
+        <include
+            android:id="@+id/profile_header"
+            layout="@layout/view_profile_header"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/ink"
-            android:paddingBottom="48dp">
-
-            <androidx.compose.ui.platform.ComposeView
-                android:id="@+id/compose_profile_header"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </FrameLayout>
+            android:layout_height="wrap_content" />
 
         <!-- Content Section -->
         <LinearLayout
@@ -141,12 +134,11 @@
                 android:background="@color/border"
                 android:layout_marginHorizontal="0dp"/>
 
-            <!-- Lost and Found Compose Section -->
-            <androidx.compose.ui.platform.ComposeView
-                android:id="@+id/compose_lost_and_found"
+            <include
+                android:id="@+id/lost_and_found_section"
+                layout="@layout/view_lost_and_found_section"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp" />
+                android:layout_height="wrap_content" />
 
             <LinearLayout
                 android:id="@+id/logout_button"
