@@ -279,9 +279,9 @@ class HomeActivity : AppCompatActivity(), HomeContract.View, MapContract.View {
     override fun showError() {}
 
     override fun showLoading() {
-        if (binding.reportsContainer.childCount == 0) {
-            binding.reportsEmpty.visibility = View.GONE
-        }
+        binding.reportsContainer.removeAllViews()
+        binding.reportsEmpty.text = getString(R.string.reports_loading)
+        binding.reportsEmpty.visibility = View.VISIBLE
     }
 
     override fun showReports(reports: List<Report>) {

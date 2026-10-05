@@ -427,6 +427,7 @@
     <string name="follow_case_feedback">O acompanhamento do caso estará disponível em breve.</string>
     <string name="sent_protocol_format">PROTOCOLO #%1$d</string>
     <string name="no_reports">Você ainda não fez nenhuma denúncia.</string>
+    <string name="reports_loading">Carregando suas denúncias…</string>
     <string name="reports_load_error">Não foi possível carregar suas denúncias.</string>
     <string name="report_card_title">%1$s — %2$s</string>
     <string name="report_protocol_format">Protocolo #%1$d</string>

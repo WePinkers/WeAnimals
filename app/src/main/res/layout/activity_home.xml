@@ -202,7 +202,7 @@
                 android:text="@string/no_reports"
                 android:textColor="@color/muted"
                 android:textSize="@dimen/text_size_report_body"
-                android:visibility="gone" />
+                android:visibility="visible" />
 
         </LinearLayout>
     </ScrollView>
