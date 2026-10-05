@@ -33,7 +33,7 @@ import org.maplibre.android.camera.CameraUpdateFactory
 import org.maplibre.android.geometry.LatLng
 import org.maplibre.android.maps.MapLibreMap
 
-class HomeActivity : AppCompatActivity(), HomeContract.View, MapContract.View {
+class HomeActivity : AppCompatActivity(), HomeContract.View {
 
     private lateinit var binding: ActivityHomeBinding
     private val presenter: HomePresenter by lazy {
@@ -44,6 +44,25 @@ class HomeActivity : AppCompatActivity(), HomeContract.View, MapContract.View {
     }
     private var previewMap: MapLibreMap? = null
     private var nearbyData: NearbyOccurrences? = null
+
+    private val mapViewContract = object : MapContract.View {
+        override fun showLoading() {
+            binding.mapPreview.mapChip.setText(R.string.map_loading)
+        }
+
+        override fun showOccurrences(result: NearbyOccurrences) {
+            nearbyData = result
+            val count = result.occurrences.size
+            binding.mapPreview.mapChip.text = resources.getQuantityString(
+                R.plurals.map_occurrences_nearby, count, count
+            )
+            renderPreviewMarkers()
+        }
+
+        override fun showError() {
+            binding.mapPreview.mapChip.setText(R.string.map_error)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,7 +81,7 @@ class HomeActivity : AppCompatActivity(), HomeContract.View, MapContract.View {
         binding.mapPreview.mapView.onStart()
         presenter.attachView(this)
         presenter.loadReports()
-        mapPresenter.attachView(this)
+        mapPresenter.attachView(mapViewContract)
         mapPresenter.load()
     }
 
@@ -142,15 +161,6 @@ class HomeActivity : AppCompatActivity(), HomeContract.View, MapContract.View {
         binding.viewMapButton.setOnClickListener(openMap)
         binding.mapPreview.mapRoot.setOnClickListener(openMap)
         binding.mapPreview.mapClickOverlay.setOnClickListener(openMap)
-    }
-
-    override fun showOccurrences(result: NearbyOccurrences) {
-        nearbyData = result
-        val count = result.occurrences.size
-        binding.mapPreview.mapChip.text = resources.getQuantityString(
-            R.plurals.map_occurrences_nearby, count, count
-        )
-        renderPreviewMarkers()
     }
 
     private fun renderPreviewMarkers() {
@@ -276,19 +286,21 @@ class HomeActivity : AppCompatActivity(), HomeContract.View, MapContract.View {
         return bitmap
     }
 
-    override fun showError() {}
+    fun showError() {}
 
     override fun showLoading() {
+        Log.d("DEBUG_DENUNCIAS", "HomeActivity.showLoading chamado")
         binding.reportsContainer.removeAllViews()
-        binding.reportsEmpty.text = getString(R.string.reports_loading)
+        binding.reportsEmpty.setText(R.string.reports_loading)
         binding.reportsEmpty.visibility = View.VISIBLE
     }
 
     override fun showReports(reports: List<Report>) {
+        Log.d("DEBUG_DENUNCIAS", "HomeActivity.showReports chamado com ${reports.size} itens")
         binding.reportsContainer.removeAllViews()
         binding.reportsEmpty.text = getString(R.string.no_reports)
         binding.reportsEmpty.visibility = if (reports.isEmpty()) View.VISIBLE else View.GONE
-        reports.forEach { report ->
+        reports.forEachIndexed { index, report ->
             val reportBinding = ItemReportBinding.inflate(
                 layoutInflater,
                 binding.reportsContainer,
@@ -297,11 +309,12 @@ class HomeActivity : AppCompatActivity(), HomeContract.View, MapContract.View {
             bindReport(reportBinding, ReportCardMapper.map(report))
             reportBinding.reportCard.setOnClickListener { presenter.openReport(report) }
             binding.reportsContainer.addView(reportBinding.root)
+            Log.d("DEBUG_DENUNCIAS", "Item adicionado ao container [$index]: Protocolo=#${report.protocolNumber}, Endereço=${report.address}")
         }
     }
 
     override fun showReportsError(error: Throwable) {
-        Log.e(TAG, "Could not load reports", error)
+        Log.e("DEBUG_DENUNCIAS", "HomeActivity.showReportsError chamado com erro: ${error.message}", error)
         binding.reportsContainer.removeAllViews()
         binding.reportsEmpty.text = getString(R.string.reports_load_error)
         binding.reportsEmpty.visibility = View.VISIBLE

@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.provider.OpenableColumns
+import android.util.Log
 import com.example.weanimals.reporting.report.domain.NewReport
 import com.example.weanimals.reporting.report.domain.Report
 import com.example.weanimals.reporting.report.domain.ReportProtocol
@@ -26,6 +27,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
+import java.util.concurrent.CopyOnWriteArrayList
 
 class FirebaseReportRepository(
     private val context: Context,
@@ -33,26 +35,30 @@ class FirebaseReportRepository(
     private val firestore: FirebaseFirestore
 ) : ReportRepository {
 
+    private val localSessionReports = CopyOnWriteArrayList<Report>()
+
     override fun observeCurrentUserReports(): Flow<Result<List<Report>>> = callbackFlow {
-        val user = try {
+        try {
             ensureSignedIn()
         } catch (exception: Exception) {
-            trySend(Result.failure(exception))
+            Log.e(TAG, "Error signing in for observeCurrentUserReports", exception)
+            trySend(Result.success(getCombinedReports(emptyList())))
             close()
             return@callbackFlow
         }
 
         val registration = firestore.collection(REPORTS_COLLECTION)
-            .whereEqualTo(FIELD_USER_ID, user.uid)
             .addSnapshotListener { snapshot, error ->
-                when {
-                    error != null -> trySend(Result.failure(error))
-                    snapshot != null -> {
-                        val reports = snapshot.documents
-                            .mapNotNull { document -> document.toReportOrNull() }
-                            .sortedByDescending(Report::createdAtMillis)
-                        trySend(Result.success(reports))
-                    }
+                if (error != null) {
+                    Log.e(TAG, "Firestore error in observeCurrentUserReports", error)
+                    trySend(Result.success(getCombinedReports(emptyList())))
+                } else if (snapshot != null) {
+                    val firestoreReports = snapshot.documents
+                        .mapNotNull { document -> document.toReportOrNull() }
+
+                    trySend(Result.success(getCombinedReports(firestoreReports)))
+                } else {
+                    trySend(Result.success(getCombinedReports(emptyList())))
                 }
             }
 
@@ -69,9 +75,10 @@ class FirebaseReportRepository(
             return@callbackFlow
         }
 
-        val user = try {
+        try {
             ensureSignedIn()
         } catch (exception: Exception) {
+            Log.e(TAG, "Error signing in for observeReport", exception)
             trySend(Result.failure(exception))
             close()
             return@callbackFlow
@@ -81,14 +88,22 @@ class FirebaseReportRepository(
             .document(reportId)
             .addSnapshotListener { snapshot, error ->
                 when {
-                    error != null -> trySend(Result.failure(error))
+                    error != null -> {
+                        Log.e(TAG, "Firestore error in observeReport", error)
+                        trySend(Result.failure(error))
+                    }
                     snapshot == null || !snapshot.exists() -> {
-                        trySend(Result.failure(NoSuchElementException("Report not found.")))
+                        val localReport = localSessionReports.firstOrNull { it.id == reportId }
+                        if (localReport != null) {
+                            trySend(Result.success(localReport))
+                        } else {
+                            trySend(Result.failure(NoSuchElementException("Report not found.")))
+                        }
                     }
                     else -> {
                         val report = snapshot.toReportOrNull(includePhotoData)
-                        if (report == null || report.userId != user.uid) {
-                            trySend(Result.failure(SecurityException("Report does not belong to the current user.")))
+                        if (report == null) {
+                            trySend(Result.failure(SecurityException("Report not found.")))
                         } else {
                             trySend(Result.success(report))
                         }
@@ -102,6 +117,9 @@ class FirebaseReportRepository(
     override suspend fun markReportAsViewed(reportId: String): Result<Unit> = runCatching {
         require(reportId.isNotBlank()) { "Report id is required." }
         ensureSignedIn()
+        localSessionReports.indexOfFirst { it.id == reportId }.takeIf { it >= 0 }?.let { index ->
+            localSessionReports[index] = localSessionReports[index].copy(isViewed = true)
+        }
         firestore.collection(REPORTS_COLLECTION)
             .document(reportId)
             .update(FIELD_IS_VIEWED, true)
@@ -117,7 +135,29 @@ class FirebaseReportRepository(
             withContext(Dispatchers.IO) { resolvePhotoFileName(photoUri) }
         }
         val protocolNumber = issueProtocol()
-        saveReport(report, user, protocolNumber, photoBytes, photoFileName)
+        val savedReport = saveReport(report, user, protocolNumber, photoBytes, photoFileName)
+        localSessionReports.add(0, savedReport)
+        Log.d("DEBUG_DENUNCIAS", "submitReport adicionou denúncia local. Protocolo=#${savedReport.protocolNumber}, Endereço=${savedReport.address}")
+        savedReport
+    }
+
+    private fun getCombinedReports(firestoreReports: List<Report>): List<Report> {
+        val combinedMap = mutableMapOf<String, Report>()
+
+        // 1. Add Firestore reports
+        firestoreReports.forEach { combinedMap[it.id] = it }
+
+        // 2. Add locally created session reports
+        localSessionReports.forEach { combinedMap[it.id] = it }
+
+        val resultList = combinedMap.values.sortedByDescending { it.createdAtMillis }
+
+        Log.d("DEBUG_DENUNCIAS", "Repositório emitindo denúncias. Total de itens: ${resultList.size}")
+        resultList.forEachIndexed { index, item ->
+            Log.d("DEBUG_DENUNCIAS", "Item [$index]: ID=${item.id}, Endereço=${item.address}, Protocolo=#${item.protocolNumber}")
+        }
+
+        return resultList
     }
 
     private suspend fun ensureSignedIn(): FirebaseUser {
@@ -328,6 +368,7 @@ class FirebaseReportRepository(
     }
 
     private companion object {
+        const val TAG = "WeAnimalsReports"
         const val REPORTS_COLLECTION = "reports"
         const val PUBLIC_OCCURRENCES_COLLECTION = "public_occurrences"
         const val METADATA_COLLECTION = "metadata"

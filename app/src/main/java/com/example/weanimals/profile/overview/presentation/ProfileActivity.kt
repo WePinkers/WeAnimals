@@ -109,6 +109,11 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
         loadCampaignSummary()
     }
 
+    override fun onResume() {
+        super.onResume()
+        presenter.start()
+    }
+
     override fun onStop() {
         presenter.detachView()
         super.onStop()
@@ -131,7 +136,7 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
     }
 
     override fun showReportsError() {
-        binding.profileContent.reportCount.text = "—"
+        binding.profileContent.reportCount.text = "0"
     }
 
     private fun updateHeader() {
@@ -222,7 +227,7 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
                     }
                 },
                 onFailure = {
-                    binding.profileContent.campaignCount.text = "—"
+                    binding.profileContent.campaignCount.text = "0"
                     binding.profileContent.itemCampaigns.campaignsDescription.setText(
                         R.string.profile_campaigns_count_error
                     )
