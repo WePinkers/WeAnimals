@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-feature android:name="android.hardware.camera" android:required="false" />
 
     <application
@@ -125,6 +126,14 @@
             android:name=".reporting.chat.presentation.CaseChatActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
+
+        <receiver
+            android:name=".core.notification.NotificationTestReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.example.weanimals.TEST_NOTIFICATION" />
+            </intent-filter>
+        </receiver>
 
         <provider
             android:name="androidx.core.content.FileProvider"

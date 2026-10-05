@@ -1,13 +1,17 @@
 package com.example.weanimals.home.presentation
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Typeface
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
@@ -45,6 +49,14 @@ class HomeActivity : AppCompatActivity(), HomeContract.View {
     private var previewMap: MapLibreMap? = null
     private var nearbyData: NearbyOccurrences? = null
 
+    private val notificationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (!isGranted) {
+            Log.w(TAG, "Notification permission was not granted by user.")
+        }
+    }
+
     private val mapViewContract = object : MapContract.View {
         override fun showLoading() {
             binding.mapPreview.mapChip.setText(R.string.map_loading)
@@ -73,6 +85,7 @@ class HomeActivity : AppCompatActivity(), HomeContract.View {
         binding.mapPreview.mapView.onCreate(savedInstanceState)
         setupInteractions()
         configureMapPreview()
+        checkNotificationPermission()
         MainNavigation.bind(this, binding.mainNavigation, MainNavigation.Destination.HOME)
     }
 
@@ -139,6 +152,18 @@ class HomeActivity : AppCompatActivity(), HomeContract.View {
         }
 
         binding.greetingText.text = formattedGreeting
+    }
+
+    private fun checkNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
     }
 
     private fun configureMapPreview() {
