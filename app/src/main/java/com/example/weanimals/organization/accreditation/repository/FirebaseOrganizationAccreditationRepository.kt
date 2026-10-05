@@ -5,6 +5,7 @@ import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import java.security.MessageDigest
 import kotlinx.coroutines.tasks.await
 
 class FirebaseOrganizationAccreditationRepository(
@@ -64,28 +65,48 @@ class FirebaseOrganizationAccreditationRepository(
         user.reload().await()
         user.getIdToken(true).await()
         if (!user.isEmailVerified) {
+            auth.setLanguageCode("pt-BR")
             user.sendEmailVerification().await()
             throw EmailVerificationRequiredException()
         }
         val request = firestore.collection(REQUESTS_COLLECTION).document()
         try {
-            request.set(
-                mapOf(
-                    "requesterId" to user.uid,
-                    "cnpj" to cnpj.filter(Char::isDigit),
-                    "legalName" to legalName,
-                    "institutionalEmail" to institutionalEmail,
-                    "documentName" to documentName,
-                    "documentSizeBytes" to documentSizeBytes,
-                    "documentContentType" to documentContentType,
-                    "pixKey" to pixKey,
-                    "status" to STATUS_PENDING,
-                    "createdAt" to FieldValue.serverTimestamp(),
-                    "termsAcceptedAt" to FieldValue.serverTimestamp(),
-                    "privacyAcceptedAt" to FieldValue.serverTimestamp(),
-                    "legalVersion" to LEGAL_VERSION
+            val normalizedCnpj = cnpj.filter(Char::isDigit)
+            val identifierReference = firestore.collection(IDENTIFIERS_COLLECTION)
+                .document(hash(normalizedCnpj))
+            val identifierAlreadyExists = identifierReference.get().await().exists()
+            firestore.runBatch { batch ->
+                batch.set(
+                    request,
+                    mapOf(
+                        "requesterId" to user.uid,
+                        "cnpj" to normalizedCnpj,
+                        "legalName" to legalName,
+                        "institutionalEmail" to institutionalEmail,
+                        "documentName" to documentName,
+                        "documentSizeBytes" to documentSizeBytes,
+                        "documentContentType" to documentContentType,
+                        "pixKey" to pixKey,
+                        "status" to STATUS_PENDING,
+                        "createdAt" to FieldValue.serverTimestamp(),
+                        "termsAcceptedAt" to FieldValue.serverTimestamp(),
+                        "privacyAcceptedAt" to FieldValue.serverTimestamp(),
+                        "legalVersion" to LEGAL_VERSION
+                    )
                 )
-            ).await()
+                if (!identifierAlreadyExists) {
+                    batch.set(
+                        identifierReference,
+                        mapOf(
+                            "email" to institutionalEmail,
+                            "userId" to user.uid,
+                            "status" to STATUS_PENDING,
+                            "requestId" to request.id,
+                            "cnpj" to normalizedCnpj
+                        )
+                    )
+                }
+            }.await()
         } catch (error: Throwable) {
             if (linkedAnonymousAccount) {
                 runCatching {
@@ -98,10 +119,16 @@ class FirebaseOrganizationAccreditationRepository(
 
     private companion object {
         const val REQUESTS_COLLECTION = "organization_verification_requests"
+        const val IDENTIFIERS_COLLECTION = "organization_identifiers"
         const val LEGAL_VERSION = "2026-10-04"
         const val CITIZEN_PROFILES_COLLECTION = "user_profiles"
         const val STATUS_PENDING = "pending"
     }
+
+    private fun hash(value: String): String = MessageDigest
+        .getInstance("SHA-256")
+        .digest(value.toByteArray())
+        .joinToString(separator = "") { byte -> "%02x".format(byte) }
 
     class EmailVerificationRequiredException : Exception()
 }

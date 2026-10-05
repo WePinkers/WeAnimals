@@ -243,11 +243,7 @@ class LoginActivity : AppCompatActivity() {
 
     private fun isCredentialFailure(error: Throwable): Boolean {
         val firebaseCode = (error as? FirebaseAuthException)?.errorCode
-        return error is FirebaseAuthRepository.AccountNotFoundException ||
-            error is FirebaseAuthRepository.OrganizationAccountNotFoundException ||
-            error is FirebaseAuthInvalidCredentialsException ||
-            error is FirebaseAuthInvalidUserException ||
-            firebaseCode == "ERROR_USER_NOT_FOUND" ||
+        return error is FirebaseAuthInvalidCredentialsException ||
             firebaseCode == "ERROR_WRONG_PASSWORD" ||
             firebaseCode == "ERROR_INVALID_CREDENTIAL" ||
             firebaseCode == "ERROR_INVALID_LOGIN_CREDENTIALS"

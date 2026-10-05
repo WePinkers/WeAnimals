@@ -41,7 +41,7 @@
                     android:layout_height="match_parent"
                     android:contentDescription="@null"
                     android:src="@drawable/ic_lock_outline"
-                    app:tint="@color/white" />
+                    app:tint="@color/brass500" />
             </FrameLayout>
 
             <TextView
