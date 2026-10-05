@@ -367,7 +367,7 @@ class OrganizationAccreditationActivity : AppCompatActivity() {
     }
 
     private fun configureLegalLinks() {
-        val fullText = getString(R.string.register_terms)
+        val fullText = getString(R.string.legal_acceptance_checkbox)
         val termsLabel = getString(R.string.legal_terms_label)
         val privacyLabel = getString(R.string.legal_privacy_label)
         val styledText = SpannableString(fullText)
@@ -379,9 +379,9 @@ class OrganizationAccreditationActivity : AppCompatActivity() {
             openLegalDocument(LegalDocumentActivity.DOCUMENT_PRIVACY)
         }
 
-        binding.accreditationTermsLink.text = styledText
-        binding.accreditationTermsLink.movementMethod = LinkMovementMethod.getInstance()
-        binding.accreditationTermsLink.highlightColor = Color.TRANSPARENT
+        binding.accreditationLegalAcceptanceCheckbox.text = styledText
+        binding.accreditationLegalAcceptanceCheckbox.movementMethod = LinkMovementMethod.getInstance()
+        binding.accreditationLegalAcceptanceCheckbox.highlightColor = Color.TRANSPARENT
     }
 
     private fun addLegalLink(text: SpannableString, label: String, action: () -> Unit) {

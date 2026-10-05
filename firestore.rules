@@ -52,11 +52,37 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
-    // CNPJ lookup for the institutional login. Records are provisioned by the
-    // administrative/credenciamento flow, never by the mobile client.
+    // CNPJ lookup for the institutional login. A pending identifier is created
+    // only by the verified requester in the same batch as its pending request.
     match /organization_identifiers/{identifierId} {
       allow read: if signedIn();
-      allow create, update, delete: if false;
+      allow create: if signedIn()
+        && request.auth.token.email_verified == true
+        && request.resource.data.keys().hasOnly([
+          'email', 'userId', 'status', 'requestId', 'cnpj'
+        ])
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.email is string
+        && request.resource.data.email.size() > 0
+        && request.resource.data.status == 'pending'
+        && request.resource.data.requestId is string
+        && request.resource.data.cnpj is string
+        && request.resource.data.cnpj.size() == 14
+        && !exists(
+          /databases/$(database)/documents/organization_identifiers/$(identifierId)
+        )
+        && getAfter(
+          /databases/$(database)/documents/organization_verification_requests/$(request.resource.data.requestId)
+        ).data.requesterId == request.auth.uid
+        && getAfter(
+          /databases/$(database)/documents/organization_verification_requests/$(request.resource.data.requestId)
+        ).data.cnpj == request.resource.data.cnpj
+        && getAfter(
+          /databases/$(database)/documents/organization_verification_requests/$(request.resource.data.requestId)
+        ).data.status == 'pending';
+      allow update: if signedIn() && request.auth.token.admin == true;
+      allow delete: if false;
     }
 
     // Accreditation requests are created by the requester and reviewed by admins.

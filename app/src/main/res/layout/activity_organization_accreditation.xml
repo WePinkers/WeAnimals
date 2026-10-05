@@ -222,22 +222,11 @@
                 android:textColorHint="@color/ink600"
                 android:textSize="@dimen/text_size_report_body" />
 
-            <TextView
-                android:id="@+id/accreditation_terms_link"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:gravity="center"
-                android:lineSpacingExtra="1dp"
-                android:text="@string/register_terms"
-                android:textColor="@color/ink600"
-                android:textSize="@dimen/text_size_location_address" />
-
             <com.google.android.material.checkbox.MaterialCheckBox
                 android:id="@+id/accreditation_legal_acceptance_checkbox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="14dp"
                 android:background="@drawable/bg_legal_acceptance"
                 android:button="@drawable/checkbox_donation_selector"
                 android:drawablePadding="0dp"
@@ -249,7 +238,7 @@
                 android:paddingTop="4dp"
                 android:paddingEnd="10dp"
                 android:paddingBottom="4dp"
-                android:text="@string/legal_acceptance_checkbox_short"
+                android:text="@string/legal_acceptance_checkbox"
                 android:textColor="@color/ink"
                 android:textSize="@dimen/text_size_details_body" />
 
