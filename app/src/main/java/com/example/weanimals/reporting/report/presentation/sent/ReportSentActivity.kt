@@ -2,6 +2,7 @@ package com.example.weanimals.reporting.report.presentation.sent
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import com.example.weanimals.R
@@ -23,6 +24,12 @@ class ReportSentActivity : AppCompatActivity() {
         bindProtocol()
         bindClassification()
         setupInteractions()
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                navigateToHomeCleanly()
+            }
+        })
     }
 
     private fun bindProtocol() {
@@ -59,18 +66,22 @@ class ReportSentActivity : AppCompatActivity() {
         binding.followCaseButton.setOnClickListener {
             val reportId = intent.getStringExtra(EXTRA_REPORT_ID).orEmpty()
             if (reportId.isNotBlank()) {
-                startActivity(TrackingActivity.newIntent(this, reportId))
+                val intent = TrackingActivity.newIntent(this, reportId, isFromCreation = true)
+                startActivity(intent)
                 finish()
             }
         }
         binding.backHomeButton.setOnClickListener {
-            startActivity(
-                Intent(this, HomeActivity::class.java).apply {
-                    flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                }
-            )
-            finish()
+            navigateToHomeCleanly()
         }
+    }
+
+    private fun navigateToHomeCleanly() {
+        val intent = Intent(this, HomeActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        startActivity(intent)
+        finish()
     }
 
     private fun configureSystemBars() {
