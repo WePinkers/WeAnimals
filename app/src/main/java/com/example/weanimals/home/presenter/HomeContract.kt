@@ -4,6 +4,7 @@ import com.example.weanimals.reporting.report.domain.Report
 
 interface HomeContract {
     interface View {
+        fun showGreeting(name: String?)
         fun showLoading()
         fun showReports(reports: List<Report>)
         fun showReportsError(error: Throwable)

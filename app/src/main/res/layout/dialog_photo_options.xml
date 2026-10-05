@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <Button
+        android:id="@+id/take_photo_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Tirar foto" />
+
+    <Button
+        android:id="@+id/choose_photo_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Escolher da galeria" />
+
+    <Button
+        android:id="@+id/remove_photo_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Remover foto" />
+</LinearLayout>

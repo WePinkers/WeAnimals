@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    tools:context=".community.campaign.presentation.CampaignAnimalsActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <include
+            android:id="@+id/animals_header"
+            layout="@layout/view_screen_header" />
+
+        <TextView
+            android:id="@+id/animals_eyebrow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="18dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="18dp"
+            android:fontFamily="monospace"
+            android:letterSpacing="0.08"
+            android:text="@string/community_campaign_animals_eyebrow"
+            android:textColor="@color/clay600"
+            android:textSize="@dimen/text_size_report_label" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/animals_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="10dp"
+            android:layout_weight="1"
+            android:clipToPadding="false"
+            android:overScrollMode="never"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:paddingBottom="22dp"
+            android:scrollbars="vertical"
+            tools:listitem="@layout/item_campaign_animal" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/animals_state"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="28dp"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:id="@+id/animals_loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminateTint="@color/clay600" />
+
+        <TextView
+            android:id="@+id/animals_state_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:gravity="center"
+            android:textColor="@color/muted"
+            android:textSize="@dimen/text_size_report_body" />
+    </LinearLayout>
+</FrameLayout>

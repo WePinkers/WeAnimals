@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    android:background="@drawable/bg_report_card"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <FrameLayout
+            android:id="@+id/animal_photo_dropzone"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:background="@drawable/bg_campaign_animal_photo"
+            android:clickable="true"
+            android:contentDescription="@string/community_campaign_animal_photo_hint"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            android:padding="17dp">
+
+            <ImageView
+                android:id="@+id/animal_photo_preview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/animal_photo_placeholder"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_camera"
+                app:tint="@color/clay600" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/animal_name_edit"
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:background="@drawable/bg_report_card"
+                android:hint="@string/community_campaign_animal_name_hint"
+                android:inputType="textCapSentences"
+                android:maxLength="80"
+                android:paddingHorizontal="10dp"
+                android:textColor="@color/ink900"
+                android:textColorHint="@color/muted"
+                android:textSize="@dimen/text_size_report_body" />
+
+            <EditText
+                android:id="@+id/animal_meta_edit"
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/bg_report_card"
+                android:hint="@string/community_campaign_animal_meta_hint"
+                android:inputType="textCapSentences"
+                android:maxLength="160"
+                android:paddingHorizontal="10dp"
+                android:textColor="@color/ink900"
+                android:textColorHint="@color/muted"
+                android:textSize="@dimen/text_size_report_body" />
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/remove_animal_button"
+            android:layout_width="34dp"
+            android:layout_height="34dp"
+            android:layout_gravity="top"
+            android:layout_marginStart="4dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/community_campaign_remove_animal"
+            android:padding="8dp"
+            android:src="@drawable/ic_close"
+            app:tint="@color/muted" />
+    </LinearLayout>
+</LinearLayout>

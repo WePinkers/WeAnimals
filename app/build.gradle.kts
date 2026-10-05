@@ -52,6 +52,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.play.services)
     implementation(libs.play.services.location)
+    implementation(libs.play.services.auth)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
     implementation("org.maplibre.gl:android-sdk:11.8.0")
