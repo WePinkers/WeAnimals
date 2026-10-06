@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="background">#FF191D1B</color>
+    <color name="surface">#FF191D1B</color>
+    <color name="ink">#FFECF0EE</color>
+
+    <color name="pine900">#FFA9D1B9</color>
+    <color name="pine_900">#FFA9D1B9</color>
+    <color name="pine800">#FF86B89D</color>
+    <color name="pine_800">#FF86B89D</color>
+    <color name="pine700">#FF629479</color>
+    <color name="pine_700">#FF629479</color>
+    <color name="pine100">#FF232F2A</color>
+    <color name="pine_100">#FF232F2A</color>
+    <color name="sand50">#FF191D1B</color>
+
+    <color name="blue_500">#FF1E88E5</color>
+    <color name="blue_500_translucent">#331E88E5</color>
+    <color name="clay600">#FFDF8862</color>
+
+    <color name="brass500">#FFE3B864</color>
+
+    <color name="alert600">#FFE66A6A</color>
+
+    <color name="ink900">#FFECF0EE</color>
+    <color name="ink600">#FF9EA8A3</color>
+
+    <color name="line_border">#FF2D3833</color>
+    <color name="muted">#FF9EA8A3</color>
+    <color name="terracotta">#FFDF8862</color>
+    <color name="terracotta_dark">#FFE6A282</color>
+    <color name="terracotta_decor">#FFDF8862</color>
+    <color name="border">#FF2D3833</color>
+    <color name="soft_cream">#FF222825</color>
+    <color name="soft_red">#FF361717</color>
+    <color name="soft_gold">#FF382C11</color>
+    <color name="gold">#FFE3B864</color>
+    <color name="red">#FFE66A6A</color>
+    <color name="low_urgency">#FF86B89D</color>
+    <color name="low_urgency_light">#FF232F2A</color>
+    <color name="medium_urgency_light">#FF382C11</color>
+    <color name="status_pending">#FF2D3833</color>
+    <color name="map_background">#FF141816</color>
+    <color name="map_grid">#FF242A27</color>
+    <color name="triage_background">#FF261F1E</color>
+    <color name="adoption_primary">#FFA9D1B9</color>
+    <color name="community_vaccination_tint">#FF86B89D</color>
+    <color name="community_vaccination_bg">#FF232F2A</color>
+    <color name="community_campaign_border">#FF2D3833</color>
+</resources>

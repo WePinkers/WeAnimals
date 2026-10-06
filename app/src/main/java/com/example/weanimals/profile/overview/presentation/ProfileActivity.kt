@@ -19,6 +19,8 @@ import com.example.weanimals.WeAnimalsApplication
 import com.example.weanimals.community.feed.domain.CommunityFeedItem
 import com.example.weanimals.community.feed.repository.CommunityRepositoryFactory
 import com.example.weanimals.core.navigation.MainNavigation
+import com.example.weanimals.core.theme.ThemeManager
+import com.google.android.material.switchmaterial.SwitchMaterial
 import com.example.weanimals.databinding.ActivityProfileBinding
 import com.example.weanimals.databinding.DialogEditProfileBinding
 import com.example.weanimals.databinding.DialogLogoutConfirmationBinding
@@ -96,6 +98,15 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
         binding.profileContent.itemFavorites.root.setOnClickListener {
             startActivity(Intent(this, FavoritesActivity::class.java))
         }
+
+        val switchDarkMode = binding.profileContent.root.findViewById<SwitchMaterial>(R.id.switch_dark_mode)
+        switchDarkMode?.isChecked = ThemeManager.isDarkModeEnabled(this)
+        switchDarkMode?.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked != ThemeManager.isDarkModeEnabled(this)) {
+                ThemeManager.setDarkModeEnabled(this, isChecked)
+            }
+        }
+
         binding.profileContent.logoutButton.setOnClickListener {
             showLogoutConfirmation()
         }

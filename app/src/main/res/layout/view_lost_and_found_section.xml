@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/lost_and_found_section"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -29,16 +30,15 @@
         android:clickable="true"
         android:focusable="true"
         android:gravity="center_vertical"
-        android:minHeight="72dp"
         android:orientation="horizontal"
-        android:paddingVertical="12dp">
+        android:paddingVertical="16dp">
 
         <ImageView
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:contentDescription="@null"
             android:src="@drawable/ic_search"
-            android:tint="@color/ink" />
+            app:tint="@color/ink" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -48,20 +48,19 @@
             android:orientation="vertical">
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-medium"
                 android:text="Perdi ou encontrei um animal"
                 android:textColor="@color/ink"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                android:textSize="14sp" />
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
                 android:text="Encontre possíveis correspondências"
                 android:textColor="@color/muted"
-                android:textSize="13sp" />
+                android:textSize="12sp" />
         </LinearLayout>
 
         <ImageView
@@ -69,7 +68,7 @@
             android:layout_height="20dp"
             android:contentDescription="@null"
             android:src="@drawable/ic_chevron_right"
-            android:tint="@color/muted" />
+            app:tint="@color/muted" />
     </LinearLayout>
 
     <View

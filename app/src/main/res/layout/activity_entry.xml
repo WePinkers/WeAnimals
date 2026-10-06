@@ -94,7 +94,7 @@
             android:layout_marginTop="24dp"
             android:clickable="true"
             android:focusable="true"
-            android:fontFamily="sans"
+            android:fontFamily="sans-serif"
             android:padding="6dp"
             android:text="@string/entry_organization_link"
             android:textColor="@color/clay600"

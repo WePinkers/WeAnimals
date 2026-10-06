@@ -806,6 +806,8 @@
     </plurals>
     <string name="profile_campaigns_count_error">Não foi possível carregar</string>
     <string name="profile_activity_favorites">Animais favoritados</string>
+    <string name="profile_dark_mode">Modo escuro</string>
+    <string name="profile_dark_mode_desc">Ajuste a aparência do aplicativo</string>
     <string name="profile_logout">Sair da conta</string>
     <string name="profile_logout_title">Sair da conta?</string>
     <string name="profile_logout_message">Você precisará entrar novamente para acessar o WeAnimals.</string>
