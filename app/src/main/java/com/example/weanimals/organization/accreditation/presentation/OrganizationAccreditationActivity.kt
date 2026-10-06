@@ -394,6 +394,7 @@ class OrganizationAccreditationActivity : AppCompatActivity() {
                 override fun updateDrawState(drawState: TextPaint) {
                     drawState.color = getColor(R.color.pine700)
                     drawState.isUnderlineText = true
+                    drawState.isFakeBoldText = true
                 }
             },
             start,
