@@ -367,7 +367,7 @@ class OrganizationAccreditationActivity : AppCompatActivity() {
     }
 
     private fun configureLegalLinks() {
-        val fullText = getString(R.string.legal_acceptance_checkbox)
+        val fullText = getString(R.string.accreditation_legal_acceptance_checkbox)
         val termsLabel = getString(R.string.legal_terms_label)
         val privacyLabel = getString(R.string.legal_privacy_label)
         val styledText = SpannableString(fullText)

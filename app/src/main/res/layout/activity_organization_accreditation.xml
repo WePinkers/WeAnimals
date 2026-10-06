@@ -238,7 +238,7 @@
                 android:paddingTop="4dp"
                 android:paddingEnd="10dp"
                 android:paddingBottom="4dp"
-                android:text="@string/legal_acceptance_checkbox"
+                android:text="@string/accreditation_legal_acceptance_checkbox"
                 android:textColor="@color/ink"
                 android:textSize="@dimen/text_size_details_body" />
 
