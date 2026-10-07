@@ -11,6 +11,7 @@ import com.example.weanimals.reporting.report.domain.Report
 import com.example.weanimals.reporting.report.domain.ReportProtocol
 import com.example.weanimals.reporting.report.domain.ReportStatus
 import com.example.weanimals.core.location.domain.Coordinates
+import com.example.weanimals.core.notification.ReportStatusNotifier
 import com.example.weanimals.map.overview.domain.PublicOccurrence
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
@@ -42,27 +43,55 @@ class FirebaseReportRepository(
             ensureSignedIn()
         } catch (exception: Exception) {
             Log.e(TAG, "Error signing in for observeCurrentUserReports", exception)
-            trySend(Result.success(getCombinedReports(emptyList())))
+            trySend(Result.success(getCombinedReports(emptyList(), emptyList())))
             close()
             return@callbackFlow
         }
 
-        val registration = firestore.collection(REPORTS_COLLECTION)
+        var currentFirestoreReports = emptyList<Report>()
+        var currentPublicOccurrences = emptyList<PublicOccurrence>()
+
+        fun emitCombined() {
+            val publicReports = currentPublicOccurrences.map { it.toReport() }
+            val combined = getCombinedReports(currentFirestoreReports, publicReports)
+            trySend(Result.success(combined))
+        }
+
+        val reportsRegistration = firestore.collection(REPORTS_COLLECTION)
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
-                    Log.e(TAG, "Firestore error in observeCurrentUserReports", error)
-                    trySend(Result.success(getCombinedReports(emptyList())))
+                    Log.e(TAG, "Firestore error in reports collection listener", error)
                 } else if (snapshot != null) {
-                    val firestoreReports = snapshot.documents
-                        .mapNotNull { document -> document.toReportOrNull() }
-
-                    trySend(Result.success(getCombinedReports(firestoreReports)))
-                } else {
-                    trySend(Result.success(getCombinedReports(emptyList())))
+                    currentFirestoreReports = snapshot.documents.mapNotNull { it.toReportOrNull() }
                 }
+                emitCombined()
             }
 
-        awaitClose { registration.remove() }
+        val publicRegistration = firestore.collection(PUBLIC_OCCURRENCES_COLLECTION)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    Log.e(TAG, "Firestore error in public_occurrences collection listener", error)
+                } else if (snapshot != null) {
+                    currentPublicOccurrences = snapshot.documents.mapNotNull { doc ->
+                        val latitudeCell = doc.getLong("latitudeCell")?.toInt() ?: return@mapNotNull null
+                        val longitudeCell = doc.getLong("longitudeCell")?.toInt() ?: return@mapNotNull null
+                        PublicOccurrence(
+                            id = doc.id,
+                            animalType = doc.getString("animalType").orEmpty(),
+                            urgency = doc.getString("urgency").orEmpty(),
+                            latitudeCell = latitudeCell,
+                            longitudeCell = longitudeCell,
+                            createdAtMillis = doc.getTimestamp("createdAt")?.toDate()?.time ?: 0L
+                        )
+                    }
+                }
+                emitCombined()
+            }
+
+        awaitClose {
+            reportsRegistration.remove()
+            publicRegistration.remove()
+        }
     }
 
     override fun observeReport(
@@ -138,26 +167,71 @@ class FirebaseReportRepository(
         val savedReport = saveReport(report, user, protocolNumber, photoBytes, photoFileName)
         localSessionReports.add(0, savedReport)
         Log.d("DEBUG_DENUNCIAS", "submitReport adicionou denúncia local. Protocolo=#${savedReport.protocolNumber}, Endereço=${savedReport.address}")
+
+        val animalTypeLabel = if (savedReport.animalType == "cat") "Gato" else "Cão"
+        val animalAndLocation = "$animalTypeLabel — ${savedReport.address.ifBlank { "Localização registrada" }}"
+
+        // Emit EXCLUSIVELY ONE initial notification: "Denúncia recebida"
+        ReportStatusNotifier.notifyReportCreated(
+            context = context,
+            reportId = savedReport.id,
+            protocolNumber = savedReport.protocolNumber,
+            animalTypeAndLocation = animalAndLocation
+        )
+
         savedReport
     }
 
-    private fun getCombinedReports(firestoreReports: List<Report>): List<Report> {
+    private fun getCombinedReports(
+        firestoreReports: List<Report>,
+        publicReports: List<Report>
+    ): List<Report> {
         val combinedMap = mutableMapOf<String, Report>()
 
-        // 1. Add Firestore reports
+        // 1. Add Public Occurrences mapped to Reports (same occurrences that feed the map!)
+        publicReports.forEach { combinedMap[it.id] = it }
+
+        // 2. Add Firestore reports (overwrites with detailed report info if document exists in reports)
         firestoreReports.forEach { combinedMap[it.id] = it }
 
-        // 2. Add locally created session reports
+        // 3. Add locally created session reports
         localSessionReports.forEach { combinedMap[it.id] = it }
 
         val resultList = combinedMap.values.sortedByDescending { it.createdAtMillis }
 
-        Log.d("DEBUG_DENUNCIAS", "Repositório emitindo denúncias. Total de itens: ${resultList.size}")
+        Log.d("DEBUG_DENUNCIAS", "Repositório emitindo denúncias unificadas. Total de itens: ${resultList.size}")
         resultList.forEachIndexed { index, item ->
             Log.d("DEBUG_DENUNCIAS", "Item [$index]: ID=${item.id}, Endereço=${item.address}, Protocolo=#${item.protocolNumber}")
         }
 
         return resultList
+    }
+
+    private fun PublicOccurrence.toReport(): Report {
+        val numericProtocol = id.filter { it.isDigit() }.toIntOrNull()
+            ?: (Math.abs(id.hashCode()) % 8000 + 1000)
+
+        val animalLabel = when (animalType) {
+            "cat" -> "Gato"
+            "dog" -> "Cão"
+            else -> "Animal"
+        }
+
+        return Report(
+            id = id,
+            protocolNumber = numericProtocol,
+            userId = "user_demo",
+            animalType = animalType,
+            urgency = urgency,
+            description = "Ocorrência registrada no mapa.",
+            address = "$animalLabel — Perto de você",
+            latitude = coordinates.latitude,
+            longitude = coordinates.longitude,
+            status = ReportStatus.NEW,
+            createdAtMillis = if (createdAtMillis > 0L) createdAtMillis else System.currentTimeMillis(),
+            updatedAtMillis = System.currentTimeMillis(),
+            isViewed = false
+        )
     }
 
     private suspend fun ensureSignedIn(): FirebaseUser {

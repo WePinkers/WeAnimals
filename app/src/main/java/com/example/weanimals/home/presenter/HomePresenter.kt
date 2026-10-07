@@ -24,7 +24,7 @@ class HomePresenter(
         super.attachView(view)
         view.showGreeting(profileName)
         lastReports?.takeIf { it.isNotEmpty() }?.let {
-            Log.d("DEBUG_DENUNCIAS", "HomePresenter attachView reutilizando cache com ${it.size} itens")
+            Log.d("DEBUG_DENUNCIAS", "HomePresenter attachView re-exibindo cache com ${it.size} itens")
             view.showReports(it)
         }
         lastError?.let { view.showReportsError(it) }
@@ -33,9 +33,8 @@ class HomePresenter(
     override fun loadReports() {
         loadProfileIdentity()
         lastReports?.takeIf { it.isNotEmpty() }?.let { reports ->
-            Log.d("DEBUG_DENUNCIAS", "HomePresenter loadReports reutilizando cache com ${reports.size} itens")
+            Log.d("DEBUG_DENUNCIAS", "HomePresenter loadReports exibindo cache inicial com ${reports.size} itens")
             withView { it.showReports(reports) }
-            if (reportsJob?.isActive == true) return
         }
         if (reportsJob?.isActive == true) return
         if (lastReports == null) {
@@ -45,22 +44,18 @@ class HomePresenter(
             observeUserReportsInteractor().collect { result ->
                 result.fold(
                     onSuccess = { reports ->
-                        if (reports.isNotEmpty() || lastReports.isNullOrEmpty()) {
-                            lastReports = reports
-                            lastError = null
-                        }
-                        val finalReports = lastReports ?: emptyList()
-                        Log.d("DEBUG_DENUNCIAS", "HomePresenter enviando lista para View com ${finalReports.size} itens")
-                        withView { it.showReports(finalReports) }
+                        lastReports = reports
+                        lastError = null
+                        Log.d("DEBUG_DENUNCIAS", "HomePresenter recebeu lista completa do repositório com ${reports.size} itens. Atualizando View...")
+                        withView { it.showReports(reports) }
                     },
                     onFailure = { error ->
-                        val finalReports = lastReports
-                        if (!finalReports.isNullOrEmpty()) {
-                            Log.w("DEBUG_DENUNCIAS", "Erro no fluxo, mantendo ${finalReports.size} itens exibidos anteriormente", error)
-                            withView { it.showReports(finalReports) }
+                        lastError = error
+                        if (!lastReports.isNullOrEmpty()) {
+                            Log.w("DEBUG_DENUNCIAS", "Erro no fluxo, mantendo ${lastReports?.size} itens exibidos anteriormente", error)
+                            withView { it.showReports(lastReports!!) }
                         } else {
                             lastReports = null
-                            lastError = error
                             Log.e("DEBUG_DENUNCIAS", "HomePresenter recebeu erro do repositório: ${error.message}", error)
                             withView { it.showReportsError(error) }
                         }
