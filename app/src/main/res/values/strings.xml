@@ -429,8 +429,6 @@
     <string name="no_reports">Você ainda não fez nenhuma denúncia.</string>
     <string name="reports_loading">Carregando suas denúncias…</string>
     <string name="reports_load_error">Não foi possível carregar suas denúncias.</string>
-    <string name="lost_pet_photo">Foto do animal perdido</string>
-    <string name="lost_pet_proof_photo">Foto de comprovação do dono</string>
     <string name="report_card_title">%1$s — %2$s</string>
     <string name="report_protocol_format">Protocolo #%1$d</string>
     <string name="report_accessibility">Denúncia de %1$s em %2$s. Urgência %3$s. Status %4$s.</string>

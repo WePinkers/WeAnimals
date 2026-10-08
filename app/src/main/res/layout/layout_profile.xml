@@ -130,17 +130,35 @@
 
             <include android:id="@+id/item_favorites" layout="@layout/item_profile_activity_favorites" />
 
-            <View
+            <!-- Account Section -->
+            <LinearLayout
+                android:id="@+id/section_account"
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/border"
-                android:layout_marginHorizontal="0dp"/>
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
 
-            <include
-                android:id="@+id/lost_and_found_section"
-                layout="@layout/view_lost_and_found_section"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="28dp"
+                    android:fontFamily="monospace"
+                    android:letterSpacing="0.1"
+                    android:text="CONTA"
+                    android:textColor="@color/muted"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="12dp"
+                    android:background="@color/border" />
+
+                <include
+                    android:id="@+id/item_change_password"
+                    layout="@layout/item_profile_change_password" />
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/logout_button"
