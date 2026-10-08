@@ -76,7 +76,7 @@
                     android:layout_height="24dp"
                     android:contentDescription=""
                     android:src="@drawable/ic_camera"
-                    android:tint="@color/terracotta" />
+                    app:tint="@color/terracotta" />
 
                 <TextView
                     android:id="@+id/photo_prompt"
@@ -125,7 +125,7 @@
                 android:paddingEnd="5dp"
                 android:text="@string/dog"
                 android:textAllCaps="false"
-                android:textColor="@color/white"
+                android:textColor="@color/background"
                 android:textSize="@dimen/text_size_report_chip"
                 app:cornerRadius="18dp"
                 app:strokeColor="@color/ink"
@@ -146,7 +146,7 @@
                 android:paddingEnd="5dp"
                 android:text="@string/cat"
                 android:textAllCaps="false"
-                android:textColor="@color/muted"
+                android:textColor="@color/ink"
                 android:textSize="@dimen/text_size_report_chip"
                 app:cornerRadius="18dp"
                 app:strokeColor="@color/border"
@@ -167,7 +167,7 @@
                 android:paddingEnd="5dp"
                 android:text="@string/other"
                 android:textAllCaps="false"
-                android:textColor="@color/muted"
+                android:textColor="@color/ink"
                 android:textSize="@dimen/text_size_report_chip"
                 app:cornerRadius="18dp"
                 app:strokeColor="@color/border"
@@ -210,7 +210,7 @@
                 android:paddingEnd="4dp"
                 android:text="@string/urgency_low"
                 android:textAllCaps="false"
-                android:textColor="@color/muted"
+                android:textColor="@color/ink"
                 android:textSize="@dimen/text_size_report_chip"
                 android:textStyle="bold"
                 app:cornerRadius="18dp"
@@ -234,7 +234,7 @@
                 android:paddingEnd="4dp"
                 android:text="@string/urgency_medium"
                 android:textAllCaps="false"
-                android:textColor="@color/muted"
+                android:textColor="@color/ink"
                 android:textSize="@dimen/text_size_report_chip"
                 android:textStyle="bold"
                 app:cornerRadius="18dp"
@@ -316,7 +316,7 @@
                 android:layout_gravity="start|center_vertical"
                 android:contentDescription=""
                 android:src="@drawable/ic_location_pin"
-                android:tint="@color/terracotta" />
+                app:tint="@color/terracotta" />
 
             <LinearLayout
                 android:layout_width="match_parent"

@@ -434,7 +434,7 @@ class MapActivity : AppCompatActivity(), MapContract.View {
             val active = chip.isChecked
             chip.isCheckedIconVisible = false
             chip.setChipBackgroundColorResource(if (active) R.color.pine800 else R.color.white)
-            chip.setTextColor(ContextCompat.getColor(this, if (active) R.color.white else R.color.ink900))
+            chip.setTextColor(ContextCompat.getColor(this, if (active) R.color.white else R.color.black))
         }
     }
 
