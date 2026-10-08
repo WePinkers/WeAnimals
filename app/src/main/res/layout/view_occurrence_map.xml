@@ -32,14 +32,14 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginBottom="274dp"
-            android:background="#E6FFFFFF"
+            android:background="@color/map_card_bg"
             android:clickable="true"
             android:contentDescription="@string/map_attribution"
             android:focusable="true"
             android:paddingHorizontal="5dp"
             android:paddingVertical="3dp"
             android:text="@string/map_attribution"
-            android:textColor="@color/ink900"
+            android:textColor="@color/map_card_text"
             android:textSize="9sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -89,9 +89,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/map_filter_high"
-                    android:textColor="@color/ink900"
+                    android:textColor="@color/map_card_text"
                     app:checkedIconVisible="false"
-                    app:chipBackgroundColor="@color/white"
+                    app:chipBackgroundColor="@color/chip_unselected_bg"
                     app:chipCornerRadius="20dp"
                     app:chipStrokeColor="@color/line_border"
                     app:chipStrokeWidth="1dp" />
@@ -102,9 +102,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/map_filter_medium"
-                    android:textColor="@color/ink900"
+                    android:textColor="@color/map_card_text"
                     app:checkedIconVisible="false"
-                    app:chipBackgroundColor="@color/white"
+                    app:chipBackgroundColor="@color/chip_unselected_bg"
                     app:chipCornerRadius="20dp"
                     app:chipStrokeColor="@color/line_border"
                     app:chipStrokeWidth="1dp" />
@@ -115,9 +115,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/map_filter_low"
-                    android:textColor="@color/ink900"
+                    android:textColor="@color/map_card_text"
                     app:checkedIconVisible="false"
-                    app:chipBackgroundColor="@color/white"
+                    app:chipBackgroundColor="@color/chip_unselected_bg"
                     app:chipCornerRadius="20dp"
                     app:chipStrokeColor="@color/line_border"
                     app:chipStrokeWidth="1dp" />
@@ -134,7 +134,7 @@
             android:clickable="true"
             android:contentDescription="@string/map_your_location"
             android:focusable="true"
-            app:cardBackgroundColor="#E6FFFFFF"
+            app:cardBackgroundColor="@color/map_card_bg"
             app:cardCornerRadius="22dp"
             app:cardElevation="6dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -158,7 +158,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="280dp"
-            app:cardBackgroundColor="#E6FFFFFF"
+            app:cardBackgroundColor="@color/map_card_bg"
             app:cardCornerRadius="12dp"
             app:cardElevation="4dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -206,7 +206,7 @@
                         android:layout_marginStart="6dp"
                         android:fontFamily="sans-serif"
                         android:text="@string/map_filter_high"
-                        android:textColor="@color/ink900"
+                        android:textColor="@color/map_card_text"
                         android:textSize="10sp"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -244,7 +244,7 @@
                         android:layout_marginStart="6dp"
                         android:fontFamily="sans-serif"
                         android:text="@string/map_filter_medium"
-                        android:textColor="@color/ink900"
+                        android:textColor="@color/map_card_text"
                         android:textSize="10sp"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -282,7 +282,7 @@
                         android:layout_marginStart="6dp"
                         android:fontFamily="sans-serif"
                         android:text="@string/map_filter_low"
-                        android:textColor="@color/ink900"
+                        android:textColor="@color/map_card_text"
                         android:textSize="10sp"
                         android:textStyle="bold" />
                 </LinearLayout>

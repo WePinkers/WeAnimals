@@ -49,4 +49,8 @@
     <color name="community_vaccination_tint">#FF86B89D</color>
     <color name="community_vaccination_bg">#FF232F2A</color>
     <color name="community_campaign_border">#FF2D3833</color>
+    <color name="profile_header_bg">#FF101312</color>
+    <color name="map_card_bg">#E6222825</color>
+    <color name="chip_unselected_bg">#FF222825</color>
+    <color name="map_card_text">#FFECF0EE</color>
 </resources>
