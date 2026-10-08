@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/map_background">
+
+    <org.maplibre.android.maps.MapView
+        android:id="@+id/organization_map_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <ImageButton
+        android:id="@+id/organization_map_back"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_back_button"
+        android:contentDescription="@string/organization_map_back"
+        android:elevation="4dp"
+        android:padding="10dp"
+        android:src="@drawable/ic_arrow_back" />
+
+    <TextView
+        android:id="@+id/organization_map_attribution"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="18dp"
+        android:layout_marginEnd="8dp"
+        android:background="#E6FFFFFF"
+        android:clickable="true"
+        android:contentDescription="@string/map_attribution"
+        android:focusable="true"
+        android:paddingHorizontal="4dp"
+        android:paddingVertical="2dp"
+        android:text="@string/map_attribution"
+        android:textColor="@color/ink900"
+        android:textSize="7sp" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/organization_map_report_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="18dp"
+        app:cardBackgroundColor="@color/surface"
+        app:cardCornerRadius="18dp"
+        app:cardElevation="4dp"
+        app:strokeColor="@color/border"
+        app:strokeWidth="1dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="14dp">
+
+            <TextView
+                android:id="@+id/organization_map_report_classification"
+                android:layout_width="wrap_content"
+                android:layout_height="24dp"
+                android:gravity="center"
+                android:paddingHorizontal="8dp"
+                android:textColor="@color/terracotta_dark"
+                android:textSize="8sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/organization_map_report_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="7dp"
+                android:fontFamily="serif"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:textColor="@color/ink"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/organization_map_report_protocol"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:textColor="@color/muted"
+                android:textSize="10sp" />
+
+            <TextView
+                android:id="@+id/organization_map_report_address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:maxLines="3"
+                android:ellipsize="end"
+                android:textColor="@color/muted"
+                android:textSize="11sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/organization_map_route_button"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="12dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="@string/organization_map_route"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                app:backgroundTint="@color/terracotta"
+                app:cornerRadius="18dp" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</FrameLayout>
