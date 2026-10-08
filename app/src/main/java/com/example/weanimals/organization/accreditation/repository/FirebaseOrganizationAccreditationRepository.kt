@@ -74,7 +74,11 @@ class FirebaseOrganizationAccreditationRepository(
             val normalizedCnpj = cnpj.filter(Char::isDigit)
             val identifierReference = firestore.collection(IDENTIFIERS_COLLECTION)
                 .document(hash(normalizedCnpj))
+            val organizationAccountReference = firestore
+                .collection(ORGANIZATION_ACCOUNTS_COLLECTION)
+                .document(user.uid)
             val identifierAlreadyExists = identifierReference.get().await().exists()
+            val organizationAccountAlreadyExists = organizationAccountReference.get().await().exists()
             firestore.runBatch { batch ->
                 batch.set(
                     request,
@@ -106,6 +110,19 @@ class FirebaseOrganizationAccreditationRepository(
                         )
                     )
                 }
+                if (!organizationAccountAlreadyExists) {
+                    batch.set(
+                        organizationAccountReference,
+                        mapOf(
+                            "userId" to user.uid,
+                            "email" to institutionalEmail,
+                            "identifierId" to identifierReference.id,
+                            "status" to STATUS_PENDING,
+                            "requestId" to request.id,
+                            "createdAt" to FieldValue.serverTimestamp()
+                        )
+                    )
+                }
             }.await()
         } catch (error: Throwable) {
             if (linkedAnonymousAccount) {
@@ -120,6 +137,7 @@ class FirebaseOrganizationAccreditationRepository(
     private companion object {
         const val REQUESTS_COLLECTION = "organization_verification_requests"
         const val IDENTIFIERS_COLLECTION = "organization_identifiers"
+        const val ORGANIZATION_ACCOUNTS_COLLECTION = "organization_accounts"
         const val LEGAL_VERSION = "2026-10-04"
         const val CITIZEN_PROFILES_COLLECTION = "user_profiles"
         const val STATUS_PENDING = "pending"

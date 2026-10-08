@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/background"
     android:orientation="vertical"
-    tools:context=".community.feed.presentation.CommunityActivity">
+    tools:context=".user.community.feed.presentation.CommunityActivity">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"

@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import com.example.weanimals.R
 import com.example.weanimals.databinding.ActivityOrganizationVerificationPendingBinding
-import com.example.weanimals.entry.presentation.EntryActivity
+import com.example.weanimals.user.entry.presentation.EntryActivity
 import com.google.firebase.auth.FirebaseAuth
 
 class OrganizationVerificationPendingActivity : AppCompatActivity() {

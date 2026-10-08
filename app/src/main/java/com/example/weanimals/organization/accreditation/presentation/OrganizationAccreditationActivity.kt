@@ -43,8 +43,8 @@ import java.util.regex.Pattern
 import android.view.Window
 import android.view.WindowManager
 import androidx.activity.OnBackPressedCallback
-import com.example.weanimals.entry.presentation.LegalDocumentActivity
-import com.example.weanimals.entry.presentation.LoginActivity
+import com.example.weanimals.user.entry.presentation.LegalDocumentActivity
+import com.example.weanimals.user.entry.presentation.LoginActivity
 
 class OrganizationAccreditationActivity : AppCompatActivity() {
 

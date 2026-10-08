@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import com.example.weanimals.R
 import com.example.weanimals.databinding.ActivityOrganizationLoginBlockedBinding
-import com.example.weanimals.entry.presentation.EntryActivity
+import com.example.weanimals.user.entry.presentation.EntryActivity
 
 class OrganizationLoginBlockedActivity : AppCompatActivity() {
 

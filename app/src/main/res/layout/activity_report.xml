@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/background"
     android:orientation="vertical"
-    tools:context=".reporting.report.presentation.ReportActivity">
+    tools:context=".user.reporting.report.presentation.ReportActivity">
 
     <include
         android:id="@+id/report_header"

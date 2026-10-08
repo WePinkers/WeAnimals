@@ -20,6 +20,15 @@ service cloud.firestore {
       return signedIn() && request.auth.token.teamMember == true;
     }
 
+    // Only an account approved by the institutional review can access all
+    // citizen reports. Pending accounts remain blocked by the login flow.
+    function isApprovedOrganization() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/organization_accounts/$(request.auth.uid))
+        && get(/databases/$(database)/documents/organization_accounts/$(request.auth.uid)).data.userId == request.auth.uid
+        && get(/databases/$(database)/documents/organization_accounts/$(request.auth.uid)).data.status == 'approved';
+    }
+
     match /user_profiles/{userId} {
       allow read: if signedIn() && request.auth.uid == userId;
       allow create: if signedIn()
@@ -126,21 +135,62 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // Links an authenticated Firebase account to an accreditation request.
+    // The document is not user-editable after creation; an admin controls
+    // the transition from pending to approved.
+    match /organization_accounts/{userId} {
+      allow read: if signedIn()
+        && (request.auth.uid == userId || request.auth.token.admin == true);
+      allow create: if signedIn()
+        && request.auth.uid == userId
+        && request.resource.data.keys().hasOnly([
+          'userId', 'email', 'identifierId', 'status', 'requestId', 'createdAt'
+        ])
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.email is string
+        && request.resource.data.identifierId is string
+        && request.resource.data.status == 'pending'
+        && request.resource.data.requestId is string
+        && request.resource.data.createdAt == request.time
+        && getAfter(/databases/$(database)/documents/organization_verification_requests/$(request.resource.data.requestId)).data.requesterId == request.auth.uid;
+      allow update: if (signedIn() && request.auth.token.admin == true)
+        || (signedIn()
+          && request.auth.uid == userId
+          && resource.data.status == 'pending'
+          && request.resource.data.status == 'approved'
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+          && exists(/databases/$(database)/documents/organization_identifiers/$(resource.data.identifierId))
+          && get(/databases/$(database)/documents/organization_identifiers/$(resource.data.identifierId)).data.userId == request.auth.uid
+          && get(/databases/$(database)/documents/organization_identifiers/$(resource.data.identifierId)).data.status == 'approved');
+      allow delete: if false;
+    }
+
     match /reports/{reportId} {
       allow create: if ownsReport(request.resource.data)
         && request.resource.data.protocolNumber is int
         && request.resource.data.status == 'new';
 
-      allow read: if ownsReport(resource.data);
+      allow read: if ownsReport(resource.data) || isTeamMember() || isApprovedOrganization();
 
       allow update: if ownsReport(resource.data)
         && request.resource.data.userId == resource.data.userId
-        && request.resource.data.protocolNumber == resource.data.protocolNumber;
+        && request.resource.data.protocolNumber == resource.data.protocolNumber
+        || (isApprovedOrganization()
+          && request.resource.data.userId == resource.data.userId
+          && request.resource.data.protocolNumber == resource.data.protocolNumber
+          && request.resource.data.status in [
+            'new', 'under_review', 'in_progress', 'rescued', 'closed'
+          ]
+          && request.resource.data.updatedAt == request.time
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'status', 'updatedAt'
+          ]));
 
       allow delete: if false;
 
       match /messages/{messageId} {
-        allow read: if ownsReportById(reportId) || isTeamMember();
+        allow read: if ownsReportById(reportId) || isTeamMember() || isApprovedOrganization();
 
         allow create: if (
           ownsReportById(reportId)

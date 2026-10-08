@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="@color/background"
     android:orientation="vertical"
-    tools:context=".community.campaign.presentation.DonationHelpActivity">
+    tools:context=".user.community.campaign.presentation.DonationHelpActivity">
 
     <include
         android:id="@+id/help_header"

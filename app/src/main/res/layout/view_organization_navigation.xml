@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:baselineAligned="false"
+    android:layout_width="match_parent"
+    android:layout_height="68dp"
+    android:background="@drawable/bg_bottom_nav"
+    android:elevation="10dp"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingTop="4dp"
+    android:paddingBottom="4dp">
+
+    <LinearLayout
+        android:id="@+id/organization_nav_home"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
+        <FrameLayout
+            android:id="@+id/organization_nav_home_indicator"
+            android:layout_width="60dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center">
+            <ImageView
+                android:id="@+id/organization_nav_home_icon"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center"
+                android:contentDescription="@string/organization_nav_home"
+                android:src="@drawable/ic_home"
+                android:tint="@color/muted" />
+        </FrameLayout>
+        <TextView
+            android:id="@+id/organization_nav_home_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:fontFamily="sans-serif"
+            android:includeFontPadding="false"
+            android:text="@string/organization_nav_home"
+            android:textColor="@color/muted"
+            android:textSize="11sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/organization_nav_reports"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
+        <FrameLayout
+            android:id="@+id/organization_nav_reports_indicator"
+            android:layout_width="60dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center">
+            <ImageView
+                android:id="@+id/organization_nav_reports_icon"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center"
+                android:contentDescription="@string/organization_nav_reports"
+                android:src="@drawable/ic_warning"
+                android:tint="@color/muted" />
+        </FrameLayout>
+        <TextView
+            android:id="@+id/organization_nav_reports_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:fontFamily="sans-serif"
+            android:includeFontPadding="false"
+            android:text="@string/organization_nav_reports"
+            android:textColor="@color/muted"
+            android:textSize="11sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/organization_nav_community"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
+        <FrameLayout
+            android:id="@+id/organization_nav_community_indicator"
+            android:layout_width="60dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center">
+            <ImageView
+                android:id="@+id/organization_nav_community_icon"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center"
+                android:contentDescription="@string/organization_nav_community"
+                android:src="@drawable/ic_community"
+                android:tint="@color/muted" />
+        </FrameLayout>
+        <TextView
+            android:id="@+id/organization_nav_community_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:fontFamily="sans-serif"
+            android:includeFontPadding="false"
+            android:text="@string/organization_nav_community"
+            android:textColor="@color/muted"
+            android:textSize="11sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/organization_nav_animals"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
+        <FrameLayout
+            android:id="@+id/organization_nav_animals_indicator"
+            android:layout_width="60dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center">
+            <ImageView
+                android:id="@+id/organization_nav_animals_icon"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center"
+                android:contentDescription="@string/organization_nav_animals"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_pet_face_bitmap"
+                android:tint="@color/muted" />
+        </FrameLayout>
+        <TextView
+            android:id="@+id/organization_nav_animals_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:fontFamily="sans-serif"
+            android:includeFontPadding="false"
+            android:text="@string/organization_nav_animals"
+            android:textColor="@color/muted"
+            android:textSize="11sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/organization_nav_profile"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
+        <FrameLayout
+            android:id="@+id/organization_nav_profile_indicator"
+            android:layout_width="60dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center">
+            <ImageView
+                android:id="@+id/organization_nav_profile_icon"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center"
+                android:contentDescription="@string/organization_nav_profile"
+                android:src="@drawable/ic_profile"
+                android:tint="@color/muted" />
+        </FrameLayout>
+        <TextView
+            android:id="@+id/organization_nav_profile_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:fontFamily="sans-serif"
+            android:includeFontPadding="false"
+            android:text="@string/organization_nav_profile"
+            android:textColor="@color/muted"
+            android:textSize="11sp" />
+    </LinearLayout>
+</LinearLayout>

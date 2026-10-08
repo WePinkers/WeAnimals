@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/background"
     android:orientation="vertical"
-    tools:context=".community.campaign.presentation.DonationItemsActivity">
+    tools:context=".user.community.campaign.presentation.DonationItemsActivity">
 
     <include
         android:id="@+id/items_header"

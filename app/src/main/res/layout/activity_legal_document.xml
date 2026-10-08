@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="@color/background"
     android:orientation="vertical"
-    tools:context=".entry.presentation.LegalDocumentActivity">
+    tools:context=".user.entry.presentation.LegalDocumentActivity">
 
     <include
         android:id="@+id/legal_header"

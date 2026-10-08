@@ -4,9 +4,9 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import com.example.weanimals.adoption.listing.presentation.AdoptionActivity
-import com.example.weanimals.reporting.chat.presentation.CaseChatActivity
-import com.example.weanimals.reporting.tracking.presentation.TrackingActivity
+import com.example.weanimals.user.adoption.listing.presentation.AdoptionActivity
+import com.example.weanimals.user.reporting.chat.presentation.CaseChatActivity
+import com.example.weanimals.user.reporting.tracking.presentation.TrackingActivity
 
 class NotificationTestReceiver : BroadcastReceiver() {
 
