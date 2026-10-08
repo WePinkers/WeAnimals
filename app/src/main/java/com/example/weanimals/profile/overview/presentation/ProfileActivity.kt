@@ -3,6 +3,7 @@ package com.example.weanimals.profile.overview.presentation
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
@@ -12,8 +13,13 @@ import android.view.WindowManager
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
+import com.canhub.cropper.CropImageContract
+import com.canhub.cropper.CropImageContractOptions
+import com.canhub.cropper.CropImageOptions
+import com.canhub.cropper.CropImageView
 import com.example.weanimals.R
 import com.example.weanimals.WeAnimalsApplication
 import com.example.weanimals.community.feed.domain.CommunityFeedItem
@@ -33,6 +39,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
+import java.io.File
 
 class ProfileActivity : AppCompatActivity(), ProfileContract.View {
     private lateinit var binding: ActivityProfileBinding
@@ -45,18 +52,33 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
     private var nomeAtual = "Usuário"
     private var bioAtual: String? = null
     private var fotoUri: Uri? = null
+    private var tempCameraUri: Uri? = null
+
+    private val cropImageLauncher = registerForActivityResult(
+        CropImageContract()
+    ) { result ->
+        if (result.isSuccessful) {
+            val croppedUri = result.uriContent
+            if (croppedUri != null) {
+                updatePhoto(croppedUri)
+                saveCroppedPhotoUri(croppedUri)
+            }
+        }
+    }
 
     private val galleryLauncher = registerForActivityResult(
         ActivityResultContracts.GetContent()
-    ) { uri -> updatePhoto(uri) }
+    ) { uri ->
+        if (uri != null) {
+            launchCrop(uri)
+        }
+    }
 
     private val cameraLauncher = registerForActivityResult(
-        ActivityResultContracts.TakePicturePreview()
-    ) { bitmap ->
-        if (bitmap != null) {
-            binding.profileContent.profileHeader.profileAvatarImage.setImageBitmap(bitmap)
-            binding.profileContent.profileHeader.profileAvatarImage.visibility = android.view.View.VISIBLE
-            binding.profileContent.profileHeader.profileAvatarInitial.visibility = android.view.View.GONE
+        ActivityResultContracts.TakePicture()
+    ) { success ->
+        if (success && tempCameraUri != null) {
+            launchCrop(tempCameraUri)
         }
     }
 
@@ -71,6 +93,12 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
         binding = ActivityProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
         MainNavigation.bind(this, binding.mainNavigation, MainNavigation.Destination.PROFILE)
+
+        val savedUri = loadSavedPhotoUri()
+        if (savedUri != null) {
+            updatePhoto(savedUri)
+        }
+
         setupProfileActions()
     }
 
@@ -155,10 +183,80 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
             image.setImageDrawable(null)
             image.visibility = android.view.View.GONE
             initial.visibility = android.view.View.VISIBLE
+            saveCroppedPhotoUri(null)
         } else {
             image.setImageURI(uri)
             image.visibility = android.view.View.VISIBLE
             initial.visibility = android.view.View.GONE
+        }
+    }
+
+    private fun launchCrop(sourceUri: Uri?) {
+        sourceUri ?: return
+        val pineColor = ContextCompat.getColor(this, R.color.pine_800)
+        val cropOptions = CropImageContractOptions(
+            uri = sourceUri,
+            cropImageOptions = CropImageOptions().apply {
+                cropShape = CropImageView.CropShape.OVAL
+                fixAspectRatio = true
+                aspectRatioX = 1
+                aspectRatioY = 1
+                activityTitle = "Ajustar foto"
+                activityMenuIconColor = Color.WHITE
+                toolbarColor = pineColor
+                toolbarTitleColor = Color.WHITE
+                toolbarBackButtonColor = Color.WHITE
+                cropMenuCropButtonTitle = "Concluir"
+
+                // Touch & Zoom stabilization
+                maxZoom = 4
+                autoZoomEnabled = true
+                multiTouchEnabled = true
+                showCropOverlay = true
+                scaleType = CropImageView.ScaleType.FIT_CENTER
+
+                outputCompressFormat = Bitmap.CompressFormat.JPEG
+                outputCompressQuality = 90
+            }
+        )
+        cropImageLauncher.launch(cropOptions)
+    }
+
+    private fun takeCameraPhoto() {
+        try {
+            val photoFile = File.createTempFile(
+                "camera_photo_",
+                ".jpg",
+                externalCacheDir ?: cacheDir
+            )
+            val uri = FileProvider.getUriForFile(
+                this,
+                "${packageName}.fileprovider",
+                photoFile
+            )
+            tempCameraUri = uri
+            cameraLauncher.launch(uri)
+        } catch (_: Exception) {
+            galleryLauncher.launch("image/*")
+        }
+    }
+
+    private fun saveCroppedPhotoUri(uri: Uri?) {
+        val prefs = getSharedPreferences("weanimals_profile", MODE_PRIVATE)
+        if (uri != null) {
+            prefs.edit().putString("key_profile_photo_uri", uri.toString()).apply()
+        } else {
+            prefs.edit().remove("key_profile_photo_uri").apply()
+        }
+    }
+
+    private fun loadSavedPhotoUri(): Uri? {
+        val prefs = getSharedPreferences("weanimals_profile", MODE_PRIVATE)
+        val uriString = prefs.getString("key_profile_photo_uri", null) ?: return null
+        return try {
+            Uri.parse(uriString)
+        } catch (_: Exception) {
+            null
         }
     }
 
@@ -186,7 +284,7 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
         dialog.setTitle("Foto do perfil")
         dialogBinding.takePhotoButton.setOnClickListener {
             dialog.dismiss()
-            cameraLauncher.launch(null)
+            takeCameraPhoto()
         }
         dialogBinding.choosePhotoButton.setOnClickListener {
             dialog.dismiss()

@@ -62,4 +62,5 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
+    implementation("com.github.CanHub:Android-Image-Cropper:4.5.0")
 }

@@ -144,6 +144,10 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+        <activity
+            android:name="com.canhub.cropper.CropImageActivity"
+            android:theme="@style/Theme.WeAnimals.CropImage" />
+
         <activity android:name=".profile.overview.presentation.ProfileActivity" android:exported="false" />
         <activity android:name=".lostandfound.presentation.ReportLostPetActivity" android:exported="false" />
         <activity android:name=".profile.reports.presentation.MyReportsActivity" android:exported="false" />
