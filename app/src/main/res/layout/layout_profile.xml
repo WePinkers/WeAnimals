@@ -93,6 +93,9 @@
                 </LinearLayout>
             </LinearLayout>
 
+            <!-- Reliability Card -->
+            <include layout="@layout/item_profile_reliability_card" />
+
             <!-- Activity Section -->
             <TextView
                 android:layout_width="wrap_content"
