@@ -86,10 +86,6 @@ import com.example.weanimals.user.community.create.repository.FirebaseCommunityP
 import com.example.weanimals.user.community.campaign.repository.FirebaseCommunityCampaignRepository
 import com.example.weanimals.user.community.detail.repository.CommunityPostEngagementRepository
 import com.example.weanimals.user.community.detail.repository.FirebaseCommunityPostEngagementRepository
-import com.example.weanimals.organization.dashboard.presenter.OrganizationReportDetailPresenter
-import com.example.weanimals.organization.dashboard.presenter.OrganizationReportsPresenter
-import com.example.weanimals.organization.dashboard.repository.FirebaseOrganizationReportsRepository
-import com.example.weanimals.organization.dashboard.repository.OrganizationReportsRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -99,13 +95,6 @@ class AppContainer(context: Context) {
     private val reportRepository: ReportRepository by lazy {
         FirebaseReportRepository(
             context = applicationContext,
-            auth = FirebaseAuth.getInstance(),
-            firestore = FirebaseFirestore.getInstance()
-        )
-    }
-
-    private val organizationReportsRepository: OrganizationReportsRepository by lazy {
-        FirebaseOrganizationReportsRepository(
             auth = FirebaseAuth.getInstance(),
             firestore = FirebaseFirestore.getInstance()
         )
@@ -274,16 +263,6 @@ class AppContainer(context: Context) {
         markReportAsViewedInteractor = markReportAsViewedInteractor,
         getProfileIdentityInteractor = getProfileIdentityInteractor
     )
-
-    fun createOrganizationReportsPresenter() = OrganizationReportsPresenter(
-        repository = organizationReportsRepository
-    )
-
-    fun createOrganizationReportDetailPresenter(reportId: String) =
-        OrganizationReportDetailPresenter(
-            reportId = reportId,
-            repository = organizationReportsRepository
-        )
 
     fun createCommunityPresenter() = CommunityPresenter(
         GetCommunityFeedInteractor(CommunityRepositoryFactory.create()),

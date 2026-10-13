@@ -9,9 +9,8 @@ class PasswordResetCompletedActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val isOrganization = intent?.data?.getQueryParameter("account") == "organization"
         startActivity(
-            LoginActivity.newPasswordResetSuccessIntent(this, isOrganization).addFlags(
+            LoginActivity.newPasswordResetSuccessIntent(this).addFlags(
                 Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             )
         )

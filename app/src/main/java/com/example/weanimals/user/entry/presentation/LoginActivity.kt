@@ -28,10 +28,6 @@ import com.example.weanimals.user.entry.auth.repository.FirebaseAuthRepository
 import com.example.weanimals.user.entry.auth.security.LocalLoginAttemptLock
 import com.example.weanimals.databinding.ActivityLoginBinding
 import com.example.weanimals.user.home.presentation.HomeActivity
-import com.example.weanimals.organization.accreditation.OrganizationAccreditationDraft
-import com.example.weanimals.organization.accreditation.presentation.OrganizationAccreditationActivity
-import com.example.weanimals.organization.accreditation.presentation.OrganizationLoginBlockedActivity
-import com.example.weanimals.organization.dashboard.presentation.OrganizationReportsActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
@@ -50,7 +46,6 @@ class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
     private var authDialog: Dialog? = null
-    private var isOrganization = false
     private val authRepository by lazy {
         FirebaseAuthRepository(FirebaseAuth.getInstance(), FirebaseFirestore.getInstance())
     }
@@ -69,12 +64,6 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.loginHeader.backButton.setOnClickListener { finish() }
-        binding.loginOrganizationTab.setOnClickListener {
-            selectAccountType(isOrganization = true)
-        }
-        binding.loginCitizenTab.setOnClickListener {
-            selectAccountType(isOrganization = false)
-        }
         binding.loginButton.setOnClickListener {
             signIn()
         }
@@ -85,71 +74,21 @@ class LoginActivity : AppCompatActivity() {
         binding.forgotPasswordLink.paintFlags =
             binding.forgotPasswordLink.paintFlags or Paint.UNDERLINE_TEXT_FLAG
         binding.forgotPasswordLink.setOnClickListener {
-            startActivity(PasswordRecoveryActivity.newIntent(this, isOrganization))
+            startActivity(PasswordRecoveryActivity.newIntent(this))
         }
         binding.loginCreateAccountLink.paintFlags =
             binding.loginCreateAccountLink.paintFlags or Paint.UNDERLINE_TEXT_FLAG
         binding.loginCreateAccountLink.setOnClickListener {
             startActivity(Intent(this, CitizenRegistrationActivity::class.java))
         }
-        binding.loginOrganizationRequestLink.paintFlags =
-            binding.loginOrganizationRequestLink.paintFlags or Paint.UNDERLINE_TEXT_FLAG
-        binding.loginOrganizationRequestLink.setOnClickListener {
-            startActivity(Intent(this, OrganizationAccreditationActivity::class.java))
-        }
         binding.loginHeader.headerTitle.setText(R.string.login_title)
-
-        selectAccountType(
-            isOrganization = intent.getBooleanExtra(EXTRA_ORGANIZATION, false)
-        )
+        setRequiredLabel(binding.loginIdentifierLabel, R.string.login_email_label)
+        setRequiredLabel(binding.loginPasswordLabel, R.string.login_password_label)
 
         if (intent.getBooleanExtra(EXTRA_PASSWORD_RESET_SUCCESS, false)) {
             intent.removeExtra(EXTRA_PASSWORD_RESET_SUCCESS)
             showMessage(R.string.login_password_reset_success)
         }
-    }
-
-    private fun selectAccountType(isOrganization: Boolean) {
-        this.isOrganization = isOrganization
-        binding.loginCitizenTab.setBackgroundResource(
-            if (isOrganization) R.drawable.bg_entry_segment_unselected
-            else R.drawable.bg_entry_segment_selected
-        )
-        binding.loginOrganizationTab.setBackgroundResource(
-            if (isOrganization) R.drawable.bg_entry_segment_selected
-            else R.drawable.bg_entry_segment_unselected
-        )
-        binding.loginHeader.headerTitle.setText(
-            if (isOrganization) R.string.login_organization_title else R.string.login_title
-        )
-        setRequiredLabel(
-            binding.loginIdentifierLabel,
-            if (isOrganization) {
-                R.string.login_organization_identifier_label
-            } else {
-                R.string.login_email_label
-            }
-        )
-        binding.loginEmailInput.setHint(
-            if (isOrganization) {
-                R.string.login_organization_identifier_hint
-            } else {
-                R.string.login_email_hint
-            }
-        )
-        setRequiredLabel(binding.loginPasswordLabel, R.string.login_password_label)
-        binding.loginPasswordInput.setHint(
-            if (isOrganization) {
-                R.string.login_organization_password_hint
-            } else {
-                R.string.login_password_hint
-            }
-        )
-        binding.loginButton.setText(
-            if (isOrganization) R.string.login_organization_button else R.string.login_button
-        )
-        binding.loginCitizenOptions.visibility = if (isOrganization) View.GONE else View.VISIBLE
-        binding.loginOrganizationOptions.visibility = if (isOrganization) View.VISIBLE else View.GONE
     }
 
     private fun setRequiredLabel(label: TextView, textRes: Int) {
@@ -198,37 +137,14 @@ class LoginActivity : AppCompatActivity() {
         lifecycleScope.launch {
             runCatching {
                 withTimeout(AUTH_TIMEOUT_MS) {
-                    if (isOrganization) {
-                        authRepository.signInOrganization(
-                            identifier = identifier,
-                            password = password,
-                            pendingEmail = pendingOrganizationEmail(identifier)
-                        )
-                    } else {
-                        authRepository.signIn(identifier, password)
-                    }
+                    authRepository.signIn(identifier, password)
                 }
             }.onSuccess {
                 localLoginAttemptLock.clear(lockIdentifier)
-                if (isOrganization) {
-                    SessionAccountType.rememberOrganization(this@LoginActivity)
-                    if (hasLocalPendingAccreditation(identifier)
-                        && !FirebaseAuthRepository.isTemporaryOrganizationTestAccess(identifier, this@LoginActivity)
-                    ) {
-                        openPendingAccreditation()
-                    } else {
-                        openOrganizationPanel()
-                    }
-                } else {
-                    SessionAccountType.rememberCitizen(this@LoginActivity)
-                    openApp()
-                }
+                SessionAccountType.rememberCitizen(this@LoginActivity)
+                openApp()
             }.onFailure { error ->
                 setLoading(false)
-                if (isOrganization && error is FirebaseAuthRepository.OrganizationAccreditationPendingException) {
-                    openOrganizationPending()
-                    return@onFailure
-                }
                 if (isCredentialFailure(error)) {
                     val lockState = localLoginAttemptLock.registerFailure(lockIdentifier)
                     if (lockState.isLocked) {
@@ -247,8 +163,7 @@ class LoginActivity : AppCompatActivity() {
         } else {
             identifier.filter(Char::isDigit)
         }
-        val accountType = if (isOrganization) "organization" else "citizen"
-        return "$accountType:$normalized"
+        return "citizen:$normalized"
     }
 
     private fun isCredentialFailure(error: Throwable): Boolean {
@@ -265,32 +180,6 @@ class LoginActivity : AppCompatActivity() {
             getString(R.string.login_local_lock_message, lockState.remainingMinutes)
         )
     }
-    private fun pendingOrganizationEmail(identifier: String): String? {
-        val normalizedIdentifier = identifier.filter(Char::isDigit)
-        if (normalizedIdentifier.length != ORGANIZATION_CNPJ_LENGTH) return null
-
-        return OrganizationAccreditationDraft.load(this)
-            ?.takeIf { it.cnpj.filter(Char::isDigit) == normalizedIdentifier }
-            ?.email
-    }
-
-    private fun hasLocalPendingAccreditation(identifier: String): Boolean {
-        val draft = OrganizationAccreditationDraft.load(this) ?: return false
-        return if (identifier.contains('@')) {
-            draft.email.equals(identifier.trim(), ignoreCase = true)
-        } else {
-            draft.cnpj.filter(Char::isDigit) == identifier.filter(Char::isDigit)
-        }
-    }
-
-    private fun openPendingAccreditation() {
-        startActivity(
-            Intent(this, OrganizationAccreditationActivity::class.java).addFlags(
-                Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            )
-        )
-    }
-
     private fun startGoogleSignIn() {
         val webClientIdRes = resources.getIdentifier(
             "default_web_client_id",
@@ -382,7 +271,6 @@ class LoginActivity : AppCompatActivity() {
         binding.loginButton.setText(
             when {
                 loading -> R.string.login_loading
-                isOrganization -> R.string.login_organization_button
                 else -> R.string.login_button
             }
         )
@@ -401,12 +289,6 @@ class LoginActivity : AppCompatActivity() {
         val message = when {
             error is FirebaseAuthRepository.AccountNotFoundException -> R.string.login_cpf_not_found
             error is FirebaseAuthRepository.InvalidCpfException -> R.string.login_invalid_identifier
-            error is FirebaseAuthRepository.OrganizationAccountNotFoundException ->
-                R.string.login_organization_not_found
-            error is FirebaseAuthRepository.OrganizationEmailVerificationRequiredException ->
-                R.string.login_organization_email_not_verified
-            error is FirebaseAuthRepository.InvalidOrganizationIdentifierException ->
-                R.string.login_organization_invalid_identifier
             error is kotlinx.coroutines.TimeoutCancellationException -> R.string.login_timeout
             error is FirebaseNetworkException || firebaseCode == "ERROR_NETWORK_REQUEST_FAILED" ->
                 R.string.login_network_error
@@ -470,22 +352,6 @@ class LoginActivity : AppCompatActivity() {
         finishAffinity()
     }
 
-    private fun openOrganizationPanel() {
-        startActivity(
-            Intent(this, OrganizationReportsActivity::class.java).addFlags(
-                Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            )
-        )
-    }
-
-    private fun openOrganizationPending() {
-        startActivity(
-            Intent(this, OrganizationLoginBlockedActivity::class.java).addFlags(
-                Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            )
-        )
-    }
-
     private fun configureSystemBars() {
         WindowCompat.setDecorFitsSystemWindows(window, true)
         WindowCompat.getInsetsController(window, window.decorView).apply {
@@ -496,18 +362,13 @@ class LoginActivity : AppCompatActivity() {
 
     companion object {
         private const val TAG = "LoginActivity"
-        private const val EXTRA_ORGANIZATION = "extra_organization"
         private const val EXTRA_PASSWORD_RESET_SUCCESS = "extra_password_reset_success"
         private const val AUTH_TIMEOUT_MS = 10_000L
-        private const val ORGANIZATION_CNPJ_LENGTH = 14
 
-        fun newIntent(context: Context, isOrganization: Boolean): Intent =
-            Intent(context, LoginActivity::class.java).putExtra(EXTRA_ORGANIZATION, isOrganization)
+        fun newIntent(context: Context): Intent =
+            Intent(context, LoginActivity::class.java)
 
-        fun newOrganizationIntent(context: Context): Intent =
-            newIntent(context, isOrganization = true)
-
-        fun newPasswordResetSuccessIntent(context: Context, isOrganization: Boolean): Intent =
-            newIntent(context, isOrganization).putExtra(EXTRA_PASSWORD_RESET_SUCCESS, true)
+        fun newPasswordResetSuccessIntent(context: Context): Intent =
+            newIntent(context).putExtra(EXTRA_PASSWORD_RESET_SUCCESS, true)
     }
 }

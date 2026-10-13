@@ -37,8 +37,6 @@ class PasswordRecoverySentActivity : AppCompatActivity() {
     private val auth by lazy { FirebaseAuth.getInstance() }
     private val email: String
         get() = intent.getStringExtra(EXTRA_EMAIL).orEmpty()
-    private val isOrganization: Boolean
-        get() = intent.getBooleanExtra(EXTRA_ORGANIZATION, false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,7 +80,7 @@ class PasswordRecoverySentActivity : AppCompatActivity() {
             runCatching {
                 withTimeout(RECOVERY_TIMEOUT_MS) {
                     auth.setLanguageCode("pt-BR")
-                    auth.sendPasswordResetEmail(email, PasswordResetActionSettings.forContext(this@PasswordRecoverySentActivity, isOrganization)).await()
+                    auth.sendPasswordResetEmail(email, PasswordResetActionSettings.forContext(this@PasswordRecoverySentActivity)).await()
                 }
             }.onSuccess {
                 setLoading(false)
@@ -155,7 +153,7 @@ class PasswordRecoverySentActivity : AppCompatActivity() {
 
     private fun openLogin() {
         startActivity(
-            LoginActivity.newIntent(this, isOrganization).addFlags(
+            LoginActivity.newIntent(this).addFlags(
                 Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
             )
         )
@@ -172,12 +170,10 @@ class PasswordRecoverySentActivity : AppCompatActivity() {
 
     companion object {
         private const val EXTRA_EMAIL = "extra_email"
-        private const val EXTRA_ORGANIZATION = "extra_organization"
         private const val RECOVERY_TIMEOUT_MS = 15_000L
 
-        fun newIntent(context: Context, email: String, isOrganization: Boolean): Intent =
+        fun newIntent(context: Context, email: String): Intent =
             Intent(context, PasswordRecoverySentActivity::class.java)
                 .putExtra(EXTRA_EMAIL, email)
-                .putExtra(EXTRA_ORGANIZATION, isOrganization)
     }
 }

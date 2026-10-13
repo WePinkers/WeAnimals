@@ -67,25 +67,6 @@
             android:name=".user.entry.presentation.LegalDocumentActivity"
             android:exported="false" />
         <activity
-            android:name=".organization.accreditation.presentation.OrganizationAccreditationActivity"
-            android:exported="false"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".organization.accreditation.presentation.OrganizationVerificationPendingActivity"
-            android:exported="false" />
-        <activity
-            android:name=".organization.accreditation.presentation.OrganizationLoginBlockedActivity"
-            android:exported="false" />
-        <activity
-            android:name=".organization.dashboard.presentation.OrganizationReportsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".organization.dashboard.presentation.OrganizationReportDetailActivity"
-            android:exported="false" />
-        <activity
-            android:name=".organization.dashboard.presentation.OrganizationReportMapActivity"
-            android:exported="false" />
-        <activity
             android:name=".user.home.presentation.HomeActivity"
             android:exported="false" />
         <activity

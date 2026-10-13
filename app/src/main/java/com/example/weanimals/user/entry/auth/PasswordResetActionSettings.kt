@@ -6,13 +6,8 @@ import com.google.firebase.auth.ActionCodeSettings
 
 object PasswordResetActionSettings {
 
-    fun forContext(context: Context, isOrganization: Boolean): ActionCodeSettings {
-        val accountType = if (isOrganization) "organization" else "citizen"
-        val continueUrl = Uri.parse(ACTION_HOST_URL)
-            .buildUpon()
-            .appendQueryParameter("account", accountType)
-            .build()
-            .toString()
+    fun forContext(context: Context): ActionCodeSettings {
+        val continueUrl = Uri.parse(ACTION_HOST_URL).toString()
 
         return ActionCodeSettings.newBuilder()
             .setUrl(continueUrl)

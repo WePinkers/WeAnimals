@@ -36,8 +36,6 @@ class PasswordRecoveryActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPasswordRecoveryBinding
     private var messageDialog: Dialog? = null
     private val auth by lazy { FirebaseAuth.getInstance() }
-    private val isOrganization: Boolean
-        get() = intent.getBooleanExtra(EXTRA_ORGANIZATION, false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,15 +75,14 @@ class PasswordRecoveryActivity : AppCompatActivity() {
             runCatching {
                 withTimeout(RECOVERY_TIMEOUT_MS) {
                     auth.setLanguageCode("pt-BR")
-                    auth.sendPasswordResetEmail(email, PasswordResetActionSettings.forContext(this@PasswordRecoveryActivity, isOrganization)).await()
+                    auth.sendPasswordResetEmail(email, PasswordResetActionSettings.forContext(this@PasswordRecoveryActivity)).await()
                 }
             }.onSuccess {
                 setLoading(false)
                 startActivity(
                     PasswordRecoverySentActivity.newIntent(
                         context = this@PasswordRecoveryActivity,
-                        email = email,
-                        isOrganization = isOrganization
+                        email = email
                     )
                 )
                 finish()
@@ -182,7 +179,7 @@ class PasswordRecoveryActivity : AppCompatActivity() {
             finish()
             return
         }
-        startActivity(LoginActivity.newIntent(this, isOrganization))
+        startActivity(LoginActivity.newIntent(this))
         finish()
     }
 
@@ -195,11 +192,9 @@ class PasswordRecoveryActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val EXTRA_ORGANIZATION = "extra_organization"
         private const val RECOVERY_TIMEOUT_MS = 15_000L
 
-        fun newIntent(context: Context, isOrganization: Boolean): Intent =
+        fun newIntent(context: Context): Intent =
             Intent(context, PasswordRecoveryActivity::class.java)
-                .putExtra(EXTRA_ORGANIZATION, isOrganization)
     }
 }

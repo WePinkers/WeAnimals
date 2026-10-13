@@ -25,11 +25,9 @@ class LegalDocumentActivity : AppCompatActivity() {
             if (isPrivacyPolicy) R.string.legal_privacy_title else R.string.legal_terms_title
         )
         val legalBody = if (isPrivacyPolicy) {
-            getString(R.string.legal_privacy_body) +
-                getString(R.string.legal_accreditation_privacy_section)
+            getString(R.string.legal_privacy_body)
         } else {
-            getString(R.string.legal_terms_body) +
-                getString(R.string.legal_accreditation_terms_section)
+            getString(R.string.legal_terms_body)
         }
         binding.legalDocumentBody.text = legalBody
         binding.legalHeader.backButton.setOnClickListener { finish() }
