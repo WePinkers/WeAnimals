@@ -16,7 +16,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
-import com.canhub.cropper.CropImageContract
 import com.canhub.cropper.CropImageContractOptions
 import com.canhub.cropper.CropImageOptions
 import com.canhub.cropper.CropImageView
@@ -55,7 +54,7 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
     private var tempCameraUri: Uri? = null
 
     private val cropImageLauncher = registerForActivityResult(
-        CropImageContract()
+        CustomCropImageContract()
     ) { result ->
         if (result.isSuccessful) {
             val croppedUri = result.uriContent
@@ -203,13 +202,17 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
                 aspectRatioY = 1
                 activityTitle = "Ajustar foto"
                 activityMenuIconColor = Color.WHITE
+                activityMenuTextColor = Color.WHITE
                 toolbarColor = pineColor
                 toolbarTitleColor = Color.WHITE
                 toolbarBackButtonColor = Color.WHITE
-                cropMenuCropButtonTitle = "Concluir"
+                cropMenuCropButtonTitle = "CONCLUIR"
+
+                allowRotation = true
+                allowFlipping = true
 
                 // Touch & Zoom stabilization
-                maxZoom = 4
+                maxZoom = 2
                 autoZoomEnabled = true
                 multiTouchEnabled = true
                 showCropOverlay = true

@@ -145,6 +145,9 @@
                 android:resource="@xml/file_paths" />
         </provider>
         <activity
+            android:name=".profile.overview.presentation.CustomCropImageActivity"
+            android:theme="@style/Theme.WeAnimals.CropImage" />
+        <activity
             android:name="com.canhub.cropper.CropImageActivity"
             android:theme="@style/Theme.WeAnimals.CropImage" />
 
