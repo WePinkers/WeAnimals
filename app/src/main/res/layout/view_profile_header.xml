@@ -36,7 +36,6 @@
                 android:id="@+id/profile_avatar_image"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/bg_profile_avatar"
                 android:contentDescription="Foto do perfil"
                 android:scaleType="centerCrop"
                 android:visibility="gone"

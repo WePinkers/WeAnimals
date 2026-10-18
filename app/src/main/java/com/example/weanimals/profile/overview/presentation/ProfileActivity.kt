@@ -4,10 +4,12 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.view.View
 import android.view.Window
 import android.view.WindowManager
 import androidx.activity.result.contract.ActivityResultContracts
@@ -29,7 +31,6 @@ import com.example.weanimals.databinding.DialogEditProfileBinding
 import com.example.weanimals.databinding.DialogLogoutConfirmationBinding
 import com.example.weanimals.databinding.DialogPhotoOptionsBinding
 import com.example.weanimals.entry.presentation.EntryActivity
-import com.example.weanimals.lostandfound.presentation.ReportLostPetActivity
 import com.example.weanimals.profile.campaigns.presentation.CampaignsActivity
 import com.example.weanimals.profile.favorites.presentation.FavoritesActivity
 import com.example.weanimals.profile.overview.presenter.ProfileContract
@@ -96,6 +97,8 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
         val savedUri = loadSavedPhotoUri()
         if (savedUri != null) {
             updatePhoto(savedUri)
+        } else {
+            loadSavedProfilePicture()
         }
 
         setupProfileActions()
@@ -111,9 +114,6 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
         binding.profileContent.profileHeader.profileEditPhoto.setOnClickListener {
             showPhotoOptions()
         }
-        binding.profileContent.lostAndFoundSection.reportLostPet.setOnClickListener {
-            startActivity(Intent(this, ReportLostPetActivity::class.java))
-        }
         binding.profileContent.itemMyReports.root.setOnClickListener {
             startActivity(Intent(this, MyReportsActivity::class.java))
         }
@@ -126,7 +126,23 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
         binding.profileContent.logoutButton.setOnClickListener {
             showLogoutConfirmation()
         }
+        setupAccountSection()
         updateHeader()
+    }
+
+    private fun setupAccountSection() {
+        val hasPasswordProvider = FirebaseAuth.getInstance().currentUser?.providerData?.any {
+            it.providerId == "password"
+        } == true
+
+        if (hasPasswordProvider) {
+            binding.profileContent.sectionAccount.visibility = View.VISIBLE
+            binding.profileContent.itemChangePassword.rootChangePassword.setOnClickListener {
+                startActivity(Intent(this, ChangePasswordActivity::class.java))
+            }
+        } else {
+            binding.profileContent.sectionAccount.visibility = View.GONE
+        }
     }
 
     override fun onStart() {
@@ -180,13 +196,13 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
         val initial = binding.profileContent.profileHeader.profileAvatarInitial
         if (uri == null) {
             image.setImageDrawable(null)
-            image.visibility = android.view.View.GONE
-            initial.visibility = android.view.View.VISIBLE
+            image.visibility = View.GONE
+            initial.visibility = View.VISIBLE
             saveCroppedPhotoUri(null)
         } else {
             image.setImageURI(uri)
-            image.visibility = android.view.View.VISIBLE
-            initial.visibility = android.view.View.GONE
+            image.visibility = View.VISIBLE
+            initial.visibility = View.GONE
         }
     }
 
@@ -263,6 +279,32 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
         }
     }
 
+    private fun removeProfilePicture() {
+        val file = File(filesDir, "profile_picture.jpg")
+        if (file.exists()) {
+            file.delete()
+        }
+        val prefs = getSharedPreferences("profile_prefs", MODE_PRIVATE)
+        prefs.edit().remove("profile_picture_path").apply()
+        updatePhoto(null)
+    }
+
+    private fun loadSavedProfilePicture() {
+        val prefs = getSharedPreferences("profile_prefs", MODE_PRIVATE)
+        val path = prefs.getString("profile_picture_path", null)
+        if (!path.isNullOrBlank()) {
+            val file = File(path)
+            if (file.exists()) {
+                val rawBitmap = BitmapFactory.decodeFile(file.absolutePath)
+                if (rawBitmap != null) {
+                    binding.profileContent.profileHeader.profileAvatarImage.setImageBitmap(rawBitmap)
+                    binding.profileContent.profileHeader.profileAvatarImage.visibility = View.VISIBLE
+                    binding.profileContent.profileHeader.profileAvatarInitial.visibility = View.GONE
+                }
+            }
+        }
+    }
+
     private fun showEditProfileDialog() {
         val dialogBinding = DialogEditProfileBinding.inflate(layoutInflater)
         dialogBinding.editName.setText(nomeAtual)
@@ -295,7 +337,7 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
         }
         dialogBinding.removePhotoButton.setOnClickListener {
             dialog.dismiss()
-            updatePhoto(null)
+            removeProfilePicture()
         }
         dialog.setOnShowListener {
             dialog.window?.apply {
@@ -375,10 +417,10 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
     }
 
     private fun openEntry() {
-        startActivity(
-            Intent(this, EntryActivity::class.java).addFlags(
-                Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            )
-        )
+        val intent = Intent(this, EntryActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        startActivity(intent)
+        finish()
     }
 }
