@@ -1,0 +1,445 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    tools:ignore="UnusedResources">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        android:paddingBottom="90dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- 1. Bleeding Cover Banner -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="170dp"
+                android:background="@drawable/bg_ad_cover_gradient">
+
+                <!-- Paw Icon when no photo is available -->
+                <ImageView
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:layout_gravity="center"
+                    android:alpha="0.55"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_paw"
+                    app:tint="#BE6D46" />
+
+                <!-- Real photo preview -->
+                <ImageView
+                    android:id="@+id/found_photo_preview"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:contentDescription="Foto do animal encontrado"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone" />
+
+                <!-- Floating Back Button -->
+                <ImageButton
+                    android:id="@+id/btn_back"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_gravity="top|start"
+                    android:layout_marginStart="14dp"
+                    android:layout_marginTop="14dp"
+                    android:background="@drawable/bg_circular_white_button"
+                    android:contentDescription="Voltar"
+                    android:elevation="2dp"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_arrow_back"
+                    app:tint="#132A20" />
+
+                <!-- Floating Status Badge (Pill) -->
+                <TextView
+                    android:id="@+id/status_badge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|end"
+                    android:layout_marginTop="14dp"
+                    android:layout_marginEnd="14dp"
+                    android:background="@drawable/bg_chip_selected_pine"
+                    android:elevation="2dp"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="4dp"
+                    android:text="Comigo"
+                    android:textColor="@color/white"
+                    android:textSize="11.5sp"
+                    android:textStyle="bold" />
+            </FrameLayout>
+
+            <!-- 2. Animal Info & Body -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="18dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="24dp">
+
+                <TextView
+                    android:id="@+id/found_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="serif"
+                    android:text="Cão caramelo encontrado"
+                    android:textColor="#132A20"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/found_subtitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Praça Central · achado há 2 dias"
+                    android:textColor="#5C5548"
+                    android:textSize="11sp" />
+
+                <!-- Tags / Chips Row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_chip_soft_sand"
+                        android:paddingHorizontal="12dp"
+                        android:paddingVertical="4dp"
+                        android:text="Cão"
+                        android:textColor="#1F3D2E"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:background="@drawable/bg_chip_soft_sand"
+                        android:paddingHorizontal="12dp"
+                        android:paddingVertical="4dp"
+                        android:text="Porte médio"
+                        android:textColor="#1F3D2E"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:background="@drawable/bg_chip_soft_sand"
+                        android:paddingHorizontal="12dp"
+                        android:paddingVertical="4dp"
+                        android:text="Adulto"
+                        android:textColor="#1F3D2E"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:background="@drawable/bg_chip_soft_sand"
+                        android:paddingHorizontal="12dp"
+                        android:paddingVertical="4dp"
+                        android:text="SRD"
+                        android:textColor="#1F3D2E"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- Expiration Progress Card -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="18dp"
+                    android:background="@drawable/bg_expiration_card"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:fontFamily="serif"
+                            android:text="Anúncio ativo"
+                            android:textColor="#132A20"
+                            android:textSize="13.5sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Restam 3 dias"
+                            android:textColor="#BE6D46"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <ProgressBar
+                        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="8dp"
+                        android:layout_marginTop="10dp"
+                        android:max="100"
+                        android:progress="40"
+                        android:progressDrawable="@drawable/bg_step_segment_active" />
+                </LinearLayout>
+
+                <!-- Observed Details List -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="18dp"
+                    android:background="@drawable/bg_stat_card"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:contentDescription="@null"
+                            android:src="@drawable/ic_search"
+                            app:tint="#1F3D2E" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Reação a nome"
+                                android:textColor="#5C5548"
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text="Pareceu reconhecer &quot;Pipoca&quot;: veio em direção à voz e abanou o rabo."
+                                android:textColor="#132A20"
+                                android:textSize="13sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginVertical="12dp"
+                        android:background="@color/border" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:contentDescription="@null"
+                            android:src="@drawable/ic_paw"
+                            app:tint="#1F3D2E" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Marcas observadas"
+                                android:textColor="#5C5548"
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text="Mancha branca em formato de coração no peito, orelha esquerda meio caída."
+                                android:textColor="#132A20"
+                                android:textSize="13sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginVertical="12dp"
+                        android:background="@color/border" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:contentDescription="@null"
+                            android:src="@drawable/ic_map_pin"
+                            app:tint="#1F3D2E" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Onde foi achado"
+                                android:textColor="#5C5548"
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text="Praça Central, Vila Marlene · 26/08, pela manhã"
+                                android:textColor="#132A20"
+                                android:textSize="13sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginVertical="12dp"
+                        android:background="@color/border" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:contentDescription="@null"
+                            android:src="@drawable/ic_profile"
+                            app:tint="#1F3D2E" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Cuidado atual"
+                                android:textColor="#5C5548"
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text="Com Marta N., informado por quem encontrou."
+                                android:textColor="#132A20"
+                                android:textSize="13sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/btn_report_ad"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="20dp"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="8dp"
+                    android:text="Denunciar anúncio"
+                    android:textColor="#A83232"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Fixed Footer Bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="76dp"
+        android:layout_gravity="bottom"
+        android:background="@color/background"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="18dp"
+        android:paddingVertical="12dp">
+
+        <Button
+            android:id="@+id/btn_back_footer"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="6dp"
+            android:layout_weight="1"
+            android:backgroundTint="@color/white"
+            android:text="Voltar"
+            android:textColor="#1F3D2E"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:cornerRadius="12dp"
+            app:strokeColor="#DDD6C4" />
+
+        <Button
+            android:id="@+id/btn_claim_pet"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="6dp"
+            android:layout_weight="2"
+            android:backgroundTint="@color/clay600"
+            android:text="É o meu animal"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            app:cornerRadius="12dp" />
+    </LinearLayout>
+</FrameLayout>

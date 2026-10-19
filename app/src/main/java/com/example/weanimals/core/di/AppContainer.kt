@@ -92,7 +92,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 class AppContainer(context: Context) {
     private val applicationContext = context.applicationContext
 
-    private val reportRepository: ReportRepository by lazy {
+    val reportRepository: ReportRepository by lazy {
         FirebaseReportRepository(
             context = applicationContext,
             auth = FirebaseAuth.getInstance(),

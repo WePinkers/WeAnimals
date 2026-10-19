@@ -31,6 +31,7 @@ import com.example.weanimals.databinding.DialogEditProfileBinding
 import com.example.weanimals.databinding.DialogLogoutConfirmationBinding
 import com.example.weanimals.databinding.DialogPhotoOptionsBinding
 import com.example.weanimals.entry.presentation.EntryActivity
+import com.example.weanimals.lostandfound.presentation.ReportLostPetActivity
 import com.example.weanimals.profile.campaigns.presentation.CampaignsActivity
 import com.example.weanimals.profile.favorites.presentation.FavoritesActivity
 import com.example.weanimals.profile.overview.presenter.ProfileContract
@@ -123,13 +124,13 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
         binding.profileContent.itemFavorites.root.setOnClickListener {
             startActivity(Intent(this, FavoritesActivity::class.java))
         }
-        binding.profileContent.itemLostFound.rootLostFound.setOnClickListener {
+        binding.profileContent.itemLostFound.root.setOnClickListener {
             startActivity(Intent(this, com.example.weanimals.lostandfound.presentation.LostAndFoundActivity::class.java))
         }
-        binding.profileContent.itemMyAds.rootMyAds.setOnClickListener {
+        binding.profileContent.itemMyAds.root.setOnClickListener {
             startActivity(Intent(this, MyReportsActivity::class.java))
         }
-        binding.profileContent.itemLogoutRow.rootLogoutRow.setOnClickListener {
+        binding.profileContent.itemLogoutRow.root.setOnClickListener {
             showLogoutConfirmation()
         }
         setupAccountSection()
