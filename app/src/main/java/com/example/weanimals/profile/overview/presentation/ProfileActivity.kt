@@ -232,7 +232,13 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
         binding.profileContent.itemFavorites.root.setOnClickListener {
             startActivity(Intent(this, FavoritesActivity::class.java))
         }
-        binding.profileContent.logoutButton.setOnClickListener {
+        binding.profileContent.itemLostFound.rootLostFound.setOnClickListener {
+            startActivity(Intent(this, com.example.weanimals.lostandfound.presentation.LostAndFoundActivity::class.java))
+        }
+        binding.profileContent.itemMyAds.rootMyAds.setOnClickListener {
+            startActivity(Intent(this, MyReportsActivity::class.java))
+        }
+        binding.profileContent.itemLogoutRow.rootLogoutRow.setOnClickListener {
             showLogoutConfirmation()
         }
         setupAccountSection()
