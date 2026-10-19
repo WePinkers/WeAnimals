@@ -236,7 +236,7 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
             startActivity(Intent(this, com.example.weanimals.lostandfound.presentation.LostAndFoundActivity::class.java))
         }
         binding.profileContent.itemMyAds.rootMyAds.setOnClickListener {
-            startActivity(Intent(this, MyReportsActivity::class.java))
+            startActivity(Intent(this, com.example.weanimals.lostandfound.presentation.MyAdsActivity::class.java))
         }
         binding.profileContent.itemLogoutRow.rootLogoutRow.setOnClickListener {
             showLogoutConfirmation()

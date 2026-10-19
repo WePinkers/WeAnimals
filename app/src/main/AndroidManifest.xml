@@ -138,6 +138,11 @@
         <activity android:name=".profile.overview.presentation.ProfileActivity" android:exported="false" />
         <activity android:name=".profile.overview.presentation.ChangePasswordActivity" android:exported="false" />
         <activity android:name=".lostandfound.presentation.LostAndFoundActivity" android:exported="false" />
+        <activity android:name=".lostandfound.presentation.FoundPetFormActivity" android:exported="false" />
+        <activity android:name=".lostandfound.presentation.AdjustLocationActivity" android:exported="false" />
+        <activity android:name=".lostandfound.presentation.MyAdDetailActivity" android:exported="false" />
+        <activity android:name=".lostandfound.presentation.MyAdsActivity" android:exported="false" />
+        <activity android:name=".lostandfound.presentation.PublicAdDetailActivity" android:exported="false" />
         <activity android:name=".profile.reports.presentation.MyReportsActivity" android:exported="false" />
         <activity android:name=".profile.campaigns.presentation.CampaignsActivity" android:exported="false" />
         <activity android:name=".profile.favorites.presentation.FavoritesActivity" android:exported="false" />
