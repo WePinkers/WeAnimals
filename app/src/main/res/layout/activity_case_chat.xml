@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
     android:orientation="vertical"
-    tools:context=".reporting.chat.presentation.CaseChatActivity">
+    tools:context=".reporting.chat.presentation.CaseChatActivity"
+    tools:ignore="UnusedResources">
 
+    <!-- Top Header Bar -->
     <LinearLayout
         android:id="@+id/chat_header"
         android:layout_width="match_parent"
@@ -14,33 +17,30 @@
         android:background="@color/surface"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingStart="18dp"
-        android:paddingEnd="18dp">
+        android:paddingHorizontal="16dp">
 
         <ImageButton
-            android:id="@+id/back_button"
+            android:id="@+id/btn_back"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:background="@drawable/bg_back_button"
-            android:contentDescription="@string/back"
-            android:gravity="center"
-            android:padding="0dp"
-            android:scaleType="center"
+            android:background="@drawable/bg_circular_white_button"
+            android:contentDescription="Voltar"
+            android:elevation="1dp"
+            android:padding="6dp"
             android:src="@drawable/ic_arrow_back"
-            android:tint="@color/ink" />
+            app:tint="#132A20" />
 
         <TextView
             android:id="@+id/chat_avatar"
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:layout_marginStart="12dp"
-            android:background="@drawable/bg_chat_avatar"
+            android:background="@drawable/bg_flowbar_active"
             android:fontFamily="sans-serif"
             android:gravity="center"
-            android:includeFontPadding="false"
-            android:text="@string/chat_unassigned_avatar"
+            android:text="R"
             android:textColor="@color/white"
-            android:textSize="@dimen/text_size_chat_avatar"
+            android:textSize="16sp"
             android:textStyle="bold" />
 
         <LinearLayout
@@ -54,23 +54,20 @@
                 android:id="@+id/chat_agent_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="sans-serif"
-                android:includeFontPadding="false"
-                android:text="@string/chat_unassigned_title"
-                android:textColor="@color/ink"
-                android:textSize="@dimen/text_size_chat_agent"
+                android:text="Renata F."
+                android:textColor="#132A20"
+                android:textSize="14sp"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/chat_protocol"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
+                android:layout_marginTop="1dp"
                 android:fontFamily="monospace"
-                android:includeFontPadding="false"
-                android:textColor="@color/muted"
-                android:textSize="@dimen/text_size_chat_protocol"
-                tools:text="PROTOCOLO #4468" />
+                android:text="tutora de Pipoca"
+                android:textColor="#5C5548"
+                android:textSize="11sp" />
         </LinearLayout>
     </LinearLayout>
 
@@ -79,109 +76,120 @@
         android:layout_height="1dp"
         android:background="@color/border" />
 
+    <!-- Messages Container -->
     <FrameLayout
-        android:id="@+id/chat_content"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
 
-        <ScrollView
-            android:id="@+id/messages_scroll"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view_chat"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
-            android:fillViewport="true"
-            android:overScrollMode="never"
-            android:paddingStart="18dp"
-            android:paddingTop="10dp"
-            android:paddingEnd="18dp"
-            android:paddingBottom="10dp"
-            android:scrollbars="none">
-
-            <LinearLayout
-                android:id="@+id/messages_container"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical" />
-        </ScrollView>
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="10dp" />
 
         <TextView
             android:id="@+id/chat_state"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:fontFamily="sans-serif"
             android:gravity="center"
-            android:includeFontPadding="false"
-            android:paddingStart="32dp"
-            android:paddingEnd="32dp"
+            android:paddingHorizontal="32dp"
             android:textColor="@color/muted"
-            android:textSize="@dimen/text_size_chat_state"
-            android:visibility="gone"
-            tools:text="@string/chat_unassigned_message"
-            tools:visibility="visible" />
+            android:textSize="14sp"
+            android:visibility="gone" />
     </FrameLayout>
 
+    <!-- Fixed Bottom Composer Section -->
     <LinearLayout
-        android:id="@+id/chat_composer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/surface"
         android:orientation="vertical"
-        android:paddingStart="14dp"
+        android:paddingHorizontal="14dp"
         android:paddingTop="8dp"
-        android:paddingEnd="14dp"
-        android:paddingBottom="8dp">
+        android:paddingBottom="12dp">
 
-        <TextView
-            android:id="@+id/chat_error"
+        <!-- Safety Card -->
+        <LinearLayout
+            android:id="@+id/card_safety_tips"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_marginBottom="5dp"
-            android:fontFamily="sans-serif"
-            android:includeFontPadding="false"
-            android:textColor="@color/red"
-            android:textSize="@dimen/text_size_chat_error"
-            android:visibility="gone" />
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/bg_secret_card"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="10dp">
 
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_shield_outline"
+                app:tint="#BE6D46" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:text="Combine em local público e movimentado. Peça um documento. Nunca envie dinheiro adiantado."
+                android:textColor="#132A20"
+                android:textSize="11sp" />
+        </LinearLayout>
+
+        <!-- Quick Action Shortcut Button -->
+        <TextView
+            android:id="@+id/btn_register_reunion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/bg_chip_selected_pine"
+            android:clickable="true"
+            android:focusable="true"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="6dp"
+            android:text="Registrar reencontro"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <!-- Input Row -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="46dp"
+            android:layout_height="44dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <EditText
-                android:id="@+id/message_input"
+                android:id="@+id/input_message"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@drawable/bg_chat_input"
-                android:fontFamily="sans-serif"
                 android:gravity="center_vertical"
-                android:hint="@string/chat_message_hint"
-                android:includeFontPadding="false"
-                android:inputType="textCapSentences|textMultiLine"
-                android:maxLength="1000"
-                android:maxLines="3"
-                android:paddingStart="14dp"
-                android:paddingEnd="14dp"
-                android:textColor="@color/ink"
-                android:textColorHint="@color/muted"
-                android:textSize="@dimen/text_size_chat_input" />
+                android:hint="Escreva uma mensagem"
+                android:imeOptions="actionSend"
+                android:inputType="textCapSentences"
+                android:paddingHorizontal="14dp"
+                android:textColor="#132A20"
+                android:textColorHint="#5C5548"
+                android:textSize="14sp" />
 
             <ImageButton
-                android:id="@+id/send_button"
-                android:layout_width="46dp"
-                android:layout_height="46dp"
+                android:id="@+id/btn_send"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
                 android:layout_marginStart="8dp"
-                android:padding="0dp"
-                android:background="@drawable/bg_chat_send"
-                android:contentDescription="@string/chat_send"
-                android:gravity="center"
-                android:scaleType="center"
+                android:background="@drawable/bg_terracotta_send_button"
+                android:contentDescription="Enviar"
+                android:padding="8dp"
                 android:src="@drawable/ic_send"
-                android:tint="@color/white" />
+                app:tint="@color/white" />
         </LinearLayout>
+
     </LinearLayout>
 </LinearLayout>
