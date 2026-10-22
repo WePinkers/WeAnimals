@@ -3,6 +3,7 @@ package com.example.weanimals.lostandfound.repository
 import android.content.Context
 import android.content.SharedPreferences
 import com.example.weanimals.lostandfound.model.FoundPetAd
+import com.example.weanimals.lostandfound.model.TutorVerificationRequest
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -16,14 +17,17 @@ object LostAndFoundRepository {
 
     private const val PREFS_NAME = "lost_and_found_prefs"
     private const val KEY_ADS = "saved_ads"
+    private const val KEY_REQUESTS = "saved_verification_requests"
 
     private val adsList = mutableListOf<FoundPetAd>()
+    private val requestsList = mutableListOf<TutorVerificationRequest>()
     private var isInitialized = false
 
     fun init(context: Context) {
         if (isInitialized) return
         isInitialized = true
         loadFromPrefs(context)
+        loadRequestsFromPrefs(context)
     }
 
     fun saveAd(context: Context, ad: FoundPetAd) {
@@ -66,6 +70,32 @@ object LostAndFoundRepository {
         ad.isEnded = true
         ad.currentSituation = "Encerrado"
         saveToPrefs(context)
+    }
+
+    fun saveVerificationRequest(context: Context, request: TutorVerificationRequest): Boolean {
+        init(context)
+        val alreadySubmitted = requestsList.any { it.adId == request.adId && it.requesterUserId == request.requesterUserId }
+        if (alreadySubmitted) return false
+
+        requestsList.add(0, request)
+        saveRequestsToPrefs(context)
+
+        val ad = adsList.firstOrNull { it.id == request.adId }
+        if (ad != null) {
+            val uniqueCount = requestsList.filter { it.adId == request.adId }.map { it.requesterUserId }.distinct().size
+            val updatedAd = ad.copy(possibleTutorsCount = uniqueCount)
+            val index = adsList.indexOfFirst { it.id == ad.id }
+            if (index >= 0) {
+                adsList[index] = updatedAd
+                saveToPrefs(context)
+            }
+        }
+        return true
+    }
+
+    fun getVerificationRequestsForAd(context: Context, adId: String): List<TutorVerificationRequest> {
+        init(context)
+        return requestsList.filter { it.adId == adId }
     }
 
     fun getIndicatorsSummary(context: Context): IndicatorsSummary {
@@ -190,6 +220,50 @@ object LostAndFoundRepository {
                     reunitedTimestamp = if (reunitedTs > 0L) reunitedTs else null
                 )
                 adsList.add(ad)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun saveRequestsToPrefs(context: Context) {
+        val array = JSONArray()
+        for (req in requestsList) {
+            val obj = JSONObject().apply {
+                put("id", req.id)
+                put("adId", req.adId)
+                put("requesterUserId", req.requesterUserId)
+                put("ownerUserId", req.ownerUserId)
+                put("petName", req.petName)
+                put("specialMark", req.specialMark)
+                put("photoUri", req.photoUri ?: "")
+                put("timestamp", req.timestamp)
+                put("status", req.status)
+            }
+            array.put(obj)
+        }
+        getPrefs(context).edit().putString(KEY_REQUESTS, array.toString()).apply()
+    }
+
+    private fun loadRequestsFromPrefs(context: Context) {
+        val jsonStr = getPrefs(context).getString(KEY_REQUESTS, null) ?: return
+        try {
+            val array = JSONArray(jsonStr)
+            requestsList.clear()
+            for (i in 0 until array.length()) {
+                val obj = array.getJSONObject(i)
+                val req = TutorVerificationRequest(
+                    id = obj.optString("id"),
+                    adId = obj.optString("adId"),
+                    requesterUserId = obj.optString("requesterUserId", "local_user"),
+                    ownerUserId = obj.optString("ownerUserId"),
+                    petName = obj.optString("petName"),
+                    specialMark = obj.optString("specialMark"),
+                    photoUri = obj.optString("photoUri").ifBlank { null },
+                    timestamp = obj.optLong("timestamp", System.currentTimeMillis()),
+                    status = obj.optString("status", "PENDENTE")
+                )
+                requestsList.add(req)
             }
         } catch (e: Exception) {
             e.printStackTrace()

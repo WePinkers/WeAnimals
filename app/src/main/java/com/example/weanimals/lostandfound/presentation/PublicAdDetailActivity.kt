@@ -209,11 +209,20 @@ class PublicAdDetailActivity : AppCompatActivity() {
         }
 
         binding.btnMainActionPublic.setOnClickListener {
-            Toast.makeText(
-                this,
-                "Funcionalidade de contato em desenvolvimento. Em breve você poderá contatar o anunciante!",
-                Toast.LENGTH_LONG
-            ).show()
+            val ad = currentAd ?: return@setOnClickListener
+            if (ad.isOwnedByCurrent()) {
+                Toast.makeText(
+                    this,
+                    "Este anúncio foi publicado por você. Não é possível enviar uma solicitação para o seu próprio anúncio.",
+                    Toast.LENGTH_LONG
+                ).show()
+                return@setOnClickListener
+            }
+
+            val intent = Intent(this, TutorVerificationActivity::class.java).apply {
+                putExtra(TutorVerificationActivity.EXTRA_AD_ID, ad.id)
+            }
+            startActivity(intent)
         }
     }
 
