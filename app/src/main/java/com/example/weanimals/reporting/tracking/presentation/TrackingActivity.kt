@@ -112,14 +112,7 @@ class TrackingActivity : AppCompatActivity(), TrackingContract.View {
         binding.updateCard.setOnClickListener {
             startActivity(CaseChatActivity.newIntent(this, report.id, report.protocolNumber))
         }
-        binding.lostFoundAdCard.visibility = View.VISIBLE
-        binding.lostFoundAdCard.setOnClickListener {
-            val intent = Intent(this, com.example.weanimals.lostandfound.presentation.MyLostAdDetailActivity::class.java).apply {
-                putExtra("extra_report_id", report.id)
-                putExtra("extra_protocol_number", report.protocolNumber)
-            }
-            startActivity(intent)
-        }
+
     }
 
     override fun showReportError(error: Throwable) {

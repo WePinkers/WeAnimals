@@ -163,6 +163,16 @@
         <activity android:name=".lostandfound.presentation.OwnerVerificationActivity" android:exported="false" />
         <activity android:name=".lostandfound.presentation.VerificationSentActivity" android:exported="false" />
         <activity android:name=".lostandfound.presentation.OwnerRequestReviewActivity" android:exported="false" />
+        <activity android:name=".lostandfound.presentation.LostFoundChatActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".lostandfound.presentation.ReportFoundAnimalActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".lostandfound.presentation.FoundAdDetailActivity" android:exported="false" />
+        <activity android:name=".lostandfound.presentation.FoundMatchesActivity" android:exported="false" />
+        <activity android:name=".lostandfound.presentation.LostAnimalPublicDetailActivity" android:exported="false" />
+        <activity android:name=".lostandfound.presentation.CloseLostAdActivity" android:exported="false" />
+        <activity android:name=".lostandfound.presentation.CloseFoundAdActivity" android:exported="false" />
+        <activity android:name=".lostandfound.presentation.MyAdsActivity" android:exported="false" />
+        <activity android:name=".lostandfound.presentation.AdExpiredActivity" android:exported="false" />
+        <activity android:name=".lostandfound.presentation.LostAndFoundMapActivity" android:exported="false" />
         <activity android:name=".profile.reports.presentation.MyReportsActivity" android:exported="false" />
         <activity android:name=".profile.campaigns.presentation.CampaignsActivity" android:exported="false" />
         <activity android:name=".profile.favorites.presentation.FavoritesActivity" android:exported="false" />
