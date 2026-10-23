@@ -1,6 +1,7 @@
 package com.example.weanimals.lostandfound.presentation
 
 import android.content.Intent
+import android.graphics.Color
 import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
@@ -133,6 +134,8 @@ class MyRequestsActivity : AppCompatActivity() {
         }
 
         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.forLanguageTag("pt-BR"))
+        val buttonHeightPx = (48 * resources.displayMetrics.density).toInt()
+        val margin12Px = (12 * resources.displayMetrics.density).toInt()
 
         for (req in myRequests) {
             val ad = LostAndFoundRepository.getAdById(this, req.adId)
@@ -257,37 +260,45 @@ class MyRequestsActivity : AppCompatActivity() {
             val actionButton = androidx.appcompat.widget.AppCompatButton(this).apply {
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
-                    48
+                    buttonHeightPx
                 ).apply {
-                    setMargins(0, 12, 0, 0)
-                }
-                text = when (statusUpper) {
-                    "APROVADO" -> "Abrir chat"
-                    else -> "Ver minhas respostas"
+                    setMargins(0, margin12Px, 0, 0)
                 }
                 isAllCaps = false
                 textSize = 14f
                 setTypeface(null, Typeface.BOLD)
-                if (statusUpper == "APROVADO") {
-                    setTextColor(getColor(R.color.white))
-                    setBackgroundResource(R.drawable.bg_btn_dark_green)
-                } else {
-                    setTextColor(getColor(R.color.pine800))
-                    setBackgroundResource(R.drawable.bg_btn_outline)
-                }
+                gravity = Gravity.CENTER
 
-                setOnClickListener {
-                    if (statusUpper == "APROVADO") {
-                        val intent = Intent(this@MyRequestsActivity, LostAndFoundChatActivity::class.java).apply {
-                            putExtra(LostAndFoundChatActivity.EXTRA_REQUEST_ID, req.id)
-                            putExtra(LostAndFoundChatActivity.EXTRA_VIEWER_ROLE, LostAndFoundChatActivity.ROLE_TUTOR)
+                when (statusUpper) {
+                    "APROVADO" -> {
+                        text = "Abrir chat"
+                        setTextColor(getColor(R.color.white))
+                        setBackgroundResource(R.drawable.bg_btn_dark_green)
+                        isClickable = true
+                        isFocusable = true
+                        setOnClickListener {
+                            val intent = Intent(this@MyRequestsActivity, LostAndFoundChatActivity::class.java).apply {
+                                putExtra(LostAndFoundChatActivity.EXTRA_REQUEST_ID, req.id)
+                                putExtra(LostAndFoundChatActivity.EXTRA_VIEWER_ROLE, LostAndFoundChatActivity.ROLE_TUTOR)
+                            }
+                            startActivity(intent)
                         }
-                        startActivity(intent)
-                    } else {
-                        val intent = Intent(this@MyRequestsActivity, SubmittedAnswersActivity::class.java).apply {
-                            putExtra(SubmittedAnswersActivity.EXTRA_REQUEST_ID, req.id)
-                        }
-                        startActivity(intent)
+                    }
+                    "RECUSADO", "RECUSADA" -> {
+                        text = "Recusada"
+                        setTextColor(Color.parseColor("#A83232"))
+                        setBackgroundResource(R.drawable.bg_bar_red)
+                        isClickable = false
+                        isFocusable = false
+                        setOnClickListener(null)
+                    }
+                    else -> {
+                        text = "Em análise"
+                        setTextColor(Color.parseColor("#7A5710"))
+                        setBackgroundResource(R.drawable.bg_bar_yellow)
+                        isClickable = false
+                        isFocusable = false
+                        setOnClickListener(null)
                     }
                 }
             }
