@@ -1,11 +1,11 @@
 package com.example.weanimals.lostandfound.presentation
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.weanimals.databinding.ActivityTutorVerificationBinding
 import com.example.weanimals.lostandfound.model.FoundPetAd
@@ -115,18 +115,11 @@ class TutorVerificationActivity : AppCompatActivity() {
             return
         }
 
-        showSuccessDialog()
-    }
-
-    private fun showSuccessDialog() {
-        AlertDialog.Builder(this)
-            .setTitle("Respostas enviadas!")
-            .setMessage("Suas respostas foram enviadas para análise. A pessoa que encontrou o animal poderá verificar as informações antes de entrar em contato.")
-            .setPositiveButton("Voltar ao anúncio") { _, _ ->
-                finish()
-            }
-            .setCancelable(false)
-            .show()
+        val intent = Intent(this, SubmittedAnswersActivity::class.java).apply {
+            putExtra(SubmittedAnswersActivity.EXTRA_REQUEST_ID, request.id)
+        }
+        startActivity(intent)
+        finish()
     }
 
     companion object {

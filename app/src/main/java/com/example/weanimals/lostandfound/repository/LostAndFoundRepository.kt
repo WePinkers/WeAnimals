@@ -98,6 +98,11 @@ object LostAndFoundRepository {
         return requestsList.filter { it.adId == adId }
     }
 
+    fun getVerificationRequestById(context: Context, id: String): TutorVerificationRequest? {
+        init(context)
+        return requestsList.firstOrNull { it.id == id }
+    }
+
     fun getIndicatorsSummary(context: Context): IndicatorsSummary {
         init(context)
         val now = System.currentTimeMillis()
