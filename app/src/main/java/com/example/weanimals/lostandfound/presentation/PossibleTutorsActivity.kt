@@ -76,6 +76,7 @@ class PossibleTutorsActivity : AppCompatActivity() {
                     if (req.status.equals("APROVADO", ignoreCase = true)) {
                         val intent = Intent(this@PossibleTutorsActivity, LostAndFoundChatActivity::class.java).apply {
                             putExtra(LostAndFoundChatActivity.EXTRA_REQUEST_ID, req.id)
+                            putExtra(LostAndFoundChatActivity.EXTRA_VIEWER_ROLE, LostAndFoundChatActivity.ROLE_FOUNDER)
                         }
                         startActivity(intent)
                     } else {

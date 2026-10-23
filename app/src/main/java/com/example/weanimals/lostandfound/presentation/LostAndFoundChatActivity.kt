@@ -3,6 +3,7 @@ package com.example.weanimals.lostandfound.presentation
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -28,6 +29,7 @@ class LostAndFoundChatActivity : AppCompatActivity() {
     private val currentUserId by lazy {
         FirebaseAuth.getInstance().currentUser?.uid ?: "local_user"
     }
+    private var isTutorView: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +37,10 @@ class LostAndFoundChatActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val requestId = intent.getStringExtra(EXTRA_REQUEST_ID)
+        val roleExtra = intent.getStringExtra(EXTRA_VIEWER_ROLE)
+
+        Log.d(TAG, "Opening chat for requestId: $requestId, roleExtra: $roleExtra, currentUserId: $currentUserId")
+
         if (requestId.isNullOrBlank()) {
             Toast.makeText(this, "Conversa não encontrada", Toast.LENGTH_SHORT).show()
             finish()
@@ -51,11 +57,15 @@ class LostAndFoundChatActivity : AppCompatActivity() {
         associatedAd = LostAndFoundRepository.getAdById(this, verificationRequest!!.adId)
 
         val req = verificationRequest!!
-        if (currentUserId != req.ownerUserId && currentUserId != req.requesterUserId) {
-            Toast.makeText(this, "Acesso não autorizado a esta conversa.", Toast.LENGTH_SHORT).show()
-            finish()
-            return
+
+        // Determine role robustly
+        isTutorView = when {
+            currentUserId == req.requesterUserId && currentUserId != req.ownerUserId -> true
+            currentUserId == req.ownerUserId && currentUserId != req.requesterUserId -> false
+            else -> roleExtra == ROLE_TUTOR
         }
+
+        Log.d(TAG, "Resolved isTutorView: $isTutorView (ownerUserId: ${req.ownerUserId}, requesterUserId: ${req.requesterUserId})")
 
         setupUI()
         setupListeners()
@@ -70,21 +80,20 @@ class LostAndFoundChatActivity : AppCompatActivity() {
         val req = verificationRequest ?: return
         val ad = associatedAd
 
-        val isOwner = (currentUserId == req.ownerUserId)
-        val otherName = if (isOwner) {
-            req.requesterName?.takeIf { it.isNotBlank() } ?: "Solicitante"
-        } else {
+        val otherName = if (isTutorView) {
             ad?.publisherName?.takeIf { it.isNotBlank() } ?: "Responsável"
+        } else {
+            req.requesterName?.takeIf { it.isNotBlank() } ?: "Solicitante"
         }
 
         binding.chatAgentName.text = otherName
         binding.chatAvatar.text = otherName.firstOrNull()?.uppercase() ?: "U"
 
         val animalTitle = ad?.getDisplayTitle() ?: "Animal encontrado"
-        binding.chatSubtitle.text = if (isOwner) {
-            "Possível tutor de $animalTitle"
+        binding.chatSubtitle.text = if (isTutorView) {
+            "Responsável pelo anúncio do $animalTitle"
         } else {
-            "Encontrou o $animalTitle"
+            "Possível tutor de $animalTitle"
         }
     }
 
@@ -114,9 +123,15 @@ class LostAndFoundChatActivity : AppCompatActivity() {
         if (text.isBlank()) return
 
         val req = verificationRequest ?: return
+        val senderId = if (currentUserId == req.ownerUserId && currentUserId == req.requesterUserId) {
+            if (isTutorView) req.requesterUserId else req.ownerUserId
+        } else {
+            currentUserId
+        }
+
         val message = LostAndFoundChatMessage(
             requestId = req.id,
-            senderUserId = currentUserId,
+            senderUserId = senderId,
             text = text
         )
 
@@ -141,7 +156,11 @@ class LostAndFoundChatActivity : AppCompatActivity() {
 
         for (msg in messages) {
             val msgBinding = ItemChatMessageBinding.inflate(layoutInflater, container, false)
-            val isMine = (msg.senderUserId == currentUserId)
+            val isMine = if (currentUserId == req.ownerUserId && currentUserId == req.requesterUserId) {
+                if (isTutorView) msg.senderUserId == req.requesterUserId else msg.senderUserId == req.ownerUserId
+            } else {
+                msg.senderUserId == currentUserId
+            }
             val timeStr = formatTime(msg.timestamp)
 
             if (isMine) {
@@ -186,11 +205,16 @@ class LostAndFoundChatActivity : AppCompatActivity() {
     }
 
     companion object {
+        private const val TAG = "LostAndFoundChatActivity"
         const val EXTRA_REQUEST_ID = "extra_request_id"
+        const val EXTRA_VIEWER_ROLE = "extra_viewer_role"
+        const val ROLE_TUTOR = "ROLE_TUTOR"
+        const val ROLE_FOUNDER = "ROLE_FOUNDER"
 
-        fun newIntent(context: Context, requestId: String): Intent {
+        fun newIntent(context: Context, requestId: String, isTutor: Boolean): Intent {
             return Intent(context, LostAndFoundChatActivity::class.java).apply {
                 putExtra(EXTRA_REQUEST_ID, requestId)
+                putExtra(EXTRA_VIEWER_ROLE, if (isTutor) ROLE_TUTOR else ROLE_FOUNDER)
             }
         }
     }

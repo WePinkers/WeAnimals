@@ -280,6 +280,7 @@ class MyRequestsActivity : AppCompatActivity() {
                     if (statusUpper == "APROVADO") {
                         val intent = Intent(this@MyRequestsActivity, LostAndFoundChatActivity::class.java).apply {
                             putExtra(LostAndFoundChatActivity.EXTRA_REQUEST_ID, req.id)
+                            putExtra(LostAndFoundChatActivity.EXTRA_VIEWER_ROLE, LostAndFoundChatActivity.ROLE_TUTOR)
                         }
                         startActivity(intent)
                     } else {
