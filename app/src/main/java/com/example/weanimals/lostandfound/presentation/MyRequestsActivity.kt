@@ -257,8 +257,10 @@ class MyRequestsActivity : AppCompatActivity() {
             val actionButton = androidx.appcompat.widget.AppCompatButton(this).apply {
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
-                    46
-                )
+                    48
+                ).apply {
+                    setMargins(0, 12, 0, 0)
+                }
                 text = when (statusUpper) {
                     "APROVADO" -> "Abrir chat"
                     else -> "Ver minhas respostas"
@@ -268,7 +270,7 @@ class MyRequestsActivity : AppCompatActivity() {
                 setTypeface(null, Typeface.BOLD)
                 if (statusUpper == "APROVADO") {
                     setTextColor(getColor(R.color.white))
-                    setBackgroundResource(R.drawable.bg_btn_terracotta)
+                    setBackgroundResource(R.drawable.bg_btn_dark_green)
                 } else {
                     setTextColor(getColor(R.color.pine800))
                     setBackgroundResource(R.drawable.bg_btn_outline)
