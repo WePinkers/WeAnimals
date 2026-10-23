@@ -62,8 +62,8 @@ class LostAndFoundActivity : AppCompatActivity() {
             startActivity(Intent(this, MyAdsActivity::class.java))
         }
 
-        binding.btnViewMap.setOnClickListener {
-            startActivity(Intent(this, MapActivity::class.java))
+        binding.btnMyRequests.setOnClickListener {
+            startActivity(Intent(this, MyRequestsActivity::class.java))
         }
 
         binding.filterAll.setOnClickListener {
