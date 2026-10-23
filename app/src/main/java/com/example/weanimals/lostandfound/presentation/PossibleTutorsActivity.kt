@@ -73,10 +73,17 @@ class PossibleTutorsActivity : AppCompatActivity() {
                 layoutParams = params
 
                 setOnClickListener {
-                    val intent = Intent(this@PossibleTutorsActivity, TutorRequestDetailActivity::class.java).apply {
-                        putExtra(TutorRequestDetailActivity.EXTRA_REQUEST_ID, req.id)
+                    if (req.status.equals("APROVADO", ignoreCase = true)) {
+                        val intent = Intent(this@PossibleTutorsActivity, LostAndFoundChatActivity::class.java).apply {
+                            putExtra(LostAndFoundChatActivity.EXTRA_REQUEST_ID, req.id)
+                        }
+                        startActivity(intent)
+                    } else {
+                        val intent = Intent(this@PossibleTutorsActivity, TutorRequestDetailActivity::class.java).apply {
+                            putExtra(TutorRequestDetailActivity.EXTRA_REQUEST_ID, req.id)
+                        }
+                        startActivity(intent)
                     }
-                    startActivity(intent)
                 }
             }
 

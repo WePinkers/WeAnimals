@@ -100,7 +100,13 @@ class TutorRequestDetailActivity : AppCompatActivity() {
         }
 
         binding.btnApproveRequest.setOnClickListener {
-            showApproveConfirmationDialog()
+            val req = currentRequest ?: return@setOnClickListener
+            LostAndFoundRepository.updateRequestStatus(this, req.id, "APROVADO")
+            val intent = Intent(this, LostAndFoundChatActivity::class.java).apply {
+                putExtra(LostAndFoundChatActivity.EXTRA_REQUEST_ID, req.id)
+            }
+            startActivity(intent)
+            finish()
         }
     }
 
@@ -114,21 +120,6 @@ class TutorRequestDetailActivity : AppCompatActivity() {
                 req.status = "RECUSADO"
                 setupUI()
                 Toast.makeText(this, "Solicitação marcada como recusada.", Toast.LENGTH_SHORT).show()
-            }
-            .setNegativeButton("Cancelar", null)
-            .show()
-    }
-
-    private fun showApproveConfirmationDialog() {
-        val req = currentRequest ?: return
-        AlertDialog.Builder(this)
-            .setTitle("Aprovar pedido?")
-            .setMessage("Confere! Deseja aprovar este pedido e liberar o chat com o tutor?")
-            .setPositiveButton("Aprovar e abrir chat") { _, _ ->
-                LostAndFoundRepository.updateRequestStatus(this, req.id, "APROVADO")
-                req.status = "APROVADO"
-                setupUI()
-                Toast.makeText(this, "Solicitação aprovada! Chat liberado.", Toast.LENGTH_LONG).show()
             }
             .setNegativeButton("Cancelar", null)
             .show()

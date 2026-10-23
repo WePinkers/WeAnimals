@@ -150,6 +150,7 @@
         <activity android:name=".lostandfound.presentation.SubmittedAnswersActivity" android:exported="false" />
         <activity android:name=".lostandfound.presentation.PossibleTutorsActivity" android:exported="false" />
         <activity android:name=".lostandfound.presentation.TutorRequestDetailActivity" android:exported="false" />
+        <activity android:name=".lostandfound.presentation.LostAndFoundChatActivity" android:exported="false" />
         <activity android:name=".profile.reports.presentation.MyReportsActivity" android:exported="false" />
         <activity android:name=".profile.campaigns.presentation.CampaignsActivity" android:exported="false" />
         <activity android:name=".profile.favorites.presentation.FavoritesActivity" android:exported="false" />

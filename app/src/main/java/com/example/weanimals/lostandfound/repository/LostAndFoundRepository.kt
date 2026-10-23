@@ -3,6 +3,7 @@ package com.example.weanimals.lostandfound.repository
 import android.content.Context
 import android.content.SharedPreferences
 import com.example.weanimals.lostandfound.model.FoundPetAd
+import com.example.weanimals.lostandfound.model.LostAndFoundChatMessage
 import com.example.weanimals.lostandfound.model.TutorVerificationRequest
 import org.json.JSONArray
 import org.json.JSONObject
@@ -18,9 +19,11 @@ object LostAndFoundRepository {
     private const val PREFS_NAME = "lost_and_found_prefs"
     private const val KEY_ADS = "saved_ads"
     private const val KEY_REQUESTS = "saved_verification_requests"
+    private const val KEY_MESSAGES = "saved_lost_found_messages"
 
     private val adsList = mutableListOf<FoundPetAd>()
     private val requestsList = mutableListOf<TutorVerificationRequest>()
+    private val messagesList = mutableListOf<LostAndFoundChatMessage>()
     private var isInitialized = false
 
     fun init(context: Context) {
@@ -28,6 +31,7 @@ object LostAndFoundRepository {
         isInitialized = true
         loadFromPrefs(context)
         loadRequestsFromPrefs(context)
+        loadMessagesFromPrefs(context)
     }
 
     fun saveAd(context: Context, ad: FoundPetAd) {
@@ -108,6 +112,17 @@ object LostAndFoundRepository {
         val req = requestsList.firstOrNull { it.id == requestId } ?: return
         req.status = status
         saveRequestsToPrefs(context)
+    }
+
+    fun saveChatMessage(context: Context, message: LostAndFoundChatMessage) {
+        init(context)
+        messagesList.add(message)
+        saveMessagesToPrefs(context)
+    }
+
+    fun getMessagesForRequest(context: Context, requestId: String): List<LostAndFoundChatMessage> {
+        init(context)
+        return messagesList.filter { it.requestId == requestId }.sortedBy { it.timestamp }
     }
 
     fun getIndicatorsSummary(context: Context): IndicatorsSummary {
@@ -278,6 +293,42 @@ object LostAndFoundRepository {
                     status = obj.optString("status", "PENDENTE")
                 )
                 requestsList.add(req)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun saveMessagesToPrefs(context: Context) {
+        val array = JSONArray()
+        for (msg in messagesList) {
+            val obj = JSONObject().apply {
+                put("id", msg.id)
+                put("requestId", msg.requestId)
+                put("senderUserId", msg.senderUserId)
+                put("text", msg.text)
+                put("timestamp", msg.timestamp)
+            }
+            array.put(obj)
+        }
+        getPrefs(context).edit().putString(KEY_MESSAGES, array.toString()).apply()
+    }
+
+    private fun loadMessagesFromPrefs(context: Context) {
+        val jsonStr = getPrefs(context).getString(KEY_MESSAGES, null) ?: return
+        try {
+            val array = JSONArray(jsonStr)
+            messagesList.clear()
+            for (i in 0 until array.length()) {
+                val obj = array.getJSONObject(i)
+                val msg = LostAndFoundChatMessage(
+                    id = obj.optString("id"),
+                    requestId = obj.optString("requestId"),
+                    senderUserId = obj.optString("senderUserId"),
+                    text = obj.optString("text"),
+                    timestamp = obj.optLong("timestamp", System.currentTimeMillis())
+                )
+                messagesList.add(msg)
             }
         } catch (e: Exception) {
             e.printStackTrace()
