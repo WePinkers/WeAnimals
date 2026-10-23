@@ -50,6 +50,13 @@ class LostAndFoundChatActivity : AppCompatActivity() {
 
         associatedAd = LostAndFoundRepository.getAdById(this, verificationRequest!!.adId)
 
+        val req = verificationRequest!!
+        if (currentUserId != req.ownerUserId && currentUserId != req.requesterUserId) {
+            Toast.makeText(this, "Acesso não autorizado a esta conversa.", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
+
         setupUI()
         setupListeners()
     }
@@ -74,7 +81,11 @@ class LostAndFoundChatActivity : AppCompatActivity() {
         binding.chatAvatar.text = otherName.firstOrNull()?.uppercase() ?: "U"
 
         val animalTitle = ad?.getDisplayTitle() ?: "Animal encontrado"
-        binding.chatSubtitle.text = if (isOwner) "possível tutor de $animalTitle" else "responsável por $animalTitle"
+        binding.chatSubtitle.text = if (isOwner) {
+            "Possível tutor de $animalTitle"
+        } else {
+            "Encontrou o $animalTitle"
+        }
     }
 
     private fun setupListeners() {
