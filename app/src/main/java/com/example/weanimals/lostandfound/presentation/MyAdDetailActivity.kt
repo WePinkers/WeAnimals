@@ -1,5 +1,6 @@
 package com.example.weanimals.lostandfound.presentation
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -74,12 +75,11 @@ class MyAdDetailActivity : AppCompatActivity() {
         binding.btnBackDetail.setOnClickListener { finish() }
 
         binding.btnViewTutors.setOnClickListener {
-            val tutors = currentAd?.possibleTutorsCount ?: 0
-            if (tutors == 0) {
-                Toast.makeText(this, "Ainda não há possíveis tutores interessados.", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(this, "Lista de tutores em desenvolvimento.", Toast.LENGTH_SHORT).show()
+            val ad = currentAd ?: return@setOnClickListener
+            val intent = Intent(this, PossibleTutorsActivity::class.java).apply {
+                putExtra(PossibleTutorsActivity.EXTRA_AD_ID, ad.id)
             }
+            startActivity(intent)
         }
 
         binding.btnUpdateSituation.setOnClickListener {

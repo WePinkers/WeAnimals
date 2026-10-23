@@ -103,6 +103,13 @@ object LostAndFoundRepository {
         return requestsList.firstOrNull { it.id == id }
     }
 
+    fun updateRequestStatus(context: Context, requestId: String, status: String) {
+        init(context)
+        val req = requestsList.firstOrNull { it.id == requestId } ?: return
+        req.status = status
+        saveRequestsToPrefs(context)
+    }
+
     fun getIndicatorsSummary(context: Context): IndicatorsSummary {
         init(context)
         val now = System.currentTimeMillis()
@@ -238,6 +245,7 @@ object LostAndFoundRepository {
                 put("id", req.id)
                 put("adId", req.adId)
                 put("requesterUserId", req.requesterUserId)
+                put("requesterName", req.requesterName ?: "")
                 put("ownerUserId", req.ownerUserId)
                 put("petName", req.petName)
                 put("specialMark", req.specialMark)
@@ -261,6 +269,7 @@ object LostAndFoundRepository {
                     id = obj.optString("id"),
                     adId = obj.optString("adId"),
                     requesterUserId = obj.optString("requesterUserId", "local_user"),
+                    requesterName = obj.optString("requesterName").ifBlank { null },
                     ownerUserId = obj.optString("ownerUserId"),
                     petName = obj.optString("petName"),
                     specialMark = obj.optString("specialMark"),

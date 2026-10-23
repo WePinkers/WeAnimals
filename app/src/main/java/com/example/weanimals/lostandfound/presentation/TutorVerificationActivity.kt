@@ -140,8 +140,14 @@ class TutorVerificationActivity : AppCompatActivity() {
 
         binding.btnSubmitVerification.isEnabled = false
 
+        val currentProfileName = getSharedPreferences("profile_prefs", MODE_PRIVATE).getString("user_name", null)
+            ?: com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.displayName
+            ?: "Usuário"
+
         val request = TutorVerificationRequest(
             adId = ad.id,
+            requesterUserId = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid ?: "local_user",
+            requesterName = currentProfileName,
             ownerUserId = ad.ownerUserId,
             petName = petName,
             specialMark = specialMark,
