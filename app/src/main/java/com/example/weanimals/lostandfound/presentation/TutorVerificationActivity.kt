@@ -53,6 +53,18 @@ class TutorVerificationActivity : AppCompatActivity() {
     private fun setupListeners() {
         binding.btnBackVerification.setOnClickListener { finish() }
 
+        binding.etPetName.setOnClickListener {
+            binding.etPetName.requestFocus()
+            val imm = getSystemService(INPUT_METHOD_SERVICE) as? android.view.inputmethod.InputMethodManager
+            imm?.showSoftInput(binding.etPetName, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT)
+        }
+
+        binding.etSpecialMark.setOnClickListener {
+            binding.etSpecialMark.requestFocus()
+            val imm = getSystemService(INPUT_METHOD_SERVICE) as? android.view.inputmethod.InputMethodManager
+            imm?.showSoftInput(binding.etSpecialMark, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT)
+        }
+
         binding.layoutVerificationPhoto.setOnClickListener {
             photoPickerLauncher.launch("image/*")
         }
