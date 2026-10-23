@@ -60,9 +60,11 @@ class LostAndFoundChatActivity : AppCompatActivity() {
 
         // Determine role robustly
         isTutorView = when {
+            roleExtra == ROLE_TUTOR -> true
+            roleExtra == ROLE_FOUNDER -> false
             currentUserId == req.requesterUserId && currentUserId != req.ownerUserId -> true
             currentUserId == req.ownerUserId && currentUserId != req.requesterUserId -> false
-            else -> roleExtra == ROLE_TUTOR
+            else -> false
         }
 
         Log.d(TAG, "Resolved isTutorView: $isTutorView (ownerUserId: ${req.ownerUserId}, requesterUserId: ${req.requesterUserId})")
@@ -123,10 +125,10 @@ class LostAndFoundChatActivity : AppCompatActivity() {
         if (text.isBlank()) return
 
         val req = verificationRequest ?: return
-        val senderId = if (currentUserId == req.ownerUserId && currentUserId == req.requesterUserId) {
-            if (isTutorView) req.requesterUserId else req.ownerUserId
+        val senderId = if (isTutorView) {
+            req.requesterUserId.takeIf { it.isNotBlank() } ?: "local_tutor"
         } else {
-            currentUserId
+            req.ownerUserId.takeIf { it.isNotBlank() } ?: "local_founder"
         }
 
         val message = LostAndFoundChatMessage(
@@ -156,11 +158,20 @@ class LostAndFoundChatActivity : AppCompatActivity() {
 
         for (msg in messages) {
             val msgBinding = ItemChatMessageBinding.inflate(layoutInflater, container, false)
-            val isMine = if (currentUserId == req.ownerUserId && currentUserId == req.requesterUserId) {
-                if (isTutorView) msg.senderUserId == req.requesterUserId else msg.senderUserId == req.ownerUserId
+            
+            // Determine if message is mine based on viewer role vs message sender
+            val founderId = req.ownerUserId.takeIf { it.isNotBlank() } ?: "local_founder"
+            val tutorId = req.requesterUserId.takeIf { it.isNotBlank() } ?: "local_tutor"
+
+            val isMine = if (isTutorView) {
+                // In tutor view, messages sent by tutor are mine (RIGHT), messages sent by founder are other (LEFT)
+                msg.senderUserId == tutorId || (currentUserId != "local_user" && msg.senderUserId == currentUserId && msg.senderUserId != founderId)
             } else {
-                msg.senderUserId == currentUserId
+                // In founder view, messages sent by founder are mine (RIGHT), messages sent by tutor are other (LEFT)
+                msg.senderUserId == founderId || (currentUserId != "local_user" && msg.senderUserId == currentUserId && msg.senderUserId != tutorId)
             }
+
+            // Fallback if message sender doesn't match either strictly: if message was sent when isTutorView matched
             val timeStr = formatTime(msg.timestamp)
 
             if (isMine) {
