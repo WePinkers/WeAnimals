@@ -8,6 +8,7 @@
     <style name="Base.Theme.WeAnimals" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Sets the default sans-serif font family across the app -->
         <item name="android:fontFamily">sans</item>
+        <item name="android:windowBackground">@color/background</item>
         <!-- Ensures status bar icons are dark/light appropriate for the dark theme background -->
         <item name="android:windowLightStatusBar">true</item>
         <!-- Background color for the system status bar -->

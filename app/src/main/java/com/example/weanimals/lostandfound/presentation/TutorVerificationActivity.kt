@@ -4,13 +4,17 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import com.example.weanimals.core.utils.ImageThumbnailLoader
 import com.example.weanimals.databinding.ActivityTutorVerificationBinding
 import com.example.weanimals.lostandfound.model.FoundPetAd
 import com.example.weanimals.lostandfound.model.TutorVerificationRequest
 import com.example.weanimals.lostandfound.repository.LostAndFoundRepository
+import kotlinx.coroutines.launch
 
 class TutorVerificationActivity : AppCompatActivity() {
 
@@ -22,9 +26,7 @@ class TutorVerificationActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
             if (uri != null) {
                 selectedPhotoUri = uri
-                binding.ivVerificationPreview.setImageURI(uri)
-                binding.ivVerificationPreview.visibility = View.VISIBLE
-                binding.btnRemoveVerificationPhoto.visibility = View.VISIBLE
+                loadPhotoPreview(uri)
             }
         }
 
@@ -47,22 +49,59 @@ class TutorVerificationActivity : AppCompatActivity() {
             return
         }
 
+        if (savedInstanceState != null) {
+            val savedUriStr = savedInstanceState.getString("KEY_SAVED_PHOTO_URI")
+            if (!savedUriStr.isNullOrBlank()) {
+                selectedPhotoUri = Uri.parse(savedUriStr)
+                loadPhotoPreview(selectedPhotoUri!!)
+            }
+        }
+
         setupListeners()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        selectedPhotoUri?.let { outState.putString("KEY_SAVED_PHOTO_URI", it.toString()) }
+    }
+
+    private fun loadPhotoPreview(uri: Uri) {
+        lifecycleScope.launch {
+            val bitmap = ImageThumbnailLoader.loadThumbnail(
+                this@TutorVerificationActivity,
+                uri.toString(),
+                600,
+                400
+            )
+            if (bitmap != null) {
+                binding.ivVerificationPreview.setImageBitmap(bitmap)
+                binding.ivVerificationPreview.visibility = View.VISIBLE
+                binding.btnRemoveVerificationPhoto.visibility = View.VISIBLE
+            } else {
+                Toast.makeText(
+                    this@TutorVerificationActivity,
+                    "Não foi possível carregar a prévia da foto.",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
     }
 
     private fun setupListeners() {
         binding.btnBackVerification.setOnClickListener { finish() }
 
-        binding.etPetName.setOnClickListener {
-            binding.etPetName.requestFocus()
-            val imm = getSystemService(INPUT_METHOD_SERVICE) as? android.view.inputmethod.InputMethodManager
-            imm?.showSoftInput(binding.etPetName, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT)
+        binding.etPetName.setOnFocusChangeListener { view, hasFocus ->
+            if (hasFocus) {
+                val imm = getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
+                imm?.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
+            }
         }
 
-        binding.etSpecialMark.setOnClickListener {
-            binding.etSpecialMark.requestFocus()
-            val imm = getSystemService(INPUT_METHOD_SERVICE) as? android.view.inputmethod.InputMethodManager
-            imm?.showSoftInput(binding.etSpecialMark, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT)
+        binding.etSpecialMark.setOnFocusChangeListener { view, hasFocus ->
+            if (hasFocus) {
+                val imm = getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
+                imm?.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
+            }
         }
 
         binding.layoutVerificationPhoto.setOnClickListener {
@@ -71,6 +110,7 @@ class TutorVerificationActivity : AppCompatActivity() {
 
         binding.btnRemoveVerificationPhoto.setOnClickListener {
             selectedPhotoUri = null
+            binding.ivVerificationPreview.setImageDrawable(null)
             binding.ivVerificationPreview.visibility = View.GONE
             binding.btnRemoveVerificationPhoto.visibility = View.GONE
         }
