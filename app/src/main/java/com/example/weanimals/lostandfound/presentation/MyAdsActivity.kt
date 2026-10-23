@@ -8,6 +8,9 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import com.example.weanimals.core.utils.ImageThumbnailLoader
+import kotlinx.coroutines.launch
 import com.example.weanimals.R
 import com.example.weanimals.databinding.ActivityMyAdsBinding
 import com.example.weanimals.lostandfound.repository.LostAndFoundRepository
@@ -73,6 +76,18 @@ class MyAdsActivity : AppCompatActivity() {
                 layoutParams = LinearLayout.LayoutParams(48, 48)
                 setImageResource(R.drawable.ic_paw_print)
                 setColorFilter(getColor(R.color.pine800))
+            }
+
+            if (ad.photoUris.isNotEmpty()) {
+                val photoUri = ad.photoUris.first()
+                lifecycleScope.launch {
+                    val bitmap = ImageThumbnailLoader.loadThumbnail(this@MyAdsActivity, photoUri, 120, 120)
+                    if (bitmap != null) {
+                        icon.clearColorFilter()
+                        icon.setImageBitmap(bitmap)
+                        icon.scaleType = ImageView.ScaleType.CENTER_CROP
+                    }
+                }
             }
 
             val infoLayout = LinearLayout(this).apply {

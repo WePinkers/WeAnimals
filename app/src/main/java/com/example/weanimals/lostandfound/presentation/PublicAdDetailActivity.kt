@@ -11,6 +11,9 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import com.example.weanimals.core.utils.ImageThumbnailLoader
+import kotlinx.coroutines.launch
 import com.example.weanimals.R
 import com.example.weanimals.databinding.ActivityPublicAdDetailBinding
 import com.example.weanimals.lostandfound.model.FoundPetAd
@@ -65,13 +68,17 @@ class PublicAdDetailActivity : AppCompatActivity() {
 
         // Photo or Paw
         if (ad.photoUris.isNotEmpty()) {
-            try {
-                binding.ivPetPhotoPublic.setImageURI(Uri.parse(ad.photoUris.first()))
-                binding.ivPetPhotoPublic.visibility = View.VISIBLE
-                binding.containerPawPublic.visibility = View.GONE
-            } catch (_: Exception) {
-                binding.ivPetPhotoPublic.visibility = View.GONE
-                binding.containerPawPublic.visibility = View.VISIBLE
+            val photoUri = ad.photoUris.first()
+            lifecycleScope.launch {
+                val bitmap = ImageThumbnailLoader.loadThumbnail(this@PublicAdDetailActivity, photoUri, 600, 400)
+                if (bitmap != null) {
+                    binding.ivPetPhotoPublic.setImageBitmap(bitmap)
+                    binding.ivPetPhotoPublic.visibility = View.VISIBLE
+                    binding.containerPawPublic.visibility = View.GONE
+                } else {
+                    binding.ivPetPhotoPublic.visibility = View.GONE
+                    binding.containerPawPublic.visibility = View.VISIBLE
+                }
             }
         } else {
             binding.ivPetPhotoPublic.visibility = View.GONE
