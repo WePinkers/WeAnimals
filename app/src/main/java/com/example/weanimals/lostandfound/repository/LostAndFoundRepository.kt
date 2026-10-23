@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.example.weanimals.lostandfound.model.FoundPetAd
 import com.example.weanimals.lostandfound.model.LostAndFoundChatMessage
+import com.example.weanimals.lostandfound.model.ReunionRequest
 import com.example.weanimals.lostandfound.model.TutorVerificationRequest
 import org.json.JSONArray
 import org.json.JSONObject
@@ -20,10 +21,12 @@ object LostAndFoundRepository {
     private const val KEY_ADS = "saved_ads"
     private const val KEY_REQUESTS = "saved_verification_requests"
     private const val KEY_MESSAGES = "saved_lost_found_messages"
+    private const val KEY_REUNIONS = "saved_reunion_requests"
 
     private val adsList = mutableListOf<FoundPetAd>()
     private val requestsList = mutableListOf<TutorVerificationRequest>()
     private val messagesList = mutableListOf<LostAndFoundChatMessage>()
+    private val reunionsList = mutableListOf<ReunionRequest>()
     private var isInitialized = false
 
     fun init(context: Context) {
@@ -32,6 +35,7 @@ object LostAndFoundRepository {
         loadFromPrefs(context)
         loadRequestsFromPrefs(context)
         loadMessagesFromPrefs(context)
+        loadReunionsFromPrefs(context)
     }
 
     fun saveAd(context: Context, ad: FoundPetAd) {
@@ -123,6 +127,34 @@ object LostAndFoundRepository {
     fun getMessagesForRequest(context: Context, requestId: String): List<LostAndFoundChatMessage> {
         init(context)
         return messagesList.filter { it.requestId == requestId }.sortedBy { it.timestamp }
+    }
+
+    fun saveReunionRequest(context: Context, reunion: ReunionRequest) {
+        init(context)
+        reunionsList.removeAll { it.requestId == reunion.requestId }
+        reunionsList.add(0, reunion)
+        saveReunionsToPrefs(context)
+    }
+
+    fun getReunionForRequest(context: Context, requestId: String): ReunionRequest? {
+        init(context)
+        return reunionsList.firstOrNull { it.requestId == requestId }
+    }
+
+    fun updateReunionStatus(context: Context, reunionId: String, status: String) {
+        init(context)
+        val reunion = reunionsList.firstOrNull { it.reunionId == reunionId } ?: return
+        reunion.status = status
+        val now = System.currentTimeMillis()
+        reunion.respondedAt = now
+        if (status.equals("CONFIRMED", ignoreCase = true)) {
+            reunion.confirmedAt = now
+            val ad = adsList.firstOrNull { it.id == reunion.announcementId }
+            if (ad != null) {
+                updateAdSituation(context, ad.id, "Reencontrado")
+            }
+        }
+        saveReunionsToPrefs(context)
     }
 
     fun getIndicatorsSummary(context: Context): IndicatorsSummary {
@@ -329,6 +361,52 @@ object LostAndFoundRepository {
                     timestamp = obj.optLong("timestamp", System.currentTimeMillis())
                 )
                 messagesList.add(msg)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun saveReunionsToPrefs(context: Context) {
+        val array = JSONArray()
+        for (r in reunionsList) {
+            val obj = JSONObject().apply {
+                put("reunionId", r.reunionId)
+                put("announcementId", r.announcementId)
+                put("requestId", r.requestId)
+                put("initiatedByUserId", r.initiatedByUserId)
+                put("confirmingUserId", r.confirmingUserId)
+                put("status", r.status)
+                put("createdAt", r.createdAt)
+                put("respondedAt", r.respondedAt ?: 0L)
+                put("confirmedAt", r.confirmedAt ?: 0L)
+            }
+            array.put(obj)
+        }
+        getPrefs(context).edit().putString(KEY_REUNIONS, array.toString()).apply()
+    }
+
+    private fun loadReunionsFromPrefs(context: Context) {
+        val jsonStr = getPrefs(context).getString(KEY_REUNIONS, null) ?: return
+        try {
+            val array = JSONArray(jsonStr)
+            reunionsList.clear()
+            for (i in 0 until array.length()) {
+                val obj = array.getJSONObject(i)
+                val respAt = obj.optLong("respondedAt", 0L)
+                val confAt = obj.optLong("confirmedAt", 0L)
+                val r = ReunionRequest(
+                    reunionId = obj.optString("reunionId"),
+                    announcementId = obj.optString("announcementId"),
+                    requestId = obj.optString("requestId"),
+                    initiatedByUserId = obj.optString("initiatedByUserId"),
+                    confirmingUserId = obj.optString("confirmingUserId"),
+                    status = obj.optString("status", "PENDING_CONFIRMATION"),
+                    createdAt = obj.optLong("createdAt", System.currentTimeMillis()),
+                    respondedAt = if (respAt > 0L) respAt else null,
+                    confirmedAt = if (confAt > 0L) confAt else null
+                )
+                reunionsList.add(r)
             }
         } catch (e: Exception) {
             e.printStackTrace()

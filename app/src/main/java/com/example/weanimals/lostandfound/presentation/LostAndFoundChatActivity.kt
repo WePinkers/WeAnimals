@@ -8,7 +8,6 @@ import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.weanimals.databinding.ActivityLostAndFoundChatBinding
 import com.example.weanimals.databinding.ItemChatMessageBinding
@@ -116,7 +115,32 @@ class LostAndFoundChatActivity : AppCompatActivity() {
         }
 
         binding.btnRegisterReunion.setOnClickListener {
-            showRegisterReunionDialog()
+            val req = verificationRequest ?: return@setOnClickListener
+            val reunion = LostAndFoundRepository.getReunionForRequest(this, req.id)
+            if (reunion != null && reunion.status.equals("CONFIRMED", ignoreCase = true)) {
+                Toast.makeText(this, "Este reencontro já foi confirmado.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            if (reunion != null && reunion.status.equals("PENDING_CONFIRMATION", ignoreCase = true)) {
+                val userId = FirebaseAuth.getInstance().currentUser?.uid ?: "local_user"
+                if (reunion.initiatedByUserId == userId) {
+                    val intent = Intent(this, ReunionSubmittedActivity::class.java).apply {
+                        putExtra(ReunionSubmittedActivity.EXTRA_REQUEST_ID, req.id)
+                    }
+                    startActivity(intent)
+                } else {
+                    val intent = Intent(this, ConfirmReunionActivity::class.java).apply {
+                        putExtra(ConfirmReunionActivity.EXTRA_REQUEST_ID, req.id)
+                    }
+                    startActivity(intent)
+                }
+                return@setOnClickListener
+            }
+
+            val intent = Intent(this, RegisterReunionActivity::class.java).apply {
+                putExtra(RegisterReunionActivity.EXTRA_REQUEST_ID, req.id)
+            }
+            startActivity(intent)
         }
     }
 
@@ -125,10 +149,12 @@ class LostAndFoundChatActivity : AppCompatActivity() {
         if (text.isBlank()) return
 
         val req = verificationRequest ?: return
-        val senderId = if (isTutorView) {
-            req.requesterUserId.takeIf { it.isNotBlank() } ?: "local_tutor"
+        val isSimulationMode = (req.ownerUserId == req.requesterUserId) || (currentUserId == "local_user")
+
+        val senderId = if (isSimulationMode) {
+            if (isTutorView) "SIM_TUTOR" else "SIM_FOUNDER"
         } else {
-            req.ownerUserId.takeIf { it.isNotBlank() } ?: "local_founder"
+            currentUserId
         }
 
         val message = LostAndFoundChatMessage(
@@ -156,22 +182,50 @@ class LostAndFoundChatActivity : AppCompatActivity() {
         systemMsgBinding.incomingMessageTime.text = formatTime(req.timestamp)
         container.addView(systemMsgBinding.root)
 
+        val reunion = LostAndFoundRepository.getReunionForRequest(this, req.id)
+        if (reunion != null) {
+            if (reunion.status.equals("CONFIRMED", ignoreCase = true)) {
+                binding.btnRegisterReunion.visibility = View.GONE
+                val confMsgBinding = ItemChatMessageBinding.inflate(layoutInflater, container, false)
+                confMsgBinding.incomingMessageGroup.visibility = View.VISIBLE
+                confMsgBinding.outgoingMessageGroup.visibility = View.GONE
+                confMsgBinding.incomingMessageText.text = "Reencontro confirmado! Este anúncio foi encerrado e movido para a seção de encerrados. O chat permanece disponível com todo o histórico."
+                confMsgBinding.incomingMessageTime.text = formatTime(reunion.confirmedAt ?: reunion.createdAt)
+                container.addView(confMsgBinding.root)
+            } else if (reunion.status.equals("PENDING_CONFIRMATION", ignoreCase = true)) {
+                val userId = FirebaseAuth.getInstance().currentUser?.uid ?: "local_user"
+                if (reunion.initiatedByUserId != userId) {
+                    val promptBinding = ItemChatMessageBinding.inflate(layoutInflater, container, false)
+                    promptBinding.incomingMessageGroup.visibility = View.VISIBLE
+                    promptBinding.outgoingMessageGroup.visibility = View.GONE
+                    promptBinding.incomingMessageText.text = "Confirmação de reencontro pendente!\nA outra pessoa informou que o animal foi entregue. Toque aqui para confirmar."
+                    promptBinding.incomingMessageTime.text = formatTime(reunion.createdAt)
+                    promptBinding.root.setOnClickListener {
+                        val intent = Intent(this, ConfirmReunionActivity::class.java).apply {
+                            putExtra(ConfirmReunionActivity.EXTRA_REQUEST_ID, req.id)
+                        }
+                        startActivity(intent)
+                    }
+                    container.addView(promptBinding.root)
+                }
+            }
+        }
+
+        val isSimulationMode = (req.ownerUserId == req.requesterUserId) || (currentUserId == "local_user")
+
         for (msg in messages) {
             val msgBinding = ItemChatMessageBinding.inflate(layoutInflater, container, false)
-            
-            // Determine if message is mine based on viewer role vs message sender
-            val founderId = req.ownerUserId.takeIf { it.isNotBlank() } ?: "local_founder"
-            val tutorId = req.requesterUserId.takeIf { it.isNotBlank() } ?: "local_tutor"
 
-            val isMine = if (isTutorView) {
-                // In tutor view, messages sent by tutor are mine (RIGHT), messages sent by founder are other (LEFT)
-                msg.senderUserId == tutorId || (currentUserId != "local_user" && msg.senderUserId == currentUserId && msg.senderUserId != founderId)
+            val isMine = if (isSimulationMode) {
+                if (isTutorView) {
+                    msg.senderUserId == "SIM_TUTOR" || msg.senderUserId == "local_tutor"
+                } else {
+                    msg.senderUserId == "SIM_FOUNDER" || msg.senderUserId == "local_founder" || msg.senderUserId == "local_user"
+                }
             } else {
-                // In founder view, messages sent by founder are mine (RIGHT), messages sent by tutor are other (LEFT)
-                msg.senderUserId == founderId || (currentUserId != "local_user" && msg.senderUserId == currentUserId && msg.senderUserId != tutorId)
+                msg.senderUserId == currentUserId
             }
 
-            // Fallback if message sender doesn't match either strictly: if message was sent when isTutorView matched
             val timeStr = formatTime(msg.timestamp)
 
             if (isMine) {
@@ -191,20 +245,6 @@ class LostAndFoundChatActivity : AppCompatActivity() {
         binding.messagesScroll.post {
             binding.messagesScroll.fullScroll(View.FOCUS_DOWN)
         }
-    }
-
-    private fun showRegisterReunionDialog() {
-        val ad = associatedAd ?: return
-        AlertDialog.Builder(this)
-            .setTitle("Registrar reencontro?")
-            .setMessage("Deseja marcar este caso como animal reencontrado com o tutor? Esta ação encerrará o anúncio.")
-            .setPositiveButton("Sim, reencontrado") { _, _ ->
-                LostAndFoundRepository.updateAdSituation(this, ad.id, "Reencontrado")
-                Toast.makeText(this, "Reencontro registrado com sucesso!", Toast.LENGTH_LONG).show()
-                finish()
-            }
-            .setNegativeButton("Cancelar", null)
-            .show()
     }
 
     private fun formatTime(timestampMillis: Long): String {
