@@ -211,6 +211,17 @@ class MyAdsActivity : AppCompatActivity() {
             }
         }
 
+        val isLost = ad.category.equals("PERDIDO", ignoreCase = true)
+        val categoryBadgeTv = TextView(this).apply {
+            text = if (isLost) "ANIMAL PERDIDO" else "ANIMAL ENCONTRADO"
+            textSize = 11f
+            typeface = Typeface.MONOSPACE
+            setTypeface(null, Typeface.BOLD)
+            letterSpacing = 0.08f
+            setTextColor(getColor(if (isLost) R.color.terracotta else R.color.pine800))
+            setPadding(0, 0, 0, 4)
+        }
+
         val titleTv = TextView(this).apply {
             text = ad.getDisplayTitle()
             textSize = 15f
@@ -243,6 +254,7 @@ class MyAdsActivity : AppCompatActivity() {
             setTextColor(getColor(if (ad.isEnded || ad.isReunited || ad.getRemainingDays() <= 0) R.color.muted else R.color.terracotta))
         }
 
+        infoLayout.addView(categoryBadgeTv)
         infoLayout.addView(titleTv)
         infoLayout.addView(subTitleTv)
         infoLayout.addView(statusTv)
