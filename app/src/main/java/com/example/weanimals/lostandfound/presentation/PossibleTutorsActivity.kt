@@ -34,7 +34,8 @@ class PossibleTutorsActivity : AppCompatActivity() {
             return
         }
 
-        binding.btnBackTutors.setOnClickListener { finish() }
+        binding.includeHeader.headerTitleTv.text = "Possíveis tutores"
+        binding.includeHeader.headerBackBtn.setOnClickListener { finish() }
     }
 
     override fun onResume() {

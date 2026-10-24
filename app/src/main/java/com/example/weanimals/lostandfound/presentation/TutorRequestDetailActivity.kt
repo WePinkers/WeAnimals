@@ -31,6 +31,9 @@ class TutorRequestDetailActivity : AppCompatActivity() {
             return
         }
 
+        binding.includeHeader.headerTitleTv.text = "Pedido de tutor"
+        binding.includeHeader.headerBackBtn.setOnClickListener { finish() }
+
         currentRequest = LostAndFoundRepository.getVerificationRequestById(this, requestId)
         if (currentRequest == null) {
             Toast.makeText(this, "Solicitação não encontrada", Toast.LENGTH_SHORT).show()
@@ -76,8 +79,6 @@ class TutorRequestDetailActivity : AppCompatActivity() {
     }
 
     private fun setupListeners() {
-        binding.btnBackRequestDetail.setOnClickListener { finish() }
-
         binding.layoutReqPhotoContainer.setOnClickListener {
             val photoUri = currentRequest?.photoUri ?: return@setOnClickListener
             try {
