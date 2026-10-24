@@ -1,6 +1,7 @@
 package com.example.weanimals.lostandfound.presentation
 
 import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -17,6 +18,7 @@ import com.example.weanimals.lostandfound.model.FoundPetAd
 import com.example.weanimals.lostandfound.repository.LostAndFoundRepository
 import com.google.firebase.auth.FirebaseAuth
 import java.util.Calendar
+import java.util.Locale
 
 class LostPetFormActivity : AppCompatActivity() {
 
@@ -107,7 +109,7 @@ class LostPetFormActivity : AppCompatActivity() {
         binding.progressSegment1.setBackgroundResource(R.drawable.bg_progress_segment_terracotta)
         binding.progressSegment2.setBackgroundResource(R.drawable.bg_progress_segment_terracotta)
         binding.progressSegment3.setBackgroundResource(R.drawable.bg_progress_segment_terracotta)
-        binding.tvProgressStep.text = "Passo 3 de 3: localização e contatos"
+        binding.tvProgressStep.text = "Passo 3 de 3: onde e quando"
     }
 
     private fun setupStep1() {
@@ -230,12 +232,35 @@ class LostPetFormActivity : AppCompatActivity() {
     private fun setupStep3() {
         val step3 = binding.step3Layout
 
-        val whenChips = listOf(step3.chipWhenNow, step3.chipWhenToday, step3.chipWhenYesterday, step3.chipWhenOther)
-        setupCapsuleGroup(whenChips) { selection ->
-            selectedWhen = selection
-            if (selection == "Outro dia") {
-                showDatePickerDialog()
-            }
+        step3.etDateLost.setOnClickListener {
+            val cal = Calendar.getInstance()
+            val dpd = DatePickerDialog(
+                this,
+                { _, year, month, dayOfMonth ->
+                    selectedWhenDate = "$dayOfMonth/${month + 1}/$year"
+                    step3.etDateLost.setText(selectedWhenDate)
+                },
+                cal.get(Calendar.YEAR),
+                cal.get(Calendar.MONTH),
+                cal.get(Calendar.DAY_OF_MONTH)
+            )
+            dpd.datePicker.maxDate = System.currentTimeMillis()
+            dpd.show()
+        }
+
+        step3.etTimeLost.setOnClickListener {
+            val cal = Calendar.getInstance()
+            val tpd = TimePickerDialog(
+                this,
+                { _, hourOfDay, minute ->
+                    val timeFormatted = String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minute)
+                    step3.etTimeLost.setText(timeFormatted)
+                },
+                cal.get(Calendar.HOUR_OF_DAY),
+                cal.get(Calendar.MINUTE),
+                true
+            )
+            tpd.show()
         }
 
         step3.btnAdjustLocation.setOnClickListener {
@@ -250,6 +275,7 @@ class LostPetFormActivity : AppCompatActivity() {
             val breedText = binding.step1Layout.etBreed.text.toString().trim()
             val distMarksText = binding.step2Layout.etDistinguishingMarks.text.toString().trim()
             val privateDetailText = binding.step2Layout.etPrivateDetail.text.toString().trim()
+            val walkingPlacesText = step3.etWalkingPlaces.text.toString().trim()
 
             val finalSpecies = if (selectedSpecies == "Outro") {
                 customSpeciesText.ifBlank { "Outro" }
@@ -263,21 +289,26 @@ class LostPetFormActivity : AppCompatActivity() {
 
             val idStr = if (selectedIdentifications.isNotEmpty()) "Identificação: ${selectedIdentifications.joinToString(", ")}" else null
             val behaviorStr = selectedBehavior?.let { "Comportamento: $it" }
+            val walkingStr = walkingPlacesText.takeIf { it.isNotBlank() }?.let { "Passeia por: $it" }
 
             val fullMarks = listOfNotNull(
                 breedText.takeIf { it.isNotBlank() }?.let { "Raça: $it" },
                 distMarksText.takeIf { it.isNotBlank() },
                 idStr,
-                behaviorStr
+                behaviorStr,
+                walkingStr
             ).joinToString(" · ")
 
-            // Save private detail locally for tutor verification
             if (privateDetailText.isNotBlank()) {
                 getSharedPreferences("private_details_prefs", MODE_PRIVATE)
                     .edit()
                     .putString("private_detail_$name", privateDetailText)
                     .apply()
             }
+
+            val dateTxt = step3.etDateLost.text.toString().trim()
+            val timeTxt = step3.etTimeLost.text.toString().trim()
+            val whenFullDate = listOfNotNull(dateTxt.takeIf { it.isNotBlank() }, timeTxt.takeIf { it.isNotBlank() }).joinToString(" às ")
 
             val ad = FoundPetAd(
                 category = "PERDIDO",
@@ -293,8 +324,8 @@ class LostPetFormActivity : AppCompatActivity() {
                 city = addressCity,
                 state = addressState,
                 complement = addressComplement,
-                whenFound = selectedWhen,
-                whenDate = selectedWhenDate,
+                whenFound = selectedWhen ?: "Data registrada",
+                whenDate = whenFullDate.ifBlank { selectedWhenDate },
                 marks = fullMarks,
                 calledNames = listOf("$name: reagiu"),
                 currentSituation = "Procurado"
@@ -393,21 +424,5 @@ class LostPetFormActivity : AppCompatActivity() {
             frame.addView(removeText)
             container.addView(frame)
         }
-    }
-
-    private fun showDatePickerDialog() {
-        val cal = Calendar.getInstance()
-        val datePicker = DatePickerDialog(
-            this,
-            { _, year, month, dayOfMonth ->
-                selectedWhenDate = "$dayOfMonth/${month + 1}/$year"
-                binding.step3Layout.chipWhenOther.text = selectedWhenDate
-            },
-            cal.get(Calendar.YEAR),
-            cal.get(Calendar.MONTH),
-            cal.get(Calendar.DAY_OF_MONTH)
-        )
-        datePicker.datePicker.maxDate = System.currentTimeMillis()
-        datePicker.show()
     }
 }
