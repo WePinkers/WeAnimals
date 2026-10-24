@@ -2,6 +2,7 @@ package com.example.weanimals.lostandfound.repository
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.example.weanimals.lostandfound.model.AnnouncementReport
 import com.example.weanimals.lostandfound.model.ChatReport
 import com.example.weanimals.lostandfound.model.FoundPetAd
 import com.example.weanimals.lostandfound.model.LostAndFoundChatMessage
@@ -24,12 +25,14 @@ object LostAndFoundRepository {
     private const val KEY_MESSAGES = "saved_lost_found_messages"
     private const val KEY_REUNIONS = "saved_reunion_requests"
     private const val KEY_REPORTS = "saved_chat_reports"
+    private const val KEY_ANNOUNCEMENT_REPORTS = "saved_announcement_reports"
 
     private val adsList = mutableListOf<FoundPetAd>()
     private val requestsList = mutableListOf<TutorVerificationRequest>()
     private val messagesList = mutableListOf<LostAndFoundChatMessage>()
     private val reunionsList = mutableListOf<ReunionRequest>()
     private val reportsList = mutableListOf<ChatReport>()
+    private val announcementReportsList = mutableListOf<AnnouncementReport>()
     private var isInitialized = false
 
     fun init(context: Context) {
@@ -40,6 +43,7 @@ object LostAndFoundRepository {
         loadMessagesFromPrefs(context)
         loadReunionsFromPrefs(context)
         loadReportsFromPrefs(context)
+        loadAnnouncementReportsFromPrefs(context)
     }
 
     fun saveAd(context: Context, ad: FoundPetAd) {
@@ -165,6 +169,12 @@ object LostAndFoundRepository {
         init(context)
         reportsList.add(0, report)
         saveReportsToPrefs(context)
+    }
+
+    fun saveAnnouncementReport(context: Context, report: AnnouncementReport) {
+        init(context)
+        announcementReportsList.add(0, report)
+        saveAnnouncementReportsToPrefs(context)
     }
 
     fun getIndicatorsSummary(context: Context): IndicatorsSummary {
@@ -461,6 +471,54 @@ object LostAndFoundRepository {
                     status = obj.optString("status", "PENDING_REVIEW")
                 )
                 reportsList.add(rep)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun saveAnnouncementReportsToPrefs(context: Context) {
+        val array = JSONArray()
+        for (rep in announcementReportsList) {
+            val obj = JSONObject().apply {
+                put("reportId", rep.reportId)
+                put("reportType", rep.reportType)
+                put("announcementId", rep.announcementId)
+                put("announcementCategory", rep.announcementCategory)
+                put("reporterUserId", rep.reporterUserId)
+                put("reportedUserId", rep.reportedUserId)
+                put("reason", rep.reason)
+                put("description", rep.description ?: "")
+                put("evidenceUri", rep.evidenceUri ?: "")
+                put("createdAt", rep.createdAt)
+                put("status", rep.status)
+            }
+            array.put(obj)
+        }
+        getPrefs(context).edit().putString(KEY_ANNOUNCEMENT_REPORTS, array.toString()).apply()
+    }
+
+    private fun loadAnnouncementReportsFromPrefs(context: Context) {
+        val jsonStr = getPrefs(context).getString(KEY_ANNOUNCEMENT_REPORTS, null) ?: return
+        try {
+            val array = JSONArray(jsonStr)
+            announcementReportsList.clear()
+            for (i in 0 until array.length()) {
+                val obj = array.getJSONObject(i)
+                val rep = AnnouncementReport(
+                    reportId = obj.optString("reportId"),
+                    reportType = obj.optString("reportType", "ANNOUNCEMENT"),
+                    announcementId = obj.optString("announcementId"),
+                    announcementCategory = obj.optString("announcementCategory"),
+                    reporterUserId = obj.optString("reporterUserId"),
+                    reportedUserId = obj.optString("reportedUserId"),
+                    reason = obj.optString("reason"),
+                    description = obj.optString("description").ifBlank { null },
+                    evidenceUri = obj.optString("evidenceUri").ifBlank { null },
+                    createdAt = obj.optLong("createdAt", System.currentTimeMillis()),
+                    status = obj.optString("status", "PENDING_REVIEW")
+                )
+                announcementReportsList.add(rep)
             }
         } catch (e: Exception) {
             e.printStackTrace()

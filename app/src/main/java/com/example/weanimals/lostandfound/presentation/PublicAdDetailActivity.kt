@@ -212,7 +212,11 @@ class PublicAdDetailActivity : AppCompatActivity() {
         }
 
         binding.tvReportAdPublic.setOnClickListener {
-            Toast.makeText(this, "Fluxo de denúncia em desenvolvimento.", Toast.LENGTH_SHORT).show()
+            val ad = currentAd ?: return@setOnClickListener
+            val intent = Intent(this, ReportAdActivity::class.java).apply {
+                putExtra(ReportAdActivity.EXTRA_AD_ID, ad.id)
+            }
+            startActivity(intent)
         }
 
         binding.btnMainActionPublic.setOnClickListener {
