@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:orientation="vertical"
+    tools:ignore="UnusedResources">
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="12dp">
+
+        <ImageButton
+            android:id="@+id/btn_back_report"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:background="@drawable/bg_circular_back_btn"
+            android:contentDescription="Voltar"
+            android:src="@drawable/ic_arrow_back"
+            app:tint="@color/ink" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="14dp"
+            android:fontFamily="serif"
+            android:text="Denunciar conversa"
+            android:textColor="@color/pine800"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/border" />
+
+    <!-- Scrollable Content -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="24dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Conte o que aconteceu. Sua denúncia será analisada com confidencialidade."
+                android:textColor="@color/muted"
+                android:textSize="13sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:fontFamily="monospace"
+                android:letterSpacing="0.1"
+                android:text="SELEOCIONE O MOTIVO"
+                android:textColor="@color/muted"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <RadioGroup
+                android:id="@+id/rg_report_reasons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp">
+
+                <RadioButton
+                    android:id="@+id/rb_reason_1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="8dp"
+                    android:text="Comportamento ofensivo ou assédio"
+                    android:textColor="@color/ink"
+                    android:textSize="14sp"
+                    app:buttonTint="@color/pine800" />
+
+                <RadioButton
+                    android:id="@+id/rb_reason_2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="8dp"
+                    android:text="Suspeita de golpe ou pedido de dinheiro"
+                    android:textColor="@color/ink"
+                    android:textSize="14sp"
+                    app:buttonTint="@color/pine800" />
+
+                <RadioButton
+                    android:id="@+id/rb_reason_3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="8dp"
+                    android:text="Informações falsas sobre o animal"
+                    android:textColor="@color/ink"
+                    android:textSize="14sp"
+                    app:buttonTint="@color/pine800" />
+
+                <RadioButton
+                    android:id="@+id/rb_reason_4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="8dp"
+                    android:text="Ameaças ou intimidação"
+                    android:textColor="@color/ink"
+                    android:textSize="14sp"
+                    app:buttonTint="@color/pine800" />
+
+                <RadioButton
+                    android:id="@+id/rb_reason_5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="8dp"
+                    android:text="Conteúdo impróprio"
+                    android:textColor="@color/ink"
+                    android:textSize="14sp"
+                    app:buttonTint="@color/pine800" />
+
+                <RadioButton
+                    android:id="@+id/rb_reason_6"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="8dp"
+                    android:text="Outro motivo"
+                    android:textColor="@color/ink"
+                    android:textSize="14sp"
+                    app:buttonTint="@color/pine800" />
+
+            </RadioGroup>
+
+            <!-- Description -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:fontFamily="monospace"
+                android:letterSpacing="0.1"
+                android:text="DESCREVA O OCORRIDO (OPCIONAL)"
+                android:textColor="@color/muted"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/et_report_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/bg_card_white_border"
+                android:gravity="top|start"
+                android:hint="Explique brevemente o que aconteceu..."
+                android:inputType="textMultiLine|textCapSentences"
+                android:minLines="3"
+                android:padding="14dp"
+                android:textColor="@color/ink"
+                android:textColorHint="#9C968A"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Footer Action Button -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/background"
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/border" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_submit_report"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginVertical="16dp"
+            android:background="@drawable/bg_btn_terracotta"
+            android:text="Enviar denúncia"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+</LinearLayout>

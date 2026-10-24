@@ -2,6 +2,7 @@ package com.example.weanimals.lostandfound.repository
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.example.weanimals.lostandfound.model.ChatReport
 import com.example.weanimals.lostandfound.model.FoundPetAd
 import com.example.weanimals.lostandfound.model.LostAndFoundChatMessage
 import com.example.weanimals.lostandfound.model.ReunionRequest
@@ -22,11 +23,13 @@ object LostAndFoundRepository {
     private const val KEY_REQUESTS = "saved_verification_requests"
     private const val KEY_MESSAGES = "saved_lost_found_messages"
     private const val KEY_REUNIONS = "saved_reunion_requests"
+    private const val KEY_REPORTS = "saved_chat_reports"
 
     private val adsList = mutableListOf<FoundPetAd>()
     private val requestsList = mutableListOf<TutorVerificationRequest>()
     private val messagesList = mutableListOf<LostAndFoundChatMessage>()
     private val reunionsList = mutableListOf<ReunionRequest>()
+    private val reportsList = mutableListOf<ChatReport>()
     private var isInitialized = false
 
     fun init(context: Context) {
@@ -36,6 +39,7 @@ object LostAndFoundRepository {
         loadRequestsFromPrefs(context)
         loadMessagesFromPrefs(context)
         loadReunionsFromPrefs(context)
+        loadReportsFromPrefs(context)
     }
 
     fun saveAd(context: Context, ad: FoundPetAd) {
@@ -155,6 +159,12 @@ object LostAndFoundRepository {
             }
         }
         saveReunionsToPrefs(context)
+    }
+
+    fun saveChatReport(context: Context, report: ChatReport) {
+        init(context)
+        reportsList.add(0, report)
+        saveReportsToPrefs(context)
     }
 
     fun getIndicatorsSummary(context: Context): IndicatorsSummary {
@@ -407,6 +417,50 @@ object LostAndFoundRepository {
                     confirmedAt = if (confAt > 0L) confAt else null
                 )
                 reunionsList.add(r)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun saveReportsToPrefs(context: Context) {
+        val array = JSONArray()
+        for (rep in reportsList) {
+            val obj = JSONObject().apply {
+                put("reportId", rep.reportId)
+                put("conversationId", rep.conversationId)
+                put("announcementId", rep.announcementId)
+                put("reporterUserId", rep.reporterUserId)
+                put("reportedUserId", rep.reportedUserId)
+                put("reason", rep.reason)
+                put("description", rep.description ?: "")
+                put("createdAt", rep.createdAt)
+                put("status", rep.status)
+            }
+            array.put(obj)
+        }
+        getPrefs(context).edit().putString(KEY_REPORTS, array.toString()).apply()
+    }
+
+    private fun loadReportsFromPrefs(context: Context) {
+        val jsonStr = getPrefs(context).getString(KEY_REPORTS, null) ?: return
+        try {
+            val array = JSONArray(jsonStr)
+            reportsList.clear()
+            for (i in 0 until array.length()) {
+                val obj = array.getJSONObject(i)
+                val rep = ChatReport(
+                    reportId = obj.optString("reportId"),
+                    conversationId = obj.optString("conversationId"),
+                    announcementId = obj.optString("announcementId"),
+                    reporterUserId = obj.optString("reporterUserId"),
+                    reportedUserId = obj.optString("reportedUserId"),
+                    reason = obj.optString("reason"),
+                    description = obj.optString("description").ifBlank { null },
+                    createdAt = obj.optLong("createdAt", System.currentTimeMillis()),
+                    status = obj.optString("status", "PENDING_REVIEW")
+                )
+                reportsList.add(rep)
             }
         } catch (e: Exception) {
             e.printStackTrace()

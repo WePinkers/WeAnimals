@@ -2,13 +2,18 @@ package com.example.weanimals.lostandfound.presentation
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Typeface
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
+import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.weanimals.R
 import com.example.weanimals.databinding.ActivityLostAndFoundChatBinding
 import com.example.weanimals.databinding.ItemChatMessageBinding
 import com.example.weanimals.lostandfound.model.FoundPetAd
@@ -101,6 +106,14 @@ class LostAndFoundChatActivity : AppCompatActivity() {
     private fun setupListeners() {
         binding.backButton.setOnClickListener { finish() }
 
+        binding.btnChatOptions.setOnClickListener {
+            val req = verificationRequest ?: return@setOnClickListener
+            val intent = Intent(this, ReportChatActivity::class.java).apply {
+                putExtra(ReportChatActivity.EXTRA_REQUEST_ID, req.id)
+            }
+            startActivity(intent)
+        }
+
         binding.sendButton.setOnClickListener { sendCurrentMessage() }
 
         binding.messageInput.setOnEditorActionListener { _, actionId, event ->
@@ -122,8 +135,13 @@ class LostAndFoundChatActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
             if (reunion != null && reunion.status.equals("PENDING_CONFIRMATION", ignoreCase = true)) {
-                val userId = FirebaseAuth.getInstance().currentUser?.uid ?: "local_user"
-                if (reunion.initiatedByUserId == userId) {
+                val isInitiator = if (req.ownerUserId == req.requesterUserId || currentUserId == "local_user") {
+                    !isTutorView
+                } else {
+                    reunion.initiatedByUserId == currentUserId
+                }
+
+                if (isInitiator) {
                     val intent = Intent(this, ReunionSubmittedActivity::class.java).apply {
                         putExtra(ReunionSubmittedActivity.EXTRA_REQUEST_ID, req.id)
                     }
@@ -189,25 +207,104 @@ class LostAndFoundChatActivity : AppCompatActivity() {
                 val confMsgBinding = ItemChatMessageBinding.inflate(layoutInflater, container, false)
                 confMsgBinding.incomingMessageGroup.visibility = View.VISIBLE
                 confMsgBinding.outgoingMessageGroup.visibility = View.GONE
-                confMsgBinding.incomingMessageText.text = "Reencontro confirmado! Este anúncio foi encerrado e movido para a seção de encerrados. O chat permanece disponível com todo o histórico."
+                confMsgBinding.incomingMessageText.text = "Reencontro confirmado! O animal voltou ao tutor e o anúncio foi encerrado com sucesso."
                 confMsgBinding.incomingMessageTime.text = formatTime(reunion.confirmedAt ?: reunion.createdAt)
                 container.addView(confMsgBinding.root)
             } else if (reunion.status.equals("PENDING_CONFIRMATION", ignoreCase = true)) {
-                val userId = FirebaseAuth.getInstance().currentUser?.uid ?: "local_user"
-                if (reunion.initiatedByUserId != userId) {
+                val isInitiator = if (req.ownerUserId == req.requesterUserId || currentUserId == "local_user") {
+                    !isTutorView
+                } else {
+                    reunion.initiatedByUserId == currentUserId
+                }
+
+                if (!isInitiator) {
+                    val cardLayout = LinearLayout(this).apply {
+                        orientation = LinearLayout.VERTICAL
+                        setBackgroundResource(R.drawable.bg_card_white_border)
+                        setPadding(28, 24, 28, 24)
+                        val params = LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT
+                        )
+                        params.setMargins(0, 16, 0, 16)
+                        layoutParams = params
+                    }
+
+                    val titleTv = TextView(this).apply {
+                        text = "Confirmação de reencontro"
+                        textSize = 15f
+                        setTypeface(null, Typeface.BOLD)
+                        setTextColor(getColor(R.color.pine800))
+                    }
+
+                    val descTv = TextView(this).apply {
+                        text = "A outra pessoa informou que o animal foi entregue. Você confirma que o reencontro realmente aconteceu?"
+                        textSize = 13f
+                        setTextColor(getColor(R.color.muted))
+                        setPadding(0, 4, 0, 14)
+                    }
+
+                    val btnsRow = LinearLayout(this).apply {
+                        orientation = LinearLayout.HORIZONTAL
+                    }
+
+                    val btnConfirm = androidx.appcompat.widget.AppCompatButton(this).apply {
+                        layoutParams = LinearLayout.LayoutParams(0, (46 * resources.displayMetrics.density).toInt(), 1f).apply {
+                            marginEnd = 6
+                        }
+                        text = "Confirmar reencontro"
+                        isAllCaps = false
+                        textSize = 13f
+                        setTypeface(null, Typeface.BOLD)
+                        setTextColor(getColor(R.color.white))
+                        setBackgroundResource(R.drawable.bg_btn_dark_green)
+                        setOnClickListener {
+                            val intent = Intent(this@LostAndFoundChatActivity, ConfirmReunionActivity::class.java).apply {
+                                putExtra(ConfirmReunionActivity.EXTRA_REQUEST_ID, req.id)
+                            }
+                            startActivity(intent)
+                        }
+                    }
+
+                    val btnNotYet = androidx.appcompat.widget.AppCompatButton(this).apply {
+                        layoutParams = LinearLayout.LayoutParams(0, (46 * resources.displayMetrics.density).toInt(), 1f).apply {
+                            marginStart = 6
+                        }
+                        text = "Ainda não aconteceu"
+                        isAllCaps = false
+                        textSize = 13f
+                        setTypeface(null, Typeface.BOLD)
+                        setTextColor(getColor(R.color.pine800))
+                        setBackgroundResource(R.drawable.bg_btn_outline)
+                        setOnClickListener {
+                            LostAndFoundRepository.updateReunionStatus(this@LostAndFoundChatActivity, reunion.reunionId, "NOT_CONFIRMED")
+                            Toast.makeText(this@LostAndFoundChatActivity, "Resposta registrada: o reencontro ainda não foi confirmado.", Toast.LENGTH_LONG).show()
+                            loadMessages()
+                        }
+                    }
+
+                    btnsRow.addView(btnConfirm)
+                    btnsRow.addView(btnNotYet)
+
+                    cardLayout.addView(titleTv)
+                    cardLayout.addView(descTv)
+                    cardLayout.addView(btnsRow)
+                    container.addView(cardLayout)
+                } else {
                     val promptBinding = ItemChatMessageBinding.inflate(layoutInflater, container, false)
                     promptBinding.incomingMessageGroup.visibility = View.VISIBLE
                     promptBinding.outgoingMessageGroup.visibility = View.GONE
-                    promptBinding.incomingMessageText.text = "Confirmação de reencontro pendente!\nA outra pessoa informou que o animal foi entregue. Toque aqui para confirmar."
+                    promptBinding.incomingMessageText.text = "Solicitação enviada. Aguardando a outra pessoa confirmar o reencontro."
                     promptBinding.incomingMessageTime.text = formatTime(reunion.createdAt)
-                    promptBinding.root.setOnClickListener {
-                        val intent = Intent(this, ConfirmReunionActivity::class.java).apply {
-                            putExtra(ConfirmReunionActivity.EXTRA_REQUEST_ID, req.id)
-                        }
-                        startActivity(intent)
-                    }
                     container.addView(promptBinding.root)
                 }
+            } else if (reunion.status.equals("NOT_CONFIRMED", ignoreCase = true)) {
+                val notConfMsgBinding = ItemChatMessageBinding.inflate(layoutInflater, container, false)
+                notConfMsgBinding.incomingMessageGroup.visibility = View.VISIBLE
+                notConfMsgBinding.outgoingMessageGroup.visibility = View.GONE
+                notConfMsgBinding.incomingMessageText.text = "O reencontro ainda não foi confirmado. O anúncio permanecerá aberto para acompanhamento."
+                notConfMsgBinding.incomingMessageTime.text = formatTime(reunion.respondedAt ?: reunion.createdAt)
+                container.addView(notConfMsgBinding.root)
             }
         }
 
