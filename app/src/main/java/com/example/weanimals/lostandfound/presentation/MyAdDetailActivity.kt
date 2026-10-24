@@ -131,6 +131,14 @@ class MyAdDetailActivity : AppCompatActivity() {
 
     private fun showUpdateSituationDialog() {
         val ad = currentAd ?: return
+        if (ad.category.equals("PERDIDO", ignoreCase = true)) {
+            showUpdateSituationForLostAd(ad)
+        } else {
+            showUpdateSituationForFoundAd(ad)
+        }
+    }
+
+    private fun showUpdateSituationForFoundAd(ad: FoundPetAd) {
         val options = arrayOf("Comigo", "Ainda na rua", "Entregue ao tutor", "Encerrado")
         val currentIndex = options.indexOf(ad.currentSituation).let { if (it >= 0) it else 0 }
 
@@ -143,6 +151,98 @@ class MyAdDetailActivity : AppCompatActivity() {
                 setupUI()
                 Toast.makeText(this, "Situação atualizada para: $newSituation", Toast.LENGTH_SHORT).show()
                 dialog.dismiss()
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
+    }
+
+    private fun showUpdateSituationForLostAd(ad: FoundPetAd) {
+        val options = arrayOf(
+            "Ainda procurando\n(Meu animal continua desaparecido)",
+            "Possivelmente localizado\n(Encontrei um possível animal correspondente, mas ainda não confirmei)",
+            "Encontrei meu animal\n(Meu animal voltou para mim. Registrar reencontro)",
+            "Encerrar anúncio\n(Quero encerrar a busca por outro motivo)"
+        )
+
+        val keys = arrayOf("Ainda procurando", "Possivelmente localizado", "Encontrei meu animal", "Encerrar anúncio")
+        val currentIndex = keys.indexOf(ad.currentSituation).let { if (it >= 0) it else 0 }
+
+        AlertDialog.Builder(this)
+            .setTitle("Atualizar situação")
+            .setSingleChoiceItems(options, currentIndex) { dialog, which ->
+                dialog.dismiss()
+                when (which) {
+                    0 -> {
+                        LostAndFoundRepository.updateAdSituation(this, ad.id, "Ainda procurando")
+                        ad.currentSituation = "Ainda procurando"
+                        setupUI()
+                        Toast.makeText(this, "Situação atualizada: Ainda procurando", Toast.LENGTH_SHORT).show()
+                    }
+                    1 -> {
+                        LostAndFoundRepository.updateAdSituation(this, ad.id, "Possivelmente localizado")
+                        ad.currentSituation = "Possivelmente localizado"
+                        setupUI()
+                        Toast.makeText(this, "Situação atualizada: Possivelmente localizado", Toast.LENGTH_SHORT).show()
+                    }
+                    2 -> {
+                        handleFoundMyPetOption(ad)
+                    }
+                    3 -> {
+                        showEndAdConfirmationDialog()
+                    }
+                }
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
+    }
+
+    private fun handleFoundMyPetOption(ad: FoundPetAd) {
+        val choices = arrayOf(
+            "Reencontro através do WeAnimals\n(Confirmar entrega com quem encontrou pelo chat)",
+            "Encontrei por conta própria\n(O animal voltou sem utilizar o chat do app)"
+        )
+
+        AlertDialog.Builder(this)
+            .setTitle("Como você encontrou seu animal?")
+            .setItems(choices) { _, which ->
+                if (which == 0) {
+                    val requests = LostAndFoundRepository.getVerificationRequestsForAd(this, ad.id)
+                    val approvedReq = requests.firstOrNull { it.status.equals("APROVADO", ignoreCase = true) }
+                    if (approvedReq != null) {
+                        val intent = Intent(this, LostAndFoundChatActivity::class.java).apply {
+                            putExtra(LostAndFoundChatActivity.EXTRA_REQUEST_ID, approvedReq.id)
+                            putExtra(LostAndFoundChatActivity.EXTRA_VIEWER_ROLE, LostAndFoundChatActivity.ROLE_TUTOR)
+                        }
+                        startActivity(intent)
+                    } else {
+                        AlertDialog.Builder(this)
+                            .setTitle("Nenhuma conversa aprovada")
+                            .setMessage("Não encontramos nenhuma conversa aprovada no app para este anúncio. Deseja registrar o reencontro por conta própria?")
+                            .setPositiveButton("Sim, por conta própria") { _, _ ->
+                                confirmSelfFoundReunion(ad)
+                            }
+                            .setNegativeButton("Cancelar", null)
+                            .show()
+                    }
+                } else {
+                    confirmSelfFoundReunion(ad)
+                }
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
+    }
+
+    private fun confirmSelfFoundReunion(ad: FoundPetAd) {
+        AlertDialog.Builder(this)
+            .setTitle("Encontrei meu animal")
+            .setMessage("Você confirma que encontrou seu animal e que ele está em segurança?")
+            .setPositiveButton("Sim, confirmar reencontro") { _, _ ->
+                LostAndFoundRepository.updateAdSituation(this, ad.id, "Reencontrado")
+                ad.currentSituation = "Reencontrado"
+                ad.isReunited = true
+                ad.isEnded = true
+                setupUI()
+                Toast.makeText(this, "Reencontro confirmado! Anúncio atualizado como Reencontrado.", Toast.LENGTH_LONG).show()
             }
             .setNegativeButton("Cancelar", null)
             .show()
