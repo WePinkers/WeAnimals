@@ -29,6 +29,10 @@ class LostPetFormActivity : AppCompatActivity() {
     private var selectedAge: String? = null
 
     // State Step 2
+    private val selectedIdentifications = mutableSetOf<String>()
+    private var selectedBehavior: String? = null
+
+    // State Step 3
     private var selectedWhen: String? = null
     private var selectedWhenDate: String? = null
     private var addressStreet: String? = null
@@ -57,7 +61,7 @@ class LostPetFormActivity : AppCompatActivity() {
                 addressState = data.getStringExtra(AdjustLocationActivity.EXTRA_STATE)
                 addressComplement = data.getStringExtra(AdjustLocationActivity.EXTRA_COMPLEMENT)
 
-                updateLocationCardInStep2()
+                updateLocationCardInStep3()
             }
         }
 
@@ -95,7 +99,7 @@ class LostPetFormActivity : AppCompatActivity() {
         binding.progressSegment1.setBackgroundResource(R.drawable.bg_progress_segment_terracotta)
         binding.progressSegment2.setBackgroundResource(R.drawable.bg_progress_segment_terracotta)
         binding.progressSegment3.setBackgroundResource(R.drawable.bg_progress_segment_beige)
-        binding.tvProgressStep.text = "Passo 2 de 3: onde e quando sumiu"
+        binding.tvProgressStep.text = "Passo 2 de 3: como identificar"
     }
 
     private fun showStep3() {
@@ -103,7 +107,7 @@ class LostPetFormActivity : AppCompatActivity() {
         binding.progressSegment1.setBackgroundResource(R.drawable.bg_progress_segment_terracotta)
         binding.progressSegment2.setBackgroundResource(R.drawable.bg_progress_segment_terracotta)
         binding.progressSegment3.setBackgroundResource(R.drawable.bg_progress_segment_terracotta)
-        binding.tvProgressStep.text = "Passo 3 de 3: características e contatos"
+        binding.tvProgressStep.text = "Passo 3 de 3: localização e contatos"
     }
 
     private fun setupStep1() {
@@ -173,17 +177,51 @@ class LostPetFormActivity : AppCompatActivity() {
     private fun setupStep2() {
         val step2 = binding.step2Layout
 
-        val whenChips = listOf(step2.chipWhenNow, step2.chipWhenToday, step2.chipWhenYesterday, step2.chipWhenOther)
-        setupCapsuleGroup(whenChips) { selection ->
-            selectedWhen = selection
-            if (selection == "Outro dia") {
-                showDatePickerDialog()
+        // Identificação (Multi-selection with "Nenhuma" clearing others)
+        val idChipsMap = mapOf(
+            "Coleira" to step2.chipIdCollar,
+            "Plaquinha" to step2.chipIdTag,
+            "Microchip" to step2.chipIdMicrochip,
+            "Nenhuma" to step2.chipIdNone
+        )
+
+        fun updateIdentificationUI() {
+            val activeBg = R.drawable.bg_capsule_selected
+            val inactiveBg = R.drawable.bg_capsule_unselected
+            val activeColor = getColor(R.color.white)
+            val inactiveColor = getColor(R.color.ink)
+
+            for ((key, chip) in idChipsMap) {
+                val isSelected = selectedIdentifications.contains(key)
+                chip.setBackgroundResource(if (isSelected) activeBg else inactiveBg)
+                chip.setTextColor(if (isSelected) activeColor else inactiveColor)
             }
         }
 
-        step2.btnAdjustLocation.setOnClickListener {
-            openAdjustLocationScreen()
+        for ((key, chip) in idChipsMap) {
+            chip.setOnClickListener {
+                if (key == "Nenhuma") {
+                    selectedIdentifications.clear()
+                    selectedIdentifications.add("Nenhuma")
+                } else {
+                    selectedIdentifications.remove("Nenhuma")
+                    if (selectedIdentifications.contains(key)) {
+                        selectedIdentifications.remove(key)
+                    } else {
+                        selectedIdentifications.add(key)
+                    }
+                }
+                updateIdentificationUI()
+            }
         }
+
+        // Comportamento
+        val behaviorChips = listOf(
+            step2.chipBehaviorDocile,
+            step2.chipBehaviorFearful,
+            step2.chipBehaviorAggressive
+        )
+        setupCapsuleGroup(behaviorChips) { selectedBehavior = it }
 
         step2.btnBackStep2.setOnClickListener { showStep1() }
         step2.btnContinueStep2.setOnClickListener { showStep3() }
@@ -192,13 +230,26 @@ class LostPetFormActivity : AppCompatActivity() {
     private fun setupStep3() {
         val step3 = binding.step3Layout
 
+        val whenChips = listOf(step3.chipWhenNow, step3.chipWhenToday, step3.chipWhenYesterday, step3.chipWhenOther)
+        setupCapsuleGroup(whenChips) { selection ->
+            selectedWhen = selection
+            if (selection == "Outro dia") {
+                showDatePickerDialog()
+            }
+        }
+
+        step3.btnAdjustLocation.setOnClickListener {
+            openAdjustLocationScreen()
+        }
+
         step3.btnBackStep3.setOnClickListener { showStep2() }
 
         step3.btnPublishLost.setOnClickListener {
             val name = binding.step1Layout.etPetName.text.toString().trim()
             val customSpeciesText = binding.step1Layout.etCustomSpecies.text.toString().trim()
             val breedText = binding.step1Layout.etBreed.text.toString().trim()
-            val marksText = step3.etMarks.text.toString().trim()
+            val distMarksText = binding.step2Layout.etDistinguishingMarks.text.toString().trim()
+            val privateDetailText = binding.step2Layout.etPrivateDetail.text.toString().trim()
 
             val finalSpecies = if (selectedSpecies == "Outro") {
                 customSpeciesText.ifBlank { "Outro" }
@@ -210,10 +261,23 @@ class LostPetFormActivity : AppCompatActivity() {
                 ?: FirebaseAuth.getInstance().currentUser?.displayName
                 ?: "Usuário"
 
+            val idStr = if (selectedIdentifications.isNotEmpty()) "Identificação: ${selectedIdentifications.joinToString(", ")}" else null
+            val behaviorStr = selectedBehavior?.let { "Comportamento: $it" }
+
             val fullMarks = listOfNotNull(
                 breedText.takeIf { it.isNotBlank() }?.let { "Raça: $it" },
-                marksText.takeIf { it.isNotBlank() }
+                distMarksText.takeIf { it.isNotBlank() },
+                idStr,
+                behaviorStr
             ).joinToString(" · ")
+
+            // Save private detail locally for tutor verification
+            if (privateDetailText.isNotBlank()) {
+                getSharedPreferences("private_details_prefs", MODE_PRIVATE)
+                    .edit()
+                    .putString("private_detail_$name", privateDetailText)
+                    .apply()
+            }
 
             val ad = FoundPetAd(
                 category = "PERDIDO",
@@ -260,15 +324,15 @@ class LostPetFormActivity : AppCompatActivity() {
         adjustLocationLauncher.launch(intent)
     }
 
-    private fun updateLocationCardInStep2() {
-        val step2 = binding.step2Layout
+    private fun updateLocationCardInStep3() {
+        val step3 = binding.step3Layout
         if (!addressStreet.isNullOrBlank()) {
             val numText = if (addressNumber.isNullOrBlank()) "" else ", $addressNumber"
-            step2.tvLocationTitle.text = "$addressStreet$numText"
+            step3.tvLocationTitle.text = "$addressStreet$numText"
 
             val neighText = if (addressNeighborhood.isNullOrBlank()) "" else "$addressNeighborhood · "
             val stateText = if (addressState.isNullOrBlank()) "" else " - $addressState"
-            step2.tvLocationSubtitle.text = "$neighText${addressCity.orEmpty()}$stateText"
+            step3.tvLocationSubtitle.text = "$neighText${addressCity.orEmpty()}$stateText"
         }
     }
 
@@ -337,7 +401,7 @@ class LostPetFormActivity : AppCompatActivity() {
             this,
             { _, year, month, dayOfMonth ->
                 selectedWhenDate = "$dayOfMonth/${month + 1}/$year"
-                binding.step2Layout.chipWhenOther.text = selectedWhenDate
+                binding.step3Layout.chipWhenOther.text = selectedWhenDate
             },
             cal.get(Calendar.YEAR),
             cal.get(Calendar.MONTH),
