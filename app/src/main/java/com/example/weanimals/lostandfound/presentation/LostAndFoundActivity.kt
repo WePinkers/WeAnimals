@@ -51,7 +51,7 @@ class LostAndFoundActivity : AppCompatActivity() {
 
     private fun setupListeners() {
         binding.btnLostPet.setOnClickListener {
-            Toast.makeText(this, "Funcionalidade em desenvolvimento", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, LostPetFormActivity::class.java))
         }
 
         binding.btnFoundPet.setOnClickListener {

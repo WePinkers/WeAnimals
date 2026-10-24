@@ -139,6 +139,7 @@
         <activity android:name=".profile.overview.presentation.ChangePasswordActivity" android:exported="false" />
         <activity android:name=".lostandfound.presentation.LostAndFoundActivity" android:exported="false" />
         <activity android:name=".lostandfound.presentation.FoundPetFormActivity" android:exported="false" />
+        <activity android:name=".lostandfound.presentation.LostPetFormActivity" android:exported="false" />
         <activity android:name=".lostandfound.presentation.AdjustLocationActivity" android:exported="false" />
         <activity android:name=".lostandfound.presentation.MyAdDetailActivity" android:exported="false" />
         <activity android:name=".lostandfound.presentation.MyAdsActivity" android:exported="false" />
