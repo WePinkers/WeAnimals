@@ -212,14 +212,25 @@ class MyAdsActivity : AppCompatActivity() {
         }
 
         val isLost = ad.category.equals("PERDIDO", ignoreCase = true)
+        val padHorizontalPx = (10 * resources.displayMetrics.density).toInt()
+        val padVerticalPx = (4 * resources.displayMetrics.density).toInt()
+        val marginBottomPx = (6 * resources.displayMetrics.density).toInt()
+
         val categoryBadgeTv = TextView(this).apply {
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(0, 0, 0, marginBottomPx)
+            }
             text = if (isLost) "ANIMAL PERDIDO" else "ANIMAL ENCONTRADO"
-            textSize = 11f
+            textSize = 10f
             typeface = Typeface.MONOSPACE
             setTypeface(null, Typeface.BOLD)
             letterSpacing = 0.08f
-            setTextColor(getColor(if (isLost) R.color.terracotta else R.color.pine800))
-            setPadding(0, 0, 0, 4)
+            setTextColor(getColor(R.color.white))
+            setBackgroundResource(if (isLost) R.drawable.bg_badge_lost else R.drawable.bg_badge_found)
+            setPadding(padHorizontalPx, padVerticalPx, padHorizontalPx, padVerticalPx)
         }
 
         val titleTv = TextView(this).apply {
