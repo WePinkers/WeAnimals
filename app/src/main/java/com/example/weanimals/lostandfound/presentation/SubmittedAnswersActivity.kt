@@ -1,10 +1,10 @@
 package com.example.weanimals.lostandfound.presentation
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.weanimals.R
 import com.example.weanimals.databinding.ActivitySubmittedAnswersBinding
 import com.example.weanimals.lostandfound.repository.LostAndFoundRepository
 
@@ -16,6 +16,9 @@ class SubmittedAnswersActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivitySubmittedAnswersBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        binding.includeHeader.headerTitleTv.text = "Relato enviado"
+        binding.includeHeader.headerBackBtn.setOnClickListener { finish() }
 
         val requestId = intent.getStringExtra(EXTRA_REQUEST_ID)
         if (requestId.isNullOrBlank()) {
@@ -31,8 +34,29 @@ class SubmittedAnswersActivity : AppCompatActivity() {
             return
         }
 
-        binding.tvAnswerName.text = "Nome: ${request.petName}"
-        binding.tvAnswerMark.text = "Marca: ${request.specialMark}"
+        val ad = LostAndFoundRepository.getAdById(this, request.adId)
+
+        binding.tvAnswerName.text = "Anúncio: ${ad?.getDisplayTitle() ?: "Animal"}"
+        binding.tvAnswerMark.text = "Informações: ${request.specialMark}"
+
+        val statusUpper = request.status.uppercase()
+        when (statusUpper) {
+            "APROVADO" -> {
+                binding.tvSubmittedStatusBadge.text = "Aprovada"
+                binding.tvSubmittedStatusBadge.setBackgroundResource(R.drawable.bg_btn_dark_green)
+                binding.tvSubmittedStatusBadge.setTextColor(getColor(R.color.white))
+            }
+            "RECUSADO", "RECUSADA" -> {
+                binding.tvSubmittedStatusBadge.text = "Recusada"
+                binding.tvSubmittedStatusBadge.setBackgroundResource(R.drawable.bg_bar_red)
+                binding.tvSubmittedStatusBadge.setTextColor(getColor(R.color.alert600))
+            }
+            else -> {
+                binding.tvSubmittedStatusBadge.text = "Em análise"
+                binding.tvSubmittedStatusBadge.setBackgroundResource(R.drawable.bg_bar_yellow)
+                binding.tvSubmittedStatusBadge.setTextColor(getColor(R.color.ink))
+            }
+        }
 
         if (!request.photoUri.isNullOrBlank()) {
             binding.layoutPhotoAttached.visibility = View.VISIBLE
@@ -41,10 +65,6 @@ class SubmittedAnswersActivity : AppCompatActivity() {
         }
 
         binding.btnBackToMyAds.setOnClickListener {
-            val intent = Intent(this, MyAdsActivity::class.java).apply {
-                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-            }
-            startActivity(intent)
             finish()
         }
     }
