@@ -56,35 +56,24 @@ class MyAdDetailActivity : AppCompatActivity() {
         binding.tvRemainingDays.text = ad.getRemainingDaysText()
         binding.pbDaysRemaining.progress = remainingDays
 
-        // Card 2: Possíveis Tutores vs Possíveis Matches
+        // Card 2: Possíveis Encontros / Possíveis Tutores
         if (ad.category.equals("PERDIDO", ignoreCase = true)) {
-            val allAds = LostAndFoundRepository.getAllAds(this)
-            val activeFound = allAds.filter { it.category == "ENCONTRADO" && !it.isEnded && !it.isReunited }
-            val count = activeFound.size
+            val requests = LostAndFoundRepository.getVerificationRequestsForAd(this, ad.id)
+            val sightingCount = requests.size
 
-            binding.tvTutorsTitle.text = when (count) {
-                0 -> "0 possíveis matches"
-                1 -> "1 possível match"
-                else -> "$count possíveis matches"
+            binding.tvTutorsTitle.text = when (sightingCount) {
+                0 -> "0 possíveis encontros"
+                1 -> "1 possível encontro"
+                else -> "$sightingCount possíveis encontros"
             }
 
-            if (count > 0) {
-                var maxScore = 0
-                for (foundAd in activeFound) {
-                    var score = 0
-                    if (ad.species.equals(foundAd.species, ignoreCase = true)) score += 40
-                    if (!ad.size.isNullOrBlank() && ad.size.equals(foundAd.size, ignoreCase = true)) score += 20 else score += 10
-                    if (!ad.ageApprox.isNullOrBlank() && ad.ageApprox.equals(foundAd.ageApprox, ignoreCase = true)) score += 20 else score += 10
-                    if (!ad.city.isNullOrBlank() && ad.city.equals(foundAd.city, ignoreCase = true)) score += 20 else score += 10
-                    score = score.coerceIn(25, 96)
-                    if (score > maxScore) maxScore = score
-                }
-                binding.tvTutorsPhrase.text = "Maior compatibilidade encontrada: $maxScore%."
+            binding.tvTutorsPhrase.text = if (sightingCount > 0) {
+                "Relatos enviados por pessoas que acreditam ter encontrado seu animal."
             } else {
-                binding.tvTutorsPhrase.text = "Nenhum possível match encontrado por enquanto."
+                "Ninguém relatou ter encontrado este animal ainda."
             }
 
-            binding.btnViewTutors.text = "Ver matches"
+            binding.btnViewTutors.text = "Ver possíveis encontros"
         } else {
             val tutors = ad.possibleTutorsCount
             binding.tvTutorsTitle.text = when (tutors) {
@@ -108,8 +97,8 @@ class MyAdDetailActivity : AppCompatActivity() {
         binding.btnViewTutors.setOnClickListener {
             val ad = currentAd ?: return@setOnClickListener
             if (ad.category.equals("PERDIDO", ignoreCase = true)) {
-                val intent = Intent(this, MatchesListActivity::class.java).apply {
-                    putExtra(MatchesListActivity.EXTRA_AD_ID, ad.id)
+                val intent = Intent(this, PossibleSightingsActivity::class.java).apply {
+                    putExtra(PossibleSightingsActivity.EXTRA_AD_ID, ad.id)
                 }
                 startActivity(intent)
             } else {
