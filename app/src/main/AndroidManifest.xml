@@ -153,6 +153,7 @@
         <activity android:name=".lostandfound.presentation.TutorRequestDetailActivity" android:exported="false" />
         <activity android:name=".lostandfound.presentation.LostAndFoundChatActivity" android:exported="false" />
         <activity android:name=".lostandfound.presentation.MyRequestsActivity" android:exported="false" />
+        <activity android:name=".lostandfound.presentation.MySightingReportsActivity" android:exported="false" />
         <activity android:name=".lostandfound.presentation.RegisterReunionActivity" android:exported="false" />
         <activity android:name=".lostandfound.presentation.ReunionSubmittedActivity" android:exported="false" />
         <activity android:name=".lostandfound.presentation.ConfirmReunionActivity" android:exported="false" />

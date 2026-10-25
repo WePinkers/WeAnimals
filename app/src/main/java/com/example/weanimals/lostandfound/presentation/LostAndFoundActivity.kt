@@ -66,6 +66,10 @@ class LostAndFoundActivity : AppCompatActivity() {
             startActivity(Intent(this, MyRequestsActivity::class.java))
         }
 
+        binding.btnMySightingReports.setOnClickListener {
+            startActivity(Intent(this, MySightingReportsActivity::class.java))
+        }
+
         binding.filterAll.setOnClickListener {
             selectFilter(FilterType.ALL)
         }
