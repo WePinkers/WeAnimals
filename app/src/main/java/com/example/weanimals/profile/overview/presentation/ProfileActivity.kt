@@ -128,10 +128,13 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
             startActivity(Intent(this, com.example.weanimals.lostandfound.presentation.LostAndFoundActivity::class.java))
         }
         binding.profileContent.itemMyAds.root.setOnClickListener {
-            startActivity(Intent(this, MyReportsActivity::class.java))
+            startActivity(Intent(this, com.example.weanimals.lostandfound.presentation.MyAdsActivity::class.java))
         }
         binding.profileContent.itemLogoutRow.root.setOnClickListener {
             showLogoutConfirmation()
+        }
+        binding.profileContent.btnHelpSupport.setOnClickListener {
+            startActivity(Intent(this, com.example.weanimals.ombudsman.presentation.HelpAndSupportActivity::class.java))
         }
         setupAccountSection()
         updateHeader()

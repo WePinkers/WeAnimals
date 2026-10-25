@@ -173,6 +173,15 @@
         <activity android:name=".lostandfound.presentation.MyAdsActivity" android:exported="false" />
         <activity android:name=".lostandfound.presentation.AdExpiredActivity" android:exported="false" />
         <activity android:name=".lostandfound.presentation.LostAndFoundMapActivity" android:exported="false" />
+        <activity android:name=".ombudsman.presentation.HelpAndSupportActivity" android:exported="false" />
+        <activity android:name=".ombudsman.presentation.FaqActivity" android:exported="false" />
+        <activity android:name=".ombudsman.presentation.ContactUsActivity" android:exported="false" />
+        <activity android:name=".ombudsman.presentation.AccountIssuesActivity" android:exported="false" />
+        <activity android:name=".ombudsman.presentation.OmbudsmanActivity" android:exported="false" />
+        <activity android:name=".ombudsman.presentation.NewManifestationActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".ombudsman.presentation.ManifestationConfirmedActivity" android:exported="false" />
+        <activity android:name=".ombudsman.presentation.MyProtocolsActivity" android:exported="false" />
+        <activity android:name=".ombudsman.presentation.ProtocolDetailActivity" android:exported="false" />
         <activity android:name=".profile.reports.presentation.MyReportsActivity" android:exported="false" />
         <activity android:name=".profile.campaigns.presentation.CampaignsActivity" android:exported="false" />
         <activity android:name=".profile.favorites.presentation.FavoritesActivity" android:exported="false" />
