@@ -259,7 +259,7 @@
                         android:textStyle="bold" />
                 </LinearLayout>
 
-                <!-- Button: Minhas solicitações -->
+                <!-- Button: Minhas solicitações (tutor) -->
                 <LinearLayout
                     android:id="@+id/btn_my_requests"
                     android:layout_width="0dp"
@@ -271,11 +271,11 @@
                     android:focusable="true"
                     android:gravity="center"
                     android:orientation="horizontal"
-                    android:paddingHorizontal="12dp">
+                    android:paddingHorizontal="8dp">
 
                     <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
                         android:contentDescription="@null"
                         android:src="@drawable/ic_document"
                         app:tint="@color/pine800" />
@@ -283,10 +283,10 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="Minhas solicitações"
+                        android:layout_marginStart="6dp"
+                        android:text="Minhas solicitações (tutor)"
                         android:textColor="@color/pine800"
-                        android:textSize="13sp"
+                        android:textSize="11sp"
                         android:textStyle="bold" />
                 </LinearLayout>
 
