@@ -221,10 +221,17 @@ class PublicAdDetailActivity : AppCompatActivity() {
 
         binding.btnMainActionPublic.setOnClickListener {
             val ad = currentAd ?: return@setOnClickListener
-            val intent = Intent(this, TutorVerificationActivity::class.java).apply {
-                putExtra(TutorVerificationActivity.EXTRA_AD_ID, ad.id)
+            if (ad.category.equals("PERDIDO", ignoreCase = true)) {
+                val intent = Intent(this, SightingFormActivity::class.java).apply {
+                    putExtra(SightingFormActivity.EXTRA_AD_ID, ad.id)
+                }
+                startActivity(intent)
+            } else {
+                val intent = Intent(this, TutorVerificationActivity::class.java).apply {
+                    putExtra(TutorVerificationActivity.EXTRA_AD_ID, ad.id)
+                }
+                startActivity(intent)
             }
-            startActivity(intent)
         }
     }
 
