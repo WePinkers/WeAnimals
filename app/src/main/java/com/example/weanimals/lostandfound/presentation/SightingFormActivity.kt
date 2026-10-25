@@ -14,7 +14,9 @@ import com.example.weanimals.R
 import com.example.weanimals.core.utils.ImageThumbnailLoader
 import com.example.weanimals.databinding.ActivitySightingFormBinding
 import com.example.weanimals.lostandfound.model.FoundPetAd
+import com.example.weanimals.lostandfound.model.TutorVerificationRequest
 import com.example.weanimals.lostandfound.repository.LostAndFoundRepository
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
@@ -106,7 +108,7 @@ class SightingFormActivity : AppCompatActivity() {
         binding.viewFlipper.displayedChild = 1
         binding.progressSegment1.setBackgroundResource(R.drawable.bg_progress_segment_terracotta)
         binding.progressSegment2.setBackgroundResource(R.drawable.bg_progress_segment_terracotta)
-        binding.tvProgressStep.text = "Passo 2 de 2: foto e observações"
+        binding.tvProgressStep.text = "Passo 2 de 2: identificação"
     }
 
     private fun setupStep1() {
@@ -174,24 +176,40 @@ class SightingFormActivity : AppCompatActivity() {
 
         step2.btnSightingSubmit.setOnClickListener {
             val ad = currentAd ?: return@setOnClickListener
+            val characteristics = step2.etSightingCharacteristics.text.toString().trim()
             val notes = step2.etSightingNotes.text.toString().trim()
-            val phone = step2.etSightingPhone.text.toString().trim()
 
-            // Save verification request for lost pet ad
-            val req = com.example.weanimals.lostandfound.model.TutorVerificationRequest(
+            if (characteristics.isBlank()) {
+                step2.etSightingCharacteristics.error = "Informe as marcas ou características observadas."
+                Toast.makeText(this, "Informe as marcas ou características observadas.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val currentProfileName = getSharedPreferences("profile_prefs", MODE_PRIVATE).getString("user_name", null)
+                ?: FirebaseAuth.getInstance().currentUser?.displayName
+                ?: "Usuário"
+
+            val situationText = if (selectedSituation == "WITH_REPORTER") "Animal está com o relator" else "Apenas avistado na rua"
+
+            val specialMarkFull = listOfNotNull(
+                "Situação: $situationText",
+                "Marcas observadas: $characteristics",
+                notes.takeIf { it.isNotBlank() }?.let { "Observações: $it" }
+            ).joinToString(" · ")
+
+            val req = TutorVerificationRequest(
                 adId = ad.id,
+                requesterUserId = FirebaseAuth.getInstance().currentUser?.uid ?: "local_user",
+                requesterName = currentProfileName,
                 ownerUserId = ad.ownerUserId,
-                petName = "Avistamento: ${if (selectedSituation == "WITH_REPORTER") "Animal com o relator" else "Apenas avistado"}",
-                specialMark = listOfNotNull(
-                    notes.takeIf { it.isNotBlank() },
-                    phone.takeIf { it.isNotBlank() }?.let { "Contato: $it" }
-                ).joinToString(" · ").ifBlank { "Localização informada" },
+                petName = "Avistamento ($situationText)",
+                specialMark = specialMarkFull,
                 photoUri = photoUri?.toString()
             )
 
             LostAndFoundRepository.saveVerificationRequest(this, req)
 
-            Toast.makeText(this, "Relato de avistamento enviado ao tutor!", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Relato enviado ao tutor com sucesso!", Toast.LENGTH_LONG).show()
 
             val intent = Intent(this, SubmittedAnswersActivity::class.java).apply {
                 putExtra(SubmittedAnswersActivity.EXTRA_REQUEST_ID, req.id)

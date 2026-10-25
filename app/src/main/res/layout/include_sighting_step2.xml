@@ -19,10 +19,37 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Foto do avistamento (opcional) -->
+            <!-- Marcas ou Características Observadas -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="monospace"
+                android:letterSpacing="0.1"
+                android:text="MARCAS OU CARACTERÍSTICAS OBSERVADAS"
+                android:textColor="@color/muted"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/et_sighting_characteristics"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/bg_card_white_border"
+                android:gravity="top|start"
+                android:hint="Ex.: Mancha branca no peito, coleira vermelha, orelha caída..."
+                android:inputType="textMultiLine|textCapSentences"
+                android:minLines="3"
+                android:padding="14dp"
+                android:textColor="@color/ink"
+                android:textColorHint="#9C968A"
+                android:textSize="14sp" />
+
+            <!-- Foto do animal (opcional) -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
                 android:fontFamily="monospace"
                 android:letterSpacing="0.1"
                 android:text="FOTO DO ANIMAL (OPCIONAL)"
@@ -53,7 +80,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="Tirar ou anexar foto do momento"
+                    android:text="Adicionar foto do animal"
                     android:textColor="@color/ink"
                     android:textSize="13sp"
                     android:textStyle="bold" />
@@ -68,14 +95,14 @@
                 android:scaleType="centerCrop"
                 android:visibility="gone" />
 
-            <!-- Observações / Detalhes adicionais -->
+            <!-- Outras Informações -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:fontFamily="monospace"
                 android:letterSpacing="0.1"
-                android:text="OBSERVAÇÕES ADICIONAIS"
+                android:text="OUTRAS INFORMAÇÕES"
                 android:textColor="@color/muted"
                 android:textSize="12sp"
                 android:textStyle="bold" />
@@ -87,7 +114,7 @@
                 android:layout_marginTop="6dp"
                 android:background="@drawable/bg_card_white_border"
                 android:gravity="top|start"
-                android:hint="Descreva o estado do animal ou como ele se comportou..."
+                android:hint="Ex.: O animal estava assustado, próximo a uma praça..."
                 android:inputType="textMultiLine|textCapSentences"
                 android:minLines="3"
                 android:padding="14dp"
@@ -95,30 +122,32 @@
                 android:textColorHint="#9C968A"
                 android:textSize="14sp" />
 
-            <!-- Seu telefone para contato -->
-            <TextView
-                android:layout_width="wrap_content"
+            <!-- Card de Privacidade -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:fontFamily="monospace"
-                android:letterSpacing="0.1"
-                android:text="SEU TELEFONE / WHATSAPP"
-                android:textColor="@color/muted"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-
-            <EditText
-                android:id="@+id/et_sighting_phone"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginTop="6dp"
                 android:background="@drawable/bg_card_white_border"
-                android:hint="Ex.: (11) 99999-9999"
-                android:inputType="phone"
-                android:paddingHorizontal="14dp"
-                android:textColor="@color/ink"
-                android:textColorHint="#9C968A"
-                android:textSize="14sp" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="16dp">
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_shield_outline"
+                    app:tint="@color/terracotta" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="1"
+                    android:text="Seu relato será enviado ao tutor para análise. O chat será liberado somente se o tutor aceitar o contato."
+                    android:textColor="@color/muted"
+                    android:textSize="12sp" />
+            </LinearLayout>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
@@ -162,7 +191,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_weight="1.8"
                 android:background="@drawable/bg_btn_terracotta"
-                android:text="Enviar relato ao tutor"
+                android:text="Enviar relato"
                 android:textAllCaps="false"
                 android:textColor="@color/white"
                 android:textSize="14sp"
