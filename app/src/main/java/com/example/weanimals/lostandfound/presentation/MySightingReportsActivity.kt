@@ -395,8 +395,8 @@ class MySightingReportsActivity : AppCompatActivity() {
                     android.widget.FrameLayout.LayoutParams.WRAP_CONTENT
                 ).apply {
                     gravity = Gravity.TOP or Gravity.END
-                    topMargin = (-6 * resources.displayMetrics.density).toInt()
-                    marginEnd = (-6 * resources.displayMetrics.density).toInt()
+                    topMargin = (6 * resources.displayMetrics.density).toInt()
+                    marginEnd = (8 * resources.displayMetrics.density).toInt()
                 }
                 text = if (unreadCount > 99) "99+" else unreadCount.toString()
                 textSize = 11f
@@ -404,6 +404,7 @@ class MySightingReportsActivity : AppCompatActivity() {
                 setTextColor(getColor(R.color.white))
                 setBackgroundResource(R.drawable.bg_badge_unread)
                 gravity = Gravity.CENTER
+                elevation = 8f
                 minWidth = (22 * resources.displayMetrics.density).toInt()
                 minHeight = (22 * resources.displayMetrics.density).toInt()
                 setPadding(
