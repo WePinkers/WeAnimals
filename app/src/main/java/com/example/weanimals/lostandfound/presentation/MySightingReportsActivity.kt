@@ -15,6 +15,9 @@ import com.example.weanimals.databinding.ActivityMySightingReportsBinding
 import com.example.weanimals.lostandfound.model.TutorVerificationRequest
 import com.example.weanimals.lostandfound.repository.LostAndFoundRepository
 import com.google.firebase.auth.FirebaseAuth
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class MySightingReportsActivity : AppCompatActivity() {
 
@@ -114,6 +117,15 @@ class MySightingReportsActivity : AppCompatActivity() {
         }
 
         // --- Section 1: Chats liberados como tutor ---
+        val tutorActive = tutorChats.filter { req ->
+            val ad = LostAndFoundRepository.getAdById(this, req.adId)
+            ad != null && !ad.isEnded && !ad.isReunited && ad.getRemainingDays() > 0
+        }
+        val tutorEnded = tutorChats.filter { req ->
+            val ad = LostAndFoundRepository.getAdById(this, req.adId)
+            ad == null || ad.isEnded || ad.isReunited || ad.getRemainingDays() <= 0
+        }
+
         val tutorHeader = createAccordionHeader("Chats liberados como tutor (${tutorChats.size})", tutorExpanded) { expanded ->
             tutorExpanded = expanded
             containerTutorList.visibility = if (expanded) View.VISIBLE else View.GONE
@@ -126,22 +138,20 @@ class MySightingReportsActivity : AppCompatActivity() {
             setPadding(0, 8, 0, 12)
         }
 
-        if (tutorChats.isEmpty()) {
-            val emptyTv = TextView(this).apply {
-                text = "Nenhum chat liberado como tutor."
-                textSize = 13f
-                setTextColor(getColor(R.color.muted))
-                setPadding(16, 8, 16, 12)
-            }
-            containerTutorList.addView(emptyTv)
-        } else {
-            for (req in tutorChats) {
-                containerTutorList.addView(createChatCard(req, isTutorRole = true))
-            }
-        }
+        renderSubGroup(containerTutorList, "Em andamento", tutorActive, isTutorRole = true)
+        renderSubGroup(containerTutorList, "Histórico de encerrados", tutorEnded, isTutorRole = true)
         container.addView(containerTutorList)
 
         // --- Section 2: Chats liberados como quem encontrou ---
+        val finderActive = finderChats.filter { req ->
+            val ad = LostAndFoundRepository.getAdById(this, req.adId)
+            ad != null && !ad.isEnded && !ad.isReunited && ad.getRemainingDays() > 0
+        }
+        val finderEnded = finderChats.filter { req ->
+            val ad = LostAndFoundRepository.getAdById(this, req.adId)
+            ad == null || ad.isEnded || ad.isReunited || ad.getRemainingDays() <= 0
+        }
+
         val finderHeader = createAccordionHeader("Chats liberados como quem encontrou (${finderChats.size})", finderExpanded) { expanded ->
             finderExpanded = expanded
             containerFinderList.visibility = if (expanded) View.VISIBLE else View.GONE
@@ -154,24 +164,38 @@ class MySightingReportsActivity : AppCompatActivity() {
             setPadding(0, 8, 0, 12)
         }
 
-        if (finderChats.isEmpty()) {
-            val emptyTv = TextView(this).apply {
-                text = "Nenhum chat liberado como quem encontrou."
-                textSize = 13f
-                setTextColor(getColor(R.color.muted))
-                setPadding(16, 8, 16, 12)
-            }
-            containerFinderList.addView(emptyTv)
-        } else {
-            for (req in finderChats) {
-                containerFinderList.addView(createChatCard(req, isTutorRole = false))
-            }
-        }
+        renderSubGroup(containerFinderList, "Em andamento", finderActive, isTutorRole = false)
+        renderSubGroup(containerFinderList, "Histórico de encerrados", finderEnded, isTutorRole = false)
         container.addView(containerFinderList)
     }
 
     private lateinit var containerTutorList: LinearLayout
     private lateinit var containerFinderList: LinearLayout
+
+    private fun renderSubGroup(
+        parentContainer: LinearLayout,
+        subTitle: String,
+        requests: List<TutorVerificationRequest>,
+        isTutorRole: Boolean
+    ) {
+        if (requests.isEmpty()) return
+
+        val subHeaderTv = TextView(this).apply {
+            text = "$subTitle (${requests.size})"
+            typeface = Typeface.MONOSPACE
+            textSize = 12f
+            setTypeface(null, Typeface.BOLD)
+            setTextColor(getColor(R.color.pine800))
+            letterSpacing = 0.08f
+            setPadding(8, 12, 8, 6)
+        }
+        parentContainer.addView(subHeaderTv)
+
+        for (req in requests) {
+            val isEnded = subTitle.contains("encerrados", ignoreCase = true)
+            parentContainer.addView(createChatCard(req, isTutorRole = isTutorRole, isEnded = isEnded))
+        }
+    }
 
     private fun createAccordionHeader(title: String, isExpanded: Boolean, onToggle: (Boolean) -> Unit): View {
         var expanded = isExpanded
@@ -217,7 +241,7 @@ class MySightingReportsActivity : AppCompatActivity() {
         return layout
     }
 
-    private fun createChatCard(req: TutorVerificationRequest, isTutorRole: Boolean): View {
+    private fun createChatCard(req: TutorVerificationRequest, isTutorRole: Boolean, isEnded: Boolean = false): View {
         val ad = LostAndFoundRepository.getAdById(this, req.adId)
         val buttonHeightPx = (48 * resources.displayMetrics.density).toInt()
         val margin12Px = (12 * resources.displayMetrics.density).toInt()
@@ -230,7 +254,7 @@ class MySightingReportsActivity : AppCompatActivity() {
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
             )
-            params.setMargins(0, 0, 0, 20)
+            params.setMargins(0, 0, 0, 16)
             layoutParams = params
         }
 
@@ -305,6 +329,18 @@ class MySightingReportsActivity : AppCompatActivity() {
             setBackgroundColor(getColor(R.color.border))
         }
         card.addView(divider)
+
+        // Status Badge for Ended Cards
+        if (isEnded && ad != null) {
+            val statusBadge = TextView(this).apply {
+                text = if (ad.isReunited) "Reencontrado" else if (ad.isEnded) "Anúncio encerrado" else "Anúncio expirado"
+                textSize = 11f
+                setTypeface(null, Typeface.BOLD)
+                setTextColor(getColor(if (ad.isReunited) R.color.pine800 else R.color.muted))
+                setPadding(0, 0, 0, 8)
+            }
+            card.addView(statusBadge)
+        }
 
         val actionButton = androidx.appcompat.widget.AppCompatButton(this).apply {
             layoutParams = LinearLayout.LayoutParams(
