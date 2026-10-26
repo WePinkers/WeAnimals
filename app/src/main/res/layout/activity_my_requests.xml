@@ -30,80 +30,9 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Acompanhe seus pedidos de reconhecimento e converse com quem encontrou seu animal."
+                android:text="Acompanhe seus pedidos de reconhecimento que ainda aguardam avaliação ou foram reprovados."
                 android:textColor="@color/muted"
                 android:textSize="13sp" />
-
-            <!-- Filters Chips (Horizontal Scroll) -->
-            <HorizontalScrollView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:scrollbars="none">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/filter_chip_all"
-                        android:layout_width="wrap_content"
-                        android:layout_height="36dp"
-                        android:layout_marginEnd="8dp"
-                        android:background="@drawable/bg_chip_selected"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:gravity="center"
-                        android:paddingHorizontal="18dp"
-                        android:text="Todos"
-                        android:textColor="@color/white"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/filter_chip_pending"
-                        android:layout_width="wrap_content"
-                        android:layout_height="36dp"
-                        android:layout_marginEnd="8dp"
-                        android:background="@drawable/bg_chip_unselected"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:gravity="center"
-                        android:paddingHorizontal="18dp"
-                        android:text="Em análise"
-                        android:textColor="@color/ink"
-                        android:textSize="12sp" />
-
-                    <TextView
-                        android:id="@+id/filter_chip_approved"
-                        android:layout_width="wrap_content"
-                        android:layout_height="36dp"
-                        android:layout_marginEnd="8dp"
-                        android:background="@drawable/bg_chip_unselected"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:gravity="center"
-                        android:paddingHorizontal="18dp"
-                        android:text="Aprovadas"
-                        android:textColor="@color/ink"
-                        android:textSize="12sp" />
-
-                    <TextView
-                        android:id="@+id/filter_chip_rejected"
-                        android:layout_width="wrap_content"
-                        android:layout_height="36dp"
-                        android:background="@drawable/bg_chip_unselected"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:gravity="center"
-                        android:paddingHorizontal="18dp"
-                        android:text="Recusadas"
-                        android:textColor="@color/ink"
-                        android:textSize="12sp" />
-
-                </LinearLayout>
-            </HorizontalScrollView>
 
             <!-- Requests List Container -->
             <LinearLayout

@@ -23,15 +23,12 @@ import java.util.Locale
 class MyRequestsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMyRequestsBinding
-    private var currentFilter = RequestFilter.ALL
     private var activeExpanded = true
     private var endedExpanded = false
 
     private val currentUserId by lazy {
         FirebaseAuth.getInstance().currentUser?.uid ?: "local_user"
     }
-
-    private enum class RequestFilter { ALL, PENDING, APPROVED, REJECTED }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,45 +37,14 @@ class MyRequestsActivity : AppCompatActivity() {
 
         binding.includeHeader.headerTitleTv.text = "Minhas solicitações"
         binding.includeHeader.headerBackBtn.setOnClickListener { finish() }
-
-        setupFilters()
     }
 
     override fun onResume() {
         super.onResume()
-        loadRequests(currentFilter)
+        loadRequests()
     }
 
-    private fun setupFilters() {
-        binding.filterChipAll.setOnClickListener { selectFilter(RequestFilter.ALL) }
-        binding.filterChipPending.setOnClickListener { selectFilter(RequestFilter.PENDING) }
-        binding.filterChipApproved.setOnClickListener { selectFilter(RequestFilter.APPROVED) }
-        binding.filterChipRejected.setOnClickListener { selectFilter(RequestFilter.REJECTED) }
-    }
-
-    private fun selectFilter(filter: RequestFilter) {
-        currentFilter = filter
-        val activeBg = R.drawable.bg_chip_selected
-        val inactiveBg = R.drawable.bg_chip_unselected
-        val activeColor = getColor(R.color.white)
-        val inactiveColor = getColor(R.color.ink)
-
-        binding.filterChipAll.setBackgroundResource(if (filter == RequestFilter.ALL) activeBg else inactiveBg)
-        binding.filterChipAll.setTextColor(if (filter == RequestFilter.ALL) activeColor else inactiveColor)
-
-        binding.filterChipPending.setBackgroundResource(if (filter == RequestFilter.PENDING) activeBg else inactiveBg)
-        binding.filterChipPending.setTextColor(if (filter == RequestFilter.PENDING) activeColor else inactiveColor)
-
-        binding.filterChipApproved.setBackgroundResource(if (filter == RequestFilter.APPROVED) activeBg else inactiveBg)
-        binding.filterChipApproved.setTextColor(if (filter == RequestFilter.APPROVED) activeColor else inactiveColor)
-
-        binding.filterChipRejected.setBackgroundResource(if (filter == RequestFilter.REJECTED) activeBg else inactiveBg)
-        binding.filterChipRejected.setTextColor(if (filter == RequestFilter.REJECTED) activeColor else inactiveColor)
-
-        loadRequests(filter)
-    }
-
-    private fun loadRequests(filter: RequestFilter) {
+    private fun loadRequests() {
         val container = binding.containerMyRequests
         container.removeAllViews()
 
@@ -88,16 +54,10 @@ class MyRequestsActivity : AppCompatActivity() {
             allRequests.addAll(LostAndFoundRepository.getVerificationRequestsForAd(this, ad.id))
         }
 
+        // Exclude APPROVED requests from "Minhas solicitações" (as they have live chats in Meus relatos de encontro)
         val myRequests = allRequests
             .filter { it.requesterUserId == currentUserId }
-            .filter { req ->
-                when (filter) {
-                    RequestFilter.ALL -> true
-                    RequestFilter.PENDING -> req.status.equals("PENDENTE", ignoreCase = true)
-                    RequestFilter.APPROVED -> req.status.equals("APROVADO", ignoreCase = true)
-                    RequestFilter.REJECTED -> req.status.equals("RECUSADO", ignoreCase = true) || req.status.equals("RECUSADA", ignoreCase = true)
-                }
-            }
+            .filter { !it.status.equals("APROVADO", ignoreCase = true) }
             .sortedByDescending { it.timestamp }
 
         if (myRequests.isEmpty()) {
@@ -108,7 +68,7 @@ class MyRequestsActivity : AppCompatActivity() {
             }
 
             val tv1 = TextView(this).apply {
-                text = "Você ainda não enviou solicitações."
+                text = "Você não possui solicitações pendentes ou reprovadas."
                 textSize = 16f
                 setTypeface(null, Typeface.BOLD)
                 setTextColor(getColor(R.color.pine800))
@@ -116,7 +76,7 @@ class MyRequestsActivity : AppCompatActivity() {
             }
 
             val tv2 = TextView(this).apply {
-                text = "Encontrou um anúncio que pode ser do seu animal? Envie uma verificação para acompanhar o pedido por aqui."
+                text = "Solicitações aprovadas com chat liberado podem ser acessadas diretamente em 'Meus relatos de encontro'."
                 textSize = 13f
                 setTextColor(getColor(R.color.muted))
                 gravity = Gravity.CENTER
@@ -138,19 +98,24 @@ class MyRequestsActivity : AppCompatActivity() {
             return
         }
 
-        // Separate active vs ended requests based on associated ad status
-        val activeRequests = myRequests.filter { req ->
+        // Section 1: Em análise (Pending requests on active ads)
+        val pendingRequests = myRequests.filter { req ->
             val ad = LostAndFoundRepository.getAdById(this, req.adId)
-            ad != null && !ad.isEnded && !ad.isReunited && ad.getRemainingDays() > 0
+            val isPending = req.status.equals("PENDENTE", ignoreCase = true) || req.status.equals("EM_ANALISE", ignoreCase = true)
+            val isAdActive = ad != null && !ad.isEnded && !ad.isReunited && ad.getRemainingDays() > 0
+            isPending && isAdActive
         }
 
-        val endedRequests = myRequests.filter { req ->
+        // Section 2: Reprovados ou encerrados (Rejected or requests on ended/expired/reunited ads)
+        val endedOrRejectedRequests = myRequests.filter { req ->
             val ad = LostAndFoundRepository.getAdById(this, req.adId)
-            ad == null || ad.isEnded || ad.isReunited || ad.getRemainingDays() <= 0
+            val isRejected = req.status.equals("RECUSADO", ignoreCase = true) || req.status.equals("RECUSADA", ignoreCase = true)
+            val isAdEnded = ad == null || ad.isEnded || ad.isReunited || ad.getRemainingDays() <= 0
+            isRejected || isAdEnded
         }
 
-        // --- Section 1: Active Requests ---
-        val activeHeader = createAccordionHeader("Solicitações ativas (${activeRequests.size})", activeExpanded) { expanded ->
+        // --- Section 1: Em análise ---
+        val activeHeader = createAccordionHeader("Em análise (${pendingRequests.size})", activeExpanded) { expanded ->
             activeExpanded = expanded
             containerActiveList.visibility = if (expanded) View.VISIBLE else View.GONE
         }
@@ -162,23 +127,23 @@ class MyRequestsActivity : AppCompatActivity() {
             setPadding(0, 8, 0, 12)
         }
 
-        if (activeRequests.isEmpty()) {
+        if (pendingRequests.isEmpty()) {
             val emptyTv = TextView(this).apply {
-                text = "Você não possui solicitações ativas."
+                text = "Você não possui solicitações em análise."
                 textSize = 13f
                 setTextColor(getColor(R.color.muted))
                 setPadding(16, 8, 16, 12)
             }
             containerActiveList.addView(emptyTv)
         } else {
-            for (req in activeRequests) {
+            for (req in pendingRequests) {
                 containerActiveList.addView(createRequestCard(req, isEndedSection = false))
             }
         }
         container.addView(containerActiveList)
 
-        // --- Section 2: Ended Requests ---
-        val endedHeader = createAccordionHeader("Solicitações encerradas (${endedRequests.size})", endedExpanded) { expanded ->
+        // --- Section 2: Reprovados ou encerrados ---
+        val endedHeader = createAccordionHeader("Reprovados ou encerrados (${endedOrRejectedRequests.size})", endedExpanded) { expanded ->
             endedExpanded = expanded
             containerEndedList.visibility = if (expanded) View.VISIBLE else View.GONE
         }
@@ -190,16 +155,16 @@ class MyRequestsActivity : AppCompatActivity() {
             setPadding(0, 8, 0, 12)
         }
 
-        if (endedRequests.isEmpty()) {
+        if (endedOrRejectedRequests.isEmpty()) {
             val emptyTv = TextView(this).apply {
-                text = "Você ainda não possui solicitações encerradas."
+                text = "Você não possui solicitações reprovadas ou encerradas."
                 textSize = 13f
                 setTextColor(getColor(R.color.muted))
                 setPadding(16, 8, 16, 12)
             }
             containerEndedList.addView(emptyTv)
         } else {
-            for (req in endedRequests) {
+            for (req in endedOrRejectedRequests) {
                 containerEndedList.addView(createRequestCard(req, isEndedSection = true))
             }
         }
@@ -352,7 +317,6 @@ class MyRequestsActivity : AppCompatActivity() {
                 if (ad.isReunited) "Reencontrado" else if (ad.isEnded) "Anúncio encerrado" else "Anúncio expirado"
             } else {
                 when (statusUpper) {
-                    "APROVADO" -> "Aprovada"
                     "RECUSADO", "RECUSADA" -> "Recusada"
                     else -> "Em análise"
                 }
@@ -361,7 +325,6 @@ class MyRequestsActivity : AppCompatActivity() {
             setTypeface(null, Typeface.BOLD)
             val badgeColor = when {
                 isEndedSection -> R.color.muted
-                statusUpper == "APROVADO" -> R.color.pine800
                 statusUpper == "RECUSADO" || statusUpper == "RECUSADA" -> R.color.alert600
                 else -> R.color.terracotta
             }
@@ -374,7 +337,6 @@ class MyRequestsActivity : AppCompatActivity() {
                 "Reencontro confirmado! Este anúncio foi encerrado com sucesso."
             } else {
                 when (statusUpper) {
-                    "APROVADO" -> "Suas respostas foram aceitas! Você já pode conversar com quem encontrou o animal."
                     "RECUSADO", "RECUSADA" -> "Suas respostas não foram confirmadas por quem encontrou o animal."
                     else -> "Suas respostas foram enviadas. Aguarde a análise de quem encontrou o animal."
                 }
@@ -398,20 +360,6 @@ class MyRequestsActivity : AppCompatActivity() {
             gravity = Gravity.CENTER
 
             when {
-                statusUpper == "APROVADO" -> {
-                    text = "Abrir chat"
-                    setTextColor(getColor(R.color.white))
-                    setBackgroundResource(R.drawable.bg_btn_dark_green)
-                    isClickable = true
-                    isFocusable = true
-                    setOnClickListener {
-                        val intent = Intent(this@MyRequestsActivity, LostAndFoundChatActivity::class.java).apply {
-                            putExtra(LostAndFoundChatActivity.EXTRA_REQUEST_ID, req.id)
-                            putExtra(LostAndFoundChatActivity.EXTRA_VIEWER_ROLE, LostAndFoundChatActivity.ROLE_TUTOR)
-                        }
-                        startActivity(intent)
-                    }
-                }
                 statusUpper == "RECUSADO" || statusUpper == "RECUSADA" -> {
                     text = "Recusada"
                     setTextColor(Color.parseColor("#A83232"))
