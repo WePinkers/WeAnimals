@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.weanimals.databinding.ActivityMyAdDetailBinding
 import com.example.weanimals.lostandfound.model.FoundPetAd
 import com.example.weanimals.lostandfound.repository.LostAndFoundRepository
+import com.example.weanimals.lostandfound.service.PetMatchingService
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -42,9 +43,9 @@ class MyAdDetailActivity : AppCompatActivity() {
 
     private fun setupUI() {
         val ad = currentAd ?: return
+        val isLost = ad.category.equals("PERDIDO", ignoreCase = true)
 
         binding.tvStatusBadge.text = ad.currentSituation
-
         binding.tvAdTitle.text = ad.getDisplayTitle()
 
         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.forLanguageTag("pt-BR"))
@@ -56,8 +57,8 @@ class MyAdDetailActivity : AppCompatActivity() {
         binding.tvRemainingDays.text = ad.getRemainingDaysText()
         binding.pbDaysRemaining.progress = remainingDays
 
-        // Card 2: Possíveis Encontros / Possíveis Tutores
-        if (ad.category.equals("PERDIDO", ignoreCase = true)) {
+        // Card 2: Possíveis Tutores (FOUND) vs Possíveis Encontros (LOST)
+        if (isLost) {
             val requests = LostAndFoundRepository.getVerificationRequestsForAd(this, ad.id)
             val sightingCount = requests.size
 
@@ -89,6 +90,34 @@ class MyAdDetailActivity : AppCompatActivity() {
             }
             binding.btnViewTutors.text = "Ver possíveis tutores"
         }
+
+        // Card 3: Possíveis Matches (Bidirectional for both PERDIDO and ENCONTRADO)
+        val allAds = LostAndFoundRepository.getAllAds(this)
+        val targetCategory = if (isLost) "ENCONTRADO" else "PERDIDO"
+        val candidateAds = allAds.filter { it.category.equals(targetCategory, ignoreCase = true) && !it.isEnded && !it.isReunited }
+
+        val discardedSet = getSharedPreferences("discarded_matches_prefs", MODE_PRIVATE)
+            .getStringSet("discarded_${ad.id}", emptySet()) ?: emptySet()
+
+        val activeCandidates = candidateAds.filter { !discardedSet.contains(it.id) }
+
+        val matchScores = activeCandidates.map { candidate ->
+            PetMatchingService.calculateMatch(ad, candidate)
+        }.filter { it.score >= 25 }
+
+        val matchCount = matchScores.size
+        binding.tvMatchesCardTitle.text = when (matchCount) {
+            0 -> "0 possíveis matches"
+            1 -> "1 possível match"
+            else -> "$matchCount possíveis matches"
+        }
+
+        if (matchCount > 0) {
+            val maxScore = matchScores.maxOf { it.score }
+            binding.tvMatchesCardPhrase.text = "Maior compatibilidade encontrada: $maxScore%."
+        } else {
+            binding.tvMatchesCardPhrase.text = "Nenhum possível match encontrado por enquanto."
+        }
     }
 
     private fun setupListeners() {
@@ -107,6 +136,14 @@ class MyAdDetailActivity : AppCompatActivity() {
                 }
                 startActivity(intent)
             }
+        }
+
+        binding.btnViewMatches.setOnClickListener {
+            val ad = currentAd ?: return@setOnClickListener
+            val intent = Intent(this, MatchesListActivity::class.java).apply {
+                putExtra(MatchesListActivity.EXTRA_AD_ID, ad.id)
+            }
+            startActivity(intent)
         }
 
         binding.btnUpdateSituation.setOnClickListener {

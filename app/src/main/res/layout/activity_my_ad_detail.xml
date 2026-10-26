@@ -172,8 +172,9 @@
 
                 </LinearLayout>
 
-                <!-- Card 2: Possíveis tutores -->
+                <!-- Card 2: Possíveis tutores OU Possíveis encontros -->
                 <LinearLayout
+                    android:id="@+id/card_tutors_or_sightings"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
@@ -214,7 +215,50 @@
 
                 </LinearLayout>
 
-                <!-- Card 3: Microchip Info Card -->
+                <!-- Card 3: Possíveis matches -->
+                <LinearLayout
+                    android:id="@+id/card_possible_matches"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/bg_card_white_border"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:id="@+id/tv_matches_card_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="serif"
+                        android:text="0 possíveis matches"
+                        android:textColor="@color/pine800"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tv_matches_card_phrase"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Nenhum possível match encontrado por enquanto."
+                        android:textColor="@color/muted"
+                        android:textSize="13sp" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btn_view_matches"
+                        android:layout_width="match_parent"
+                        android:layout_height="46dp"
+                        android:layout_marginTop="14dp"
+                        android:background="@drawable/bg_btn_dark_green"
+                        android:text="Ver matches"
+                        android:textAllCaps="false"
+                        android:textColor="@color/white"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+                <!-- Card 4: Microchip Info Card -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

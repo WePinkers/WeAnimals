@@ -27,7 +27,7 @@ import java.util.Locale
 class MatchesListActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMatchesListBinding
-    private var lostAd: FoundPetAd? = null
+    private var sourceAd: FoundPetAd? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,14 +41,15 @@ class MatchesListActivity : AppCompatActivity() {
             return
         }
 
-        lostAd = LostAndFoundRepository.getAdById(this, adId)
-        if (lostAd == null) {
+        sourceAd = LostAndFoundRepository.getAdById(this, adId)
+        if (sourceAd == null) {
             Toast.makeText(this, "Anúncio não encontrado", Toast.LENGTH_SHORT).show()
             finish()
             return
         }
 
-        binding.btnBackMatches.setOnClickListener { finish() }
+        binding.includeHeader.headerTitleTv.text = "Possíveis matches"
+        binding.includeHeader.headerBackBtn.setOnClickListener { finish() }
     }
 
     override fun onResume() {
@@ -57,20 +58,23 @@ class MatchesListActivity : AppCompatActivity() {
     }
 
     private fun loadMatches() {
-        val currentLostAd = lostAd ?: return
+        val currentSourceAd = sourceAd ?: return
+        val isSourceLost = currentSourceAd.category.equals("PERDIDO", ignoreCase = true)
+        val targetCategory = if (isSourceLost) "ENCONTRADO" else "PERDIDO"
+
         val container = binding.containerMatchesList
         container.removeAllViews()
 
         val discardedSet = getSharedPreferences("discarded_matches_prefs", MODE_PRIVATE)
-            .getStringSet("discarded_${currentLostAd.id}", emptySet()) ?: emptySet()
+            .getStringSet("discarded_${currentSourceAd.id}", emptySet()) ?: emptySet()
 
         val allAds = LostAndFoundRepository.getAllAds(this)
-        val activeFoundAds = allAds
-            .filter { it.category == "ENCONTRADO" && !it.isEnded && !it.isReunited }
+        val activeTargetAds = allAds
+            .filter { it.category.equals(targetCategory, ignoreCase = true) && !it.isEnded && !it.isReunited }
             .filter { !discardedSet.contains(it.id) }
 
-        val matchResults = activeFoundAds
-            .map { foundAd -> PetMatchingService.calculateMatch(currentLostAd, foundAd) }
+        val matchResults = activeTargetAds
+            .map { targetAd -> PetMatchingService.calculateMatch(currentSourceAd, targetAd) }
             .filter { it.score >= 25 }
             .sortedByDescending { it.score }
 
@@ -79,7 +83,8 @@ class MatchesListActivity : AppCompatActivity() {
             return
         }
 
-        binding.tvMatchesSummary.text = "Exibindo ${matchResults.size} ${if (matchResults.size == 1) "animal encontrado compatível" else "animais encontrados compatíveis"}:"
+        val categoryLabel = if (isSourceLost) "encontrados" else "perdidos"
+        binding.tvMatchesSummary.text = "Exibindo ${matchResults.size} ${if (matchResults.size == 1) "animal $categoryLabel compatível" else "animais $categoryLabel compatíveis"}:"
 
         val bestMatch = matchResults.firstOrNull { it.score >= 50 }
         val remainingMatches = if (bestMatch != null) matchResults.drop(1) else matchResults
@@ -95,7 +100,7 @@ class MatchesListActivity : AppCompatActivity() {
                 setPadding(0, 8, 0, 8)
             }
             container.addView(bestHeader)
-            container.addView(createMatchCard(currentLostAd, bestMatch, isBest = true))
+            container.addView(createMatchCard(currentSourceAd, bestMatch, isBest = true))
         }
 
         if (remainingMatches.isNotEmpty()) {
@@ -111,18 +116,18 @@ class MatchesListActivity : AppCompatActivity() {
             container.addView(partialHeader)
 
             for (match in remainingMatches) {
-                container.addView(createMatchCard(currentLostAd, match, isBest = false))
+                container.addView(createMatchCard(currentSourceAd, match, isBest = false))
             }
         }
     }
 
-    private fun createMatchCard(lostAd: FoundPetAd, match: PetMatchResult, isBest: Boolean): View {
-        val foundAd = match.foundAd
+    private fun createMatchCard(sourceAd: FoundPetAd, match: PetMatchResult, isBest: Boolean): View {
+        val targetAd = match.foundAd
         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.forLanguageTag("pt-BR"))
 
         val card = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setBackgroundResource(if (isBest) R.drawable.bg_card_white_border else R.drawable.bg_card_white_border)
+            setBackgroundResource(R.drawable.bg_card_white_border)
             setPadding(28, 28, 28, 28)
             val params = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -132,7 +137,6 @@ class MatchesListActivity : AppCompatActivity() {
             layoutParams = params
         }
 
-        // Top Row: Icon + Info + Score Badge
         val topRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
@@ -144,8 +148,8 @@ class MatchesListActivity : AppCompatActivity() {
             setColorFilter(getColor(R.color.pine800))
         }
 
-        if (foundAd.photoUris.isNotEmpty()) {
-            val photoUri = foundAd.photoUris.first()
+        if (targetAd.photoUris.isNotEmpty()) {
+            val photoUri = targetAd.photoUris.first()
             lifecycleScope.launch {
                 val bitmap = ImageThumbnailLoader.loadThumbnail(this@MatchesListActivity, photoUri, 120, 120)
                 if (bitmap != null) {
@@ -164,15 +168,15 @@ class MatchesListActivity : AppCompatActivity() {
         }
 
         val titleTv = TextView(this).apply {
-            text = foundAd.getDisplayTitle()
+            text = targetAd.getDisplayTitle()
             textSize = 16f
             setTypeface(null, Typeface.BOLD)
             setTextColor(getColor(R.color.pine800))
         }
 
-        val pubDateStr = dateFormat.format(Date(foundAd.publicationTimestamp))
+        val pubDateStr = dateFormat.format(Date(targetAd.publicationTimestamp))
         val locTv = TextView(this).apply {
-            text = "${foundAd.getDisplayLocation()} · $pubDateStr"
+            text = "${targetAd.getDisplayLocation()} · $pubDateStr"
             textSize = 12f
             setTextColor(getColor(R.color.muted))
             setPadding(0, 2, 0, 0)
@@ -294,9 +298,9 @@ class MatchesListActivity : AppCompatActivity() {
 
             setOnClickListener {
                 val prefs = getSharedPreferences("discarded_matches_prefs", MODE_PRIVATE)
-                val currentSet = prefs.getStringSet("discarded_${lostAd.id}", emptySet())?.toMutableSet() ?: mutableSetOf()
-                currentSet.add(foundAd.id)
-                prefs.edit().putStringSet("discarded_${lostAd.id}", currentSet).apply()
+                val currentSet = prefs.getStringSet("discarded_${sourceAd.id}", emptySet())?.toMutableSet() ?: mutableSetOf()
+                currentSet.add(targetAd.id)
+                prefs.edit().putStringSet("discarded_${sourceAd.id}", currentSet).apply()
 
                 Toast.makeText(this@MatchesListActivity, "Candidato descartado", Toast.LENGTH_SHORT).show()
                 loadMatches()
@@ -316,7 +320,7 @@ class MatchesListActivity : AppCompatActivity() {
 
             setOnClickListener {
                 val intent = Intent(this@MatchesListActivity, PublicAdDetailActivity::class.java).apply {
-                    putExtra(PublicAdDetailActivity.EXTRA_AD_ID, foundAd.id)
+                    putExtra(PublicAdDetailActivity.EXTRA_AD_ID, targetAd.id)
                 }
                 startActivity(intent)
             }
