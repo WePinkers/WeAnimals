@@ -342,13 +342,22 @@ class MySightingReportsActivity : AppCompatActivity() {
             card.addView(statusBadge)
         }
 
-        val actionButton = androidx.appcompat.widget.AppCompatButton(this).apply {
+        val buttonFrameLayout = android.widget.FrameLayout(this).apply {
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
-                buttonHeightPx
+                LinearLayout.LayoutParams.WRAP_CONTENT
             ).apply {
                 setMargins(0, margin12Px, 0, 0)
             }
+            clipChildren = false
+            clipToPadding = false
+        }
+
+        val actionButton = androidx.appcompat.widget.AppCompatButton(this).apply {
+            layoutParams = android.widget.FrameLayout.LayoutParams(
+                android.widget.FrameLayout.LayoutParams.MATCH_PARENT,
+                buttonHeightPx
+            )
             isAllCaps = false
             textSize = 14f
             setTypeface(null, Typeface.BOLD)
@@ -368,7 +377,47 @@ class MySightingReportsActivity : AppCompatActivity() {
                 startActivity(intent)
             }
         }
-        card.addView(actionButton)
+
+        buttonFrameLayout.addView(actionButton)
+
+        // Query unread messages
+        val unreadCount = LostAndFoundRepository.getUnreadCountForRequest(
+            this,
+            req.id,
+            currentUserId,
+            isTutorRole
+        )
+
+        if (unreadCount > 0) {
+            val badgeTv = TextView(this).apply {
+                layoutParams = android.widget.FrameLayout.LayoutParams(
+                    android.widget.FrameLayout.LayoutParams.WRAP_CONTENT,
+                    android.widget.FrameLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    gravity = Gravity.TOP or Gravity.END
+                    topMargin = (-6 * resources.displayMetrics.density).toInt()
+                    marginEnd = (-6 * resources.displayMetrics.density).toInt()
+                }
+                text = if (unreadCount > 99) "99+" else unreadCount.toString()
+                textSize = 11f
+                setTypeface(null, Typeface.BOLD)
+                setTextColor(getColor(R.color.white))
+                setBackgroundResource(R.drawable.bg_badge_unread)
+                gravity = Gravity.CENTER
+                minWidth = (22 * resources.displayMetrics.density).toInt()
+                minHeight = (22 * resources.displayMetrics.density).toInt()
+                setPadding(
+                    (6 * resources.displayMetrics.density).toInt(),
+                    (2 * resources.displayMetrics.density).toInt(),
+                    (6 * resources.displayMetrics.density).toInt(),
+                    (2 * resources.displayMetrics.density).toInt()
+                )
+                contentDescription = "Abrir chat, $unreadCount mensagens não lidas"
+            }
+            buttonFrameLayout.addView(badgeTv)
+        }
+
+        card.addView(buttonFrameLayout)
 
         return card
     }

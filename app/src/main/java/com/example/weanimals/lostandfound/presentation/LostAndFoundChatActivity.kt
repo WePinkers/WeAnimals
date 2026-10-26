@@ -188,6 +188,9 @@ class LostAndFoundChatActivity : AppCompatActivity() {
 
     private fun loadMessages() {
         val req = verificationRequest ?: return
+
+        LostAndFoundRepository.markMessagesAsRead(this, req.id, currentUserId, isTutorView)
+
         val messages = LostAndFoundRepository.getMessagesForRequest(this, req.id)
         val container = binding.messagesContainer
         container.removeAllViews()

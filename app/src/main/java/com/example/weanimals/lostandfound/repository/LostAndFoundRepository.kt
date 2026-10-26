@@ -137,6 +137,66 @@ object LostAndFoundRepository {
         return messagesList.filter { it.requestId == requestId }.sortedBy { it.timestamp }
     }
 
+    fun getUnreadCountForRequest(
+        context: Context,
+        requestId: String,
+        currentUserId: String,
+        isTutorRole: Boolean
+    ): Int {
+        init(context)
+        val req = requestsList.firstOrNull { it.id == requestId } ?: return 0
+        val isSimulationMode = (req.ownerUserId == req.requesterUserId) || (currentUserId == "local_user")
+        val activeUserId = if (isSimulationMode) {
+            if (isTutorRole) "SIM_TUTOR" else "SIM_FOUNDER"
+        } else {
+            currentUserId
+        }
+
+        val messages = messagesList.filter { it.requestId == requestId }
+        val readSet = context.getSharedPreferences("read_messages_prefs", Context.MODE_PRIVATE)
+            .getStringSet("read_msgs_${requestId}_$activeUserId", emptySet()) ?: emptySet()
+
+        return messages.count { msg ->
+            val isOtherSender = if (isSimulationMode) {
+                if (isTutorRole) {
+                    msg.senderUserId == "SIM_FOUNDER" || msg.senderUserId == "local_founder" || msg.senderUserId == "local_user"
+                } else {
+                    msg.senderUserId == "SIM_TUTOR" || msg.senderUserId == "local_tutor"
+                }
+            } else {
+                msg.senderUserId != currentUserId
+            }
+            isOtherSender && !readSet.contains(msg.id)
+        }
+    }
+
+    fun markMessagesAsRead(
+        context: Context,
+        requestId: String,
+        currentUserId: String,
+        isTutorRole: Boolean
+    ) {
+        init(context)
+        val req = requestsList.firstOrNull { it.id == requestId } ?: return
+        val isSimulationMode = (req.ownerUserId == req.requesterUserId) || (currentUserId == "local_user")
+        val activeUserId = if (isSimulationMode) {
+            if (isTutorRole) "SIM_TUTOR" else "SIM_FOUNDER"
+        } else {
+            currentUserId
+        }
+
+        val messages = messagesList.filter { it.requestId == requestId }
+        val prefs = context.getSharedPreferences("read_messages_prefs", Context.MODE_PRIVATE)
+        val key = "read_msgs_${requestId}_$activeUserId"
+        val currentReadSet = prefs.getStringSet(key, emptySet())?.toMutableSet() ?: mutableSetOf()
+
+        for (msg in messages) {
+            currentReadSet.add(msg.id)
+        }
+
+        prefs.edit().putStringSet(key, currentReadSet).apply()
+    }
+
     fun saveReunionRequest(context: Context, reunion: ReunionRequest) {
         init(context)
         reunionsList.removeAll { it.requestId == reunion.requestId }
