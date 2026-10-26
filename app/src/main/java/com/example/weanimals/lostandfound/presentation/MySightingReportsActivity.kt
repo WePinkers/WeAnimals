@@ -1,7 +1,6 @@
 package com.example.weanimals.lostandfound.presentation
 
 import android.content.Intent
-import android.graphics.Color
 import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
@@ -16,15 +15,12 @@ import com.example.weanimals.databinding.ActivityMySightingReportsBinding
 import com.example.weanimals.lostandfound.model.TutorVerificationRequest
 import com.example.weanimals.lostandfound.repository.LostAndFoundRepository
 import com.google.firebase.auth.FirebaseAuth
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 class MySightingReportsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMySightingReportsBinding
-    private var activeExpanded = true
-    private var endedExpanded = false
+    private var tutorExpanded = true
+    private var finderExpanded = false
 
     private val currentUserId by lazy {
         FirebaseAuth.getInstance().currentUser?.uid ?: "local_user"
@@ -41,10 +37,10 @@ class MySightingReportsActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        loadReports()
+        loadChatsHub()
     }
 
-    private fun loadReports() {
+    private fun loadChatsHub() {
         val container = binding.containerMySightingReports
         container.removeAllViews()
 
@@ -54,11 +50,32 @@ class MySightingReportsActivity : AppCompatActivity() {
             allRequests.addAll(LostAndFoundRepository.getVerificationRequestsForAd(this, ad.id))
         }
 
-        val myReports = allRequests
-            .filter { it.requesterUserId == currentUserId }
+        val approvedRequests = allRequests
+            .filter { it.status.equals("APROVADO", ignoreCase = true) }
+            .filter { it.ownerUserId == currentUserId || it.requesterUserId == currentUserId }
             .sortedByDescending { it.timestamp }
 
-        if (myReports.isEmpty()) {
+        val tutorChats = mutableListOf<TutorVerificationRequest>()
+        val finderChats = mutableListOf<TutorVerificationRequest>()
+
+        for (req in approvedRequests) {
+            val ad = LostAndFoundRepository.getAdById(this, req.adId) ?: continue
+            val isUserOwner = (ad.ownerUserId == currentUserId)
+
+            val isTutor = if (ad.category.equals("PERDIDO", ignoreCase = true)) {
+                isUserOwner
+            } else {
+                !isUserOwner
+            }
+
+            if (isTutor) {
+                tutorChats.add(req)
+            } else {
+                finderChats.add(req)
+            }
+        }
+
+        if (tutorChats.isEmpty() && finderChats.isEmpty()) {
             val emptyLayout = LinearLayout(this).apply {
                 orientation = LinearLayout.VERTICAL
                 gravity = Gravity.CENTER_HORIZONTAL
@@ -66,7 +83,7 @@ class MySightingReportsActivity : AppCompatActivity() {
             }
 
             val tv1 = TextView(this).apply {
-                text = "Você ainda não enviou relatos de encontro."
+                text = "Você ainda não possui chats liberados."
                 textSize = 16f
                 setTypeface(null, Typeface.BOLD)
                 setTextColor(getColor(R.color.pine800))
@@ -74,7 +91,7 @@ class MySightingReportsActivity : AppCompatActivity() {
             }
 
             val tv2 = TextView(this).apply {
-                text = "Viu um animal perdido? Relate o encontro para ajudar o tutor a encontrá-lo."
+                text = "Assim que um relato ou verificação for aprovada, a conversa aparecerá aqui."
                 textSize = 13f
                 setTextColor(getColor(R.color.muted))
                 gravity = Gravity.CENTER
@@ -96,75 +113,65 @@ class MySightingReportsActivity : AppCompatActivity() {
             return
         }
 
-        val activeReports = myReports.filter { req ->
-            val ad = LostAndFoundRepository.getAdById(this, req.adId)
-            ad != null && !ad.isEnded && !ad.isReunited && ad.getRemainingDays() > 0
+        // --- Section 1: Chats liberados como tutor ---
+        val tutorHeader = createAccordionHeader("Chats liberados como tutor (${tutorChats.size})", tutorExpanded) { expanded ->
+            tutorExpanded = expanded
+            containerTutorList.visibility = if (expanded) View.VISIBLE else View.GONE
         }
+        container.addView(tutorHeader)
 
-        val endedReports = myReports.filter { req ->
-            val ad = LostAndFoundRepository.getAdById(this, req.adId)
-            ad == null || ad.isEnded || ad.isReunited || ad.getRemainingDays() <= 0
-        }
-
-        // Section 1: Active
-        val activeHeader = createAccordionHeader("Relatos ativos (${activeReports.size})", activeExpanded) { expanded ->
-            activeExpanded = expanded
-            containerActiveList.visibility = if (expanded) View.VISIBLE else View.GONE
-        }
-        container.addView(activeHeader)
-
-        containerActiveList = LinearLayout(this).apply {
+        containerTutorList = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            visibility = if (activeExpanded) View.VISIBLE else View.GONE
+            visibility = if (tutorExpanded) View.VISIBLE else View.GONE
             setPadding(0, 8, 0, 12)
         }
 
-        if (activeReports.isEmpty()) {
+        if (tutorChats.isEmpty()) {
             val emptyTv = TextView(this).apply {
-                text = "Você não possui relatos ativos."
+                text = "Nenhum chat liberado como tutor."
                 textSize = 13f
                 setTextColor(getColor(R.color.muted))
                 setPadding(16, 8, 16, 12)
             }
-            containerActiveList.addView(emptyTv)
+            containerTutorList.addView(emptyTv)
         } else {
-            for (req in activeReports) {
-                containerActiveList.addView(createReportCard(req, isEndedSection = false))
+            for (req in tutorChats) {
+                containerTutorList.addView(createChatCard(req, isTutorRole = true))
             }
         }
-        container.addView(containerActiveList)
+        container.addView(containerTutorList)
 
-        // Section 2: Ended
-        val endedHeader = createAccordionHeader("Relatos encerrados (${endedReports.size})", endedExpanded) { expanded ->
-            endedExpanded = expanded
-            containerEndedList.visibility = if (expanded) View.VISIBLE else View.GONE
+        // --- Section 2: Chats liberados como quem encontrou ---
+        val finderHeader = createAccordionHeader("Chats liberados como quem encontrou (${finderChats.size})", finderExpanded) { expanded ->
+            finderExpanded = expanded
+            containerFinderList.visibility = if (expanded) View.VISIBLE else View.GONE
         }
-        container.addView(endedHeader)
+        container.addView(finderHeader)
 
-        containerEndedList = LinearLayout(this).apply {
+        containerFinderList = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            visibility = if (endedExpanded) View.VISIBLE else View.GONE
+            visibility = if (finderExpanded) View.VISIBLE else View.GONE
             setPadding(0, 8, 0, 12)
         }
 
-        if (endedReports.isEmpty()) {
+        if (finderChats.isEmpty()) {
             val emptyTv = TextView(this).apply {
-                text = "Você ainda não possui relatos encerrados."
+                text = "Nenhum chat liberado como quem encontrou."
                 textSize = 13f
                 setTextColor(getColor(R.color.muted))
                 setPadding(16, 8, 16, 12)
             }
-            containerEndedList.addView(emptyTv)
+            containerFinderList.addView(emptyTv)
         } else {
-            for (req in endedReports) {
-                containerEndedList.addView(createReportCard(req, isEndedSection = true))
+            for (req in finderChats) {
+                containerFinderList.addView(createChatCard(req, isTutorRole = false))
             }
         }
-        container.addView(containerEndedList)
+        container.addView(containerFinderList)
     }
 
-    private lateinit var containerActiveList: LinearLayout
-    private lateinit var containerEndedList: LinearLayout
+    private lateinit var containerTutorList: LinearLayout
+    private lateinit var containerFinderList: LinearLayout
 
     private fun createAccordionHeader(title: String, isExpanded: Boolean, onToggle: (Boolean) -> Unit): View {
         var expanded = isExpanded
@@ -210,9 +217,8 @@ class MySightingReportsActivity : AppCompatActivity() {
         return layout
     }
 
-    private fun createReportCard(req: TutorVerificationRequest, isEndedSection: Boolean): View {
+    private fun createChatCard(req: TutorVerificationRequest, isTutorRole: Boolean): View {
         val ad = LostAndFoundRepository.getAdById(this, req.adId)
-        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.forLanguageTag("pt-BR"))
         val buttonHeightPx = (48 * resources.displayMetrics.density).toInt()
         val margin12Px = (12 * resources.displayMetrics.density).toInt()
 
@@ -224,7 +230,7 @@ class MySightingReportsActivity : AppCompatActivity() {
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
             )
-            params.setMargins(0, 12, 0, 12)
+            params.setMargins(0, 0, 0, 20)
             layoutParams = params
         }
 
@@ -257,39 +263,36 @@ class MySightingReportsActivity : AppCompatActivity() {
         }
 
         val titleTv = TextView(this).apply {
-            text = ad?.getDisplayTitle() ?: "Animal perdido"
+            text = ad?.getDisplayTitle() ?: "Animal"
             textSize = 15f
             setTypeface(null, Typeface.BOLD)
             setTextColor(getColor(R.color.pine800))
         }
 
-        val locTv = TextView(this).apply {
-            text = ad?.getDisplayLocation() ?: "Localização registrada"
+        val otherPersonName = if (isTutorRole) {
+            if (currentUserId == ad?.ownerUserId) req.requesterName else ad?.publisherName
+        } else {
+            if (currentUserId == ad?.ownerUserId) req.requesterName else ad?.publisherName
+        } ?: "Participante"
+
+        val convTv = TextView(this).apply {
+            text = "Conversando com: $otherPersonName"
             textSize = 12f
             setTextColor(getColor(R.color.muted))
             setPadding(0, 2, 0, 0)
         }
 
-        val publisherName = ad?.publisherName?.takeIf { it.isNotBlank() } ?: "Usuário"
-        val pubTv = TextView(this).apply {
-            text = "Tutor responsável: $publisherName"
+        val roleTv = TextView(this).apply {
+            text = "Meu papel: ${if (isTutorRole) "Tutor" else "Quem encontrou"}"
             textSize = 12f
-            setTextColor(getColor(R.color.muted))
-            setPadding(0, 2, 0, 0)
-        }
-
-        val dateStr = dateFormat.format(Date(req.timestamp))
-        val dateTv = TextView(this).apply {
-            text = "Relato enviado em $dateStr"
-            textSize = 12f
-            setTextColor(getColor(R.color.muted))
+            setTypeface(null, Typeface.BOLD)
+            setTextColor(getColor(R.color.terracotta))
             setPadding(0, 2, 0, 0)
         }
 
         infoLayout.addView(titleTv)
-        infoLayout.addView(locTv)
-        infoLayout.addView(pubTv)
-        infoLayout.addView(dateTv)
+        infoLayout.addView(convTv)
+        infoLayout.addView(roleTv)
 
         topRow.addView(icon)
         topRow.addView(infoLayout)
@@ -303,45 +306,6 @@ class MySightingReportsActivity : AppCompatActivity() {
         }
         card.addView(divider)
 
-        val statusUpper = req.status.uppercase()
-        val statusBadge = TextView(this).apply {
-            text = if (isEndedSection && ad != null) {
-                if (ad.isReunited) "Reencontrado" else if (ad.isEnded) "Anúncio encerrado" else "Anúncio expirado"
-            } else {
-                when (statusUpper) {
-                    "APROVADO" -> "Aprovada"
-                    "RECUSADO", "RECUSADA" -> "Recusado"
-                    else -> "Em análise"
-                }
-            }
-            textSize = 11f
-            setTypeface(null, Typeface.BOLD)
-            val badgeColor = when {
-                isEndedSection -> R.color.muted
-                statusUpper == "APROVADO" -> R.color.pine800
-                statusUpper == "RECUSADO" || statusUpper == "RECUSADA" -> R.color.alert600
-                else -> R.color.terracotta
-            }
-            setTextColor(getColor(badgeColor))
-        }
-        card.addView(statusBadge)
-
-        val msgTv = TextView(this).apply {
-            text = if (isEndedSection && ad != null && ad.isReunited) {
-                "Reencontro confirmado! Este caso foi encerrado com sucesso."
-            } else {
-                when (statusUpper) {
-                    "APROVADO" -> "Seu relato foi aceito! Você já pode conversar com o tutor do animal."
-                    "RECUSADO", "RECUSADA" -> "Seu relato não foi confirmado pelo tutor."
-                    else -> "Seu relato foi enviado. Aguarde a análise do tutor."
-                }
-            }
-            textSize = 12f
-            setTextColor(getColor(R.color.muted))
-            setPadding(0, 4, 0, 12)
-        }
-        card.addView(msgTv)
-
         val actionButton = androidx.appcompat.widget.AppCompatButton(this).apply {
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -353,38 +317,19 @@ class MySightingReportsActivity : AppCompatActivity() {
             textSize = 14f
             setTypeface(null, Typeface.BOLD)
             gravity = Gravity.CENTER
+            text = "Abrir chat"
+            setTextColor(getColor(R.color.white))
+            setBackgroundResource(R.drawable.bg_btn_dark_green)
 
-            when {
-                statusUpper == "APROVADO" -> {
-                    text = "Abrir chat"
-                    setTextColor(getColor(R.color.white))
-                    setBackgroundResource(R.drawable.bg_btn_dark_green)
-                    isClickable = true
-                    isFocusable = true
-                    setOnClickListener {
-                        val intent = Intent(this@MySightingReportsActivity, LostAndFoundChatActivity::class.java).apply {
-                            putExtra(LostAndFoundChatActivity.EXTRA_REQUEST_ID, req.id)
-                            putExtra(LostAndFoundChatActivity.EXTRA_VIEWER_ROLE, LostAndFoundChatActivity.ROLE_TUTOR)
-                        }
-                        startActivity(intent)
-                    }
+            setOnClickListener {
+                val intent = Intent(this@MySightingReportsActivity, LostAndFoundChatActivity::class.java).apply {
+                    putExtra(LostAndFoundChatActivity.EXTRA_REQUEST_ID, req.id)
+                    putExtra(
+                        LostAndFoundChatActivity.EXTRA_VIEWER_ROLE,
+                        if (isTutorRole) LostAndFoundChatActivity.ROLE_TUTOR else LostAndFoundChatActivity.ROLE_FOUNDER
+                    )
                 }
-                statusUpper == "RECUSADO" || statusUpper == "RECUSADA" -> {
-                    text = "Recusado"
-                    setTextColor(Color.parseColor("#A83232"))
-                    setBackgroundResource(R.drawable.bg_bar_red)
-                    isClickable = false
-                    isFocusable = false
-                    setOnClickListener(null)
-                }
-                else -> {
-                    text = "Em análise"
-                    setTextColor(Color.parseColor("#7A5710"))
-                    setBackgroundResource(R.drawable.bg_bar_yellow)
-                    isClickable = false
-                    isFocusable = false
-                    setOnClickListener(null)
-                }
+                startActivity(intent)
             }
         }
         card.addView(actionButton)
