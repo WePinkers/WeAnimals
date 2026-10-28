@@ -5,23 +5,21 @@ import android.app.Dialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Matrix
 import android.graphics.drawable.ColorDrawable
-import androidx.exifinterface.media.ExifInterface
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
-import java.io.File
-import java.io.FileOutputStream
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
+import androidx.exifinterface.media.ExifInterface
 import androidx.lifecycle.lifecycleScope
 import com.example.weanimals.R
 import com.example.weanimals.WeAnimalsApplication
@@ -37,16 +35,12 @@ import com.example.weanimals.profile.campaigns.presentation.CampaignsActivity
 import com.example.weanimals.profile.favorites.presentation.FavoritesActivity
 import com.example.weanimals.profile.overview.presenter.ProfileContract
 import com.example.weanimals.profile.reports.presentation.MyReportsActivity
-import android.view.Gravity
-import android.view.MotionEvent
-import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.LinearLayout
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
+import java.io.File
+import java.io.FileOutputStream
 
 class ProfileActivity : AppCompatActivity(), ProfileContract.View {
     private lateinit var binding: ActivityProfileBinding
@@ -59,11 +53,20 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
     private var nomeAtual = "Usuário"
     private var bioAtual: String? = null
 
+    private val previewLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            loadSavedProfilePicture()
+            Toast.makeText(this, "Foto de perfil atualizada!", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     private val galleryLauncher = registerForActivityResult(
         ActivityResultContracts.GetContent()
     ) { uri ->
         if (uri != null) {
-            showCropDialog(uri)
+            openPhotoPreview(uri)
         }
     }
 
@@ -77,114 +80,18 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out)
                 }
                 val uri = Uri.fromFile(tempFile)
-                showCropDialog(uri)
+                openPhotoPreview(uri)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
     }
 
-    private fun showCropDialog(imageUri: Uri) {
-        val dialog = Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
-        val layout = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            gravity = Gravity.CENTER
-            setBackgroundColor(Color.BLACK)
+    private fun openPhotoPreview(uri: Uri) {
+        val intent = Intent(this, ProfilePhotoPreviewActivity::class.java).apply {
+            putExtra(ProfilePhotoPreviewActivity.EXTRA_IMAGE_URI, uri.toString())
         }
-
-        val imageView = ImageView(this).apply {
-            layoutParams = LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-            ).apply {
-                weight = 1f
-            }
-            scaleType = ImageView.ScaleType.MATRIX
-            setImageURI(imageUri)
-        }
-
-        val matrix = Matrix()
-        val savedMatrix = Matrix()
-        var mode = 0
-        var startX = 0f
-        var startY = 0f
-        var oldDist = 1f
-
-        imageView.setOnTouchListener { v, event ->
-            val view = v as ImageView
-            when (event.action and MotionEvent.ACTION_MASK) {
-                MotionEvent.ACTION_DOWN -> {
-                    savedMatrix.set(matrix)
-                    startX = event.x
-                    startY = event.y
-                    mode = 1
-                }
-                MotionEvent.ACTION_POINTER_DOWN -> {
-                    oldDist = spacing(event)
-                    if (oldDist > 10f) {
-                        savedMatrix.set(matrix)
-                        mode = 2
-                    }
-                }
-                MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP -> {
-                    mode = 0
-                    v.performClick()
-                }
-                MotionEvent.ACTION_MOVE -> {
-                    if (mode == 1) {
-                        matrix.set(savedMatrix)
-                        matrix.postTranslate(event.x - startX, event.y - startY)
-                    } else if (mode == 2) {
-                        val newDist = spacing(event)
-                        if (newDist > 10f) {
-                            matrix.set(savedMatrix)
-                            val scale = newDist / oldDist
-                            matrix.postScale(scale, scale, view.width / 2f, view.height / 2f)
-                        }
-                    }
-                }
-            }
-            view.imageMatrix = matrix
-            true
-        }
-
-        val buttonLayout = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER
-            setPadding(32, 32, 32, 32)
-            setBackgroundColor(Color.BLACK)
-        }
-
-        val cancelButton = Button(this).apply {
-            text = "Cancelar"
-            setOnClickListener { dialog.dismiss() }
-        }
-
-        val saveButton = Button(this).apply {
-            text = "Salvar"
-            setOnClickListener {
-                if (imageView.width > 0 && imageView.height > 0) {
-                    val bitmap = Bitmap.createBitmap(imageView.width, imageView.height, Bitmap.Config.ARGB_8888)
-                    val canvas = Canvas(bitmap)
-                    imageView.draw(canvas)
-                    saveProfilePicture(bitmap)
-                }
-                dialog.dismiss()
-            }
-        }
-
-        buttonLayout.addView(cancelButton)
-        buttonLayout.addView(saveButton)
-        layout.addView(imageView)
-        layout.addView(buttonLayout)
-        dialog.setContentView(layout)
-        dialog.show()
-    }
-
-    private fun spacing(event: MotionEvent): Float {
-        val x = event.getX(0) - event.getX(1)
-        val y = event.getY(0) - event.getY(1)
-        return Math.sqrt((x * x + y * y).toDouble()).toFloat()
+        previewLauncher.launch(intent)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -300,10 +207,6 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
             bioAtual?.takeIf(String::isNotBlank) ?: "Toque para adicionar bio"
     }
 
-
-
-
-
     private fun rotateBitmapIfNeeded(bitmap: Bitmap, imagePath: String): Bitmap {
         return try {
             val exif = ExifInterface(imagePath)
@@ -326,49 +229,6 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
         } catch (e: Exception) {
             e.printStackTrace()
             bitmap
-        }
-    }
-
-    private fun saveProfilePicture(bitmap: Bitmap) {
-        try {
-            val file = File(filesDir, "profile_picture.jpg")
-            FileOutputStream(file).use { out ->
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out)
-            }
-            val prefs = getSharedPreferences("profile_prefs", MODE_PRIVATE)
-            prefs.edit().putString("profile_picture_path", file.absolutePath).apply()
-
-            val orientedBitmap = rotateBitmapIfNeeded(bitmap, file.absolutePath)
-            binding.profileContent.profileHeader.profileAvatarImage.setImageBitmap(orientedBitmap)
-            binding.profileContent.profileHeader.profileAvatarImage.visibility = View.VISIBLE
-            binding.profileContent.profileHeader.profileAvatarInitial.visibility = View.GONE
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
-    private fun saveProfilePicture(uri: Uri) {
-        try {
-            val inputStream = contentResolver.openInputStream(uri)
-            val file = File(filesDir, "profile_picture.jpg")
-            FileOutputStream(file).use { out ->
-                inputStream?.copyTo(out)
-            }
-            val prefs = getSharedPreferences("profile_prefs", MODE_PRIVATE)
-            prefs.edit().putString("profile_picture_path", file.absolutePath).apply()
-
-            val rawBitmap = BitmapFactory.decodeFile(file.absolutePath)
-            val bitmap = if (rawBitmap != null) rotateBitmapIfNeeded(rawBitmap, file.absolutePath) else null
-
-            if (bitmap != null) {
-                binding.profileContent.profileHeader.profileAvatarImage.setImageBitmap(bitmap)
-            } else {
-                binding.profileContent.profileHeader.profileAvatarImage.setImageURI(uri)
-            }
-            binding.profileContent.profileHeader.profileAvatarImage.visibility = View.VISIBLE
-            binding.profileContent.profileHeader.profileAvatarInitial.visibility = View.GONE
-        } catch (e: Exception) {
-            e.printStackTrace()
         }
     }
 
