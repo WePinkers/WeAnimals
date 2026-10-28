@@ -19,7 +19,7 @@
         android:contentDescription="Configurações"
         android:padding="8dp"
         android:src="@drawable/ic_settings"
-        android:tint="@color/white" />
+        app:tint="@color/white" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -53,16 +53,24 @@
                 android:textSize="24sp"
                 android:textStyle="bold" />
 
-            <ImageButton
+            <FrameLayout
                 android:id="@+id/profile_edit_photo"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
                 android:layout_gravity="bottom|end"
                 android:background="@drawable/bg_profile_photo_badge"
-                android:contentDescription="Editar foto"
-                android:padding="5dp"
-                android:src="@drawable/ic_camera"
-                android:tint="@color/white" />
+                android:clickable="true"
+                android:focusable="true"
+                android:contentDescription="Editar foto">
+
+                <ImageView
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:layout_gravity="center"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_camera"
+                    app:tint="@color/white" />
+            </FrameLayout>
         </FrameLayout>
 
         <LinearLayout
