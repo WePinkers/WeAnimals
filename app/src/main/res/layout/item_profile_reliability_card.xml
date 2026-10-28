@@ -1,69 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="20dp"
+    android:layout_marginTop="16dp"
     android:background="@drawable/bg_stat_card"
     android:orientation="vertical"
-    android:padding="20dp">
+    android:padding="18dp">
 
-    <!-- Header Row -->
+    <!-- Title Row: Shield Check Icon + Title -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:fontFamily="monospace"
-            android:letterSpacing="0.1"
-            android:text="CONFIABILIDADE"
-            android:textColor="@color/muted"
-            android:textSize="12sp"
-            android:textStyle="bold" />
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_shield_check"
+            app:tint="@color/pine800" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_badge_gold"
-            android:paddingHorizontal="14dp"
-            android:paddingVertical="5dp"
-            android:text="Nível ouro"
-            android:textColor="@color/white"
-            android:textSize="12sp"
+            android:layout_marginStart="10dp"
+            android:fontFamily="serif"
+            android:text="Nível de Confiabilidade"
+            android:textColor="@color/pine800"
+            android:textSize="15sp"
             android:textStyle="bold" />
     </LinearLayout>
 
-    <!-- Percentage Number -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:fontFamily="serif"
-        android:text="94%"
-        android:textColor="@color/ink"
-        android:textSize="36sp"
-        android:textStyle="bold" />
-
-    <!-- Progress Bar -->
-    <ProgressBar
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="match_parent"
-        android:layout_height="8dp"
-        android:layout_marginVertical="12dp"
-        android:max="100"
-        android:progress="94"
-        android:progressDrawable="@drawable/bg_reliability_progress" />
-
-    <!-- Description Footer -->
+    <!-- Description Row -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Calculado com base no histórico validado pelas ONGs"
+        android:layout_marginTop="8dp"
+        android:text="Perfil verificado com histórico positivo de denúncias e ajuda comunitária."
         android:textColor="@color/muted"
-        android:textSize="12sp" />
+        android:textSize="13sp" />
 
 </LinearLayout>
