@@ -30,6 +30,10 @@ object PetMatchingService {
         "que", "esta", "este", "estava", "meio", "muito", "pouco", "tem", "possui"
     )
 
+    private val LABEL_WORDS = setOf(
+        "raca", "raca:", "marca", "marcas", "detalhe", "detalhes", "caracteristica", "caracteristicas"
+    )
+
     fun calculateMatch(lostAd: FoundPetAd, foundAd: FoundPetAd): PetMatchResult {
         val details = mutableListOf<MatchCriteriaDetail>()
         val matchingReasons = mutableListOf<String>()
@@ -62,7 +66,7 @@ object PetMatchingService {
         }
         evaluatedCriteriaCount++
 
-        // 2. MARCAS FÍSICAS E RAÇA (Peso 25) - Filtered to purely physical attributes & breed
+        // 2. MARCAS FÍSICAS E RAÇA (Peso 25) - Filtered to physical traits and breed
         val rawLostMarks = lostAd.marks.orEmpty()
         val rawFoundMarks = foundAd.marks.orEmpty()
 
@@ -191,8 +195,13 @@ object PetMatchingService {
         val parts = rawMarks.split(" · ", "\n", ";")
 
         val filteredParts = parts.mapNotNull { part ->
-            val trimmed = part.trim()
+            var trimmed = part.trim()
             if (trimmed.isBlank()) return@mapNotNull null
+
+            // Clean leading label prefix for display
+            if (trimmed.startsWith("Raça:", ignoreCase = true) || trimmed.startsWith("Raca:", ignoreCase = true)) {
+                trimmed = trimmed.substringAfter(":").trim()
+            }
 
             val lower = normalizeText(trimmed)
 
@@ -235,7 +244,7 @@ object PetMatchingService {
             else physicalSegments.joinToString(", ")
         }.filter { it.isNotBlank() }
 
-        return filteredParts.joinToString(" · ")
+        return filteredParts.joinToString(", ")
     }
 
     fun normalizeText(input: String): String {
@@ -253,14 +262,26 @@ object PetMatchingService {
 
         if (norm1.isBlank() || norm2.isBlank()) return 0f
 
-        val tokens1 = norm1.split("\\s+".toRegex()).filter { it.length > 2 && !STOP_WORDS.contains(it) }.toSet()
-        val tokens2 = norm2.split("\\s+".toRegex()).filter { it.length > 2 && !STOP_WORDS.contains(it) }.toSet()
+        val tokens1 = norm1.split("\\s+".toRegex())
+            .filter { it.length > 2 && !STOP_WORDS.contains(it) && !LABEL_WORDS.contains(it) }
+            .toSet()
+        val tokens2 = norm2.split("\\s+".toRegex())
+            .filter { it.length > 2 && !STOP_WORDS.contains(it) && !LABEL_WORDS.contains(it) }
+            .toSet()
 
         if (tokens1.isEmpty() || tokens2.isEmpty()) return 0f
 
         val intersection = tokens1.intersect(tokens2).size
-        val union = tokens1.union(tokens2).size
+        val minSize = minOf(tokens1.size, tokens2.size)
+        val maxSize = maxOf(tokens1.size, tokens2.size)
 
-        return if (union > 0) intersection.toFloat() / union.toFloat() else 0f
+        val overlapRatio = intersection.toFloat() / minSize.toFloat()
+        val jaccardRatio = intersection.toFloat() / maxSize.toFloat()
+
+        return if (overlapRatio == 1.0f) {
+            1.0f
+        } else {
+            (overlapRatio * 0.6f + jaccardRatio * 0.4f).coerceIn(0f, 1f)
+        }
     }
 }
