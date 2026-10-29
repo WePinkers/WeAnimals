@@ -91,8 +91,13 @@ class PublicAdDetailActivity : AppCompatActivity() {
         // Section: MARCAS QUE DIFERENCIAM
         val marks = ad.marks?.trim()
         if (!marks.isNullOrBlank()) {
-            binding.layoutMarksSection.visibility = View.VISIBLE
-            binding.tvMarksTextPublic.text = marks
+            val cleanPhysicalMarks = com.example.weanimals.lostandfound.service.PetMatchingService.extractPhysicalMarksOnly(marks)
+            if (cleanPhysicalMarks.isNotBlank()) {
+                binding.layoutMarksSection.visibility = View.VISIBLE
+                binding.tvMarksTextPublic.text = cleanPhysicalMarks
+            } else {
+                binding.layoutMarksSection.visibility = View.GONE
+            }
         } else {
             binding.layoutMarksSection.visibility = View.GONE
         }

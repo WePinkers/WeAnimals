@@ -62,9 +62,13 @@ object PetMatchingService {
         }
         evaluatedCriteriaCount++
 
-        // 2. MARCAS FÍSICAS E TEXTO (Peso 25)
-        val lostMarks = lostAd.marks.orEmpty()
-        val foundMarks = foundAd.marks.orEmpty()
+        // 2. MARCAS FÍSICAS E TEXTO (Peso 25) - Filtered to purely physical attributes
+        val rawLostMarks = lostAd.marks.orEmpty()
+        val rawFoundMarks = foundAd.marks.orEmpty()
+
+        val lostMarks = extractPhysicalMarksOnly(rawLostMarks)
+        val foundMarks = extractPhysicalMarksOnly(rawFoundMarks)
+
         val textSimilarity = calculateTextSimilarity(lostMarks, foundMarks)
 
         if (lostMarks.isNotBlank() && foundMarks.isNotBlank()) {
@@ -72,7 +76,7 @@ object PetMatchingService {
             val marksPoints = (textSimilarity * 25).toInt()
             totalScore += marksPoints
             if (marksPoints >= 12) {
-                matchingReasons.add("Marcas físicas semelhantes")
+                matchingReasons.add("Marcas físicas semelhantes ($lostMarks)")
                 details.add(MatchCriteriaDetail("Marcas físicas", lostMarks, foundMarks, marksPoints, 25, true))
             } else {
                 divergingReasons.add("Marcas físicas com pouca semelhança")
@@ -84,7 +88,6 @@ object PetMatchingService {
 
         // 3. REAÇÃO AO NOME (Peso 15)
         val petName = lostAd.calledNames.firstOrNull()?.split(":")?.firstOrNull()?.trim() ?: ""
-        var nameMatchScore = 0
         if (petName.isNotBlank() && foundAd.calledNames.isNotEmpty()) {
             evaluatedCriteriaCount++
             val normalizedPetName = normalizeText(petName)
@@ -96,7 +99,6 @@ object PetMatchingService {
             }
 
             if (reactedCall) {
-                nameMatchScore = 15
                 totalScore += 15
                 matchingReasons.add("Reagiu ao nome '$petName'")
                 details.add(MatchCriteriaDetail("Reação ao nome", petName, "Reagiu", 15, 15, true))
@@ -181,6 +183,59 @@ object PetMatchingService {
             divergingReasons = divergingReasons,
             detailsList = details
         )
+    }
+
+    fun extractPhysicalMarksOnly(rawMarks: String): String {
+        if (rawMarks.isBlank()) return ""
+
+        val parts = rawMarks.split(" · ", "\n", ";")
+
+        val filteredParts = parts.mapNotNull { part ->
+            val trimmed = part.trim()
+            if (trimmed.isBlank()) return@mapNotNull null
+
+            val lower = normalizeText(trimmed)
+
+            // Ignore non-physical sections
+            if (lower.startsWith("identificacao") ||
+                lower.startsWith("comportamento") ||
+                lower.startsWith("passeia por") ||
+                lower.startsWith("situacao") ||
+                lower.startsWith("contato") ||
+                lower.startsWith("telefone") ||
+                lower.startsWith("whatsapp") ||
+                lower.startsWith("detalhe secreto") ||
+                lower.startsWith("observacoes")
+            ) {
+                return@mapNotNull null
+            }
+
+            // Filter out non-physical clauses from free-text segments
+            val textSegments = trimmed.split(",", " e ").map { it.trim() }
+            val physicalSegments = textSegments.filter { segment ->
+                val normSegment = normalizeText(segment)
+                normSegment.isNotBlank() &&
+                !normSegment.contains("coleira") &&
+                !normSegment.contains("plaquinha") &&
+                !normSegment.contains("microchip") &&
+                !normSegment.contains("docil") &&
+                !normSegment.contains("arisco") &&
+                !normSegment.contains("medroso") &&
+                !normSegment.contains("agressivo") &&
+                !normSegment.contains("reagir") &&
+                !normSegment.contains("passeia") &&
+                !normSegment.contains("parque") &&
+                !normSegment.contains("praca") &&
+                !normSegment.contains("ruas proximas") &&
+                !normSegment.contains("rotina") &&
+                !normSegment.contains("tutor")
+            }
+
+            if (physicalSegments.isEmpty()) null
+            else physicalSegments.joinToString(", ")
+        }.filter { it.isNotBlank() }
+
+        return filteredParts.joinToString(" · ")
     }
 
     fun normalizeText(input: String): String {
