@@ -103,7 +103,7 @@ class MyAdDetailActivity : AppCompatActivity() {
 
         val matchScores = activeCandidates.map { candidate ->
             PetMatchingService.calculateMatch(ad, candidate)
-        }.filter { it.score >= 25 }
+        }.filter { it.score >= 30 }
 
         val matchCount = matchScores.size
         binding.tvMatchesCardTitle.text = when (matchCount) {

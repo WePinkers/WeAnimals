@@ -167,7 +167,7 @@
                             android:layout_marginStart="8dp"
                             android:fontFamily="monospace"
                             android:letterSpacing="0.1"
-                            android:text="MARCAS QUE DIFERENCIAM"
+                            android:text="MARCAS FÍSICAS E RAÇA"
                             android:textColor="@color/muted"
                             android:textSize="12sp"
                             android:textStyle="bold" />

@@ -62,7 +62,7 @@ object PetMatchingService {
         }
         evaluatedCriteriaCount++
 
-        // 2. MARCAS FÍSICAS E TEXTO (Peso 25) - Filtered to purely physical attributes
+        // 2. MARCAS FÍSICAS E RAÇA (Peso 25) - Filtered to purely physical attributes & breed
         val rawLostMarks = lostAd.marks.orEmpty()
         val rawFoundMarks = foundAd.marks.orEmpty()
 
@@ -76,14 +76,14 @@ object PetMatchingService {
             val marksPoints = (textSimilarity * 25).toInt()
             totalScore += marksPoints
             if (marksPoints >= 12) {
-                matchingReasons.add("Marcas físicas semelhantes ($lostMarks)")
-                details.add(MatchCriteriaDetail("Marcas físicas", lostMarks, foundMarks, marksPoints, 25, true))
+                matchingReasons.add("Marcas físicas e raça semelhantes ($lostMarks)")
+                details.add(MatchCriteriaDetail("Marcas físicas e raça", lostMarks, foundMarks, marksPoints, 25, true))
             } else {
-                divergingReasons.add("Marcas físicas com pouca semelhança")
-                details.add(MatchCriteriaDetail("Marcas físicas", lostMarks, foundMarks, marksPoints, 25, false))
+                divergingReasons.add("Marcas físicas e raça com pouca semelhança")
+                details.add(MatchCriteriaDetail("Marcas físicas e raça", lostMarks, foundMarks, marksPoints, 25, false))
             }
         } else {
-            details.add(MatchCriteriaDetail("Marcas físicas", lostMarks.ifBlank { "Não informado" }, foundMarks.ifBlank { "Não informado" }, 0, 25, false))
+            details.add(MatchCriteriaDetail("Marcas físicas e raça", lostMarks.ifBlank { "Não informado" }, foundMarks.ifBlank { "Não informado" }, 0, 25, false))
         }
 
         // 3. REAÇÃO AO NOME (Peso 15)

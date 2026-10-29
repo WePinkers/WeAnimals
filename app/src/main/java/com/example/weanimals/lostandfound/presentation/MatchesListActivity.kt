@@ -75,7 +75,7 @@ class MatchesListActivity : AppCompatActivity() {
 
         val matchResults = activeTargetAds
             .map { targetAd -> PetMatchingService.calculateMatch(currentSourceAd, targetAd) }
-            .filter { it.score >= 25 }
+            .filter { it.score >= 30 }
             .sortedByDescending { it.score }
 
         if (matchResults.isEmpty()) {

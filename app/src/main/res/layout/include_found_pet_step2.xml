@@ -155,14 +155,14 @@
                     android:textSize="13sp" />
             </LinearLayout>
 
-            <!-- MARCAS QUE VOCÊ NOTOU -->
+            <!-- MARCAS FÍSICAS E RAÇA -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:fontFamily="monospace"
                 android:letterSpacing="0.1"
-                android:text="MARCAS QUE VOCÊ NOTOU"
+                android:text="MARCAS FÍSICAS E RAÇA"
                 android:textColor="@color/muted"
                 android:textSize="12sp"
                 android:textStyle="bold" />
@@ -174,7 +174,7 @@
                 android:layout_marginTop="10dp"
                 android:background="@drawable/bg_card_white_border"
                 android:gravity="top|start"
-                android:hint="Mancha branca em formato de coração no peito, orelha esquerda meio caída."
+                android:hint="Ex.: Poodle, mancha branca na barriga, orelha caída, pelo curto..."
                 android:inputType="textMultiLine"
                 android:minLines="3"
                 android:padding="14dp"
