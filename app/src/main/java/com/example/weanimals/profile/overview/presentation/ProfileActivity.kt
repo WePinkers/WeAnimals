@@ -107,6 +107,13 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
         MainNavigation.bind(this, binding.mainNavigation, MainNavigation.Destination.PROFILE)
         setupProfileActions()
         loadSavedProfilePicture()
+        loadSavedProfileData()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadSavedProfilePicture()
+        loadSavedProfileData()
     }
 
     private fun setupProfileActions() {
@@ -185,7 +192,9 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
     }
 
     override fun showIdentity(name: String?) {
-        if (!name.isNullOrBlank()) {
+        val prefs = getSharedPreferences("profile_prefs", MODE_PRIVATE)
+        val savedName = prefs.getString("user_name", null)
+        if (savedName.isNullOrBlank() && !name.isNullOrBlank()) {
             nomeAtual = name
             updateHeader()
         }
@@ -197,6 +206,37 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
 
     override fun showReportsError() {
         binding.profileContent.reportCount.text = "—"
+    }
+
+    private fun loadSavedProfileData() {
+        val prefs = getSharedPreferences("profile_prefs", MODE_PRIVATE)
+        val savedName = prefs.getString("user_name", null)
+        val savedBio = prefs.getString("user_bio", null)
+
+        val currentFirebaseName = FirebaseAuth.getInstance().currentUser?.displayName
+
+        if (!savedName.isNullOrBlank()) {
+            nomeAtual = savedName
+        } else if (!currentFirebaseName.isNullOrBlank()) {
+            nomeAtual = currentFirebaseName
+        }
+
+        if (savedBio != null) {
+            bioAtual = savedBio.ifBlank { null }
+        }
+
+        updateHeader()
+    }
+
+    private fun saveProfileData(name: String, bio: String?) {
+        nomeAtual = name
+        bioAtual = bio
+        val prefs = getSharedPreferences("profile_prefs", MODE_PRIVATE)
+        prefs.edit()
+            .putString("user_name", name)
+            .putString("user_bio", bio ?: "")
+            .apply()
+        updateHeader()
     }
 
     private fun updateHeader() {
@@ -272,9 +312,10 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
             .setNegativeButton("Cancelar", null)
             .setPositiveButton("Salvar") { _, _ ->
                 val newName = dialogBinding.editName.text.toString().trim()
-                if (newName.isNotBlank()) nomeAtual = newName
-                bioAtual = dialogBinding.editBio.text.toString().trim().takeIf(String::isNotBlank)
-                updateHeader()
+                val newBio = dialogBinding.editBio.text.toString().trim().takeIf(String::isNotBlank)
+                val finalName = if (newName.isNotBlank()) newName else nomeAtual
+                saveProfileData(finalName, newBio)
+                Toast.makeText(this, "Perfil atualizado com sucesso!", Toast.LENGTH_SHORT).show()
             }
             .show()
     }

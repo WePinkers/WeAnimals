@@ -55,8 +55,8 @@
 
             <FrameLayout
                 android:id="@+id/profile_edit_photo"
-                android:layout_width="26dp"
-                android:layout_height="26dp"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
                 android:layout_gravity="bottom|end"
                 android:background="@drawable/bg_profile_photo_badge"
                 android:clickable="true"
@@ -64,8 +64,8 @@
                 android:contentDescription="Editar foto">
 
                 <ImageView
-                    android:layout_width="14dp"
-                    android:layout_height="14dp"
+                    android:layout_width="11dp"
+                    android:layout_height="11dp"
                     android:layout_gravity="center"
                     android:contentDescription="@null"
                     android:src="@drawable/ic_camera"
