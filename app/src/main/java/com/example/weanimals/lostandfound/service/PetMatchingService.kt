@@ -39,7 +39,8 @@ object PetMatchingService {
         val matchingReasons = mutableListOf<String>()
         val divergingReasons = mutableListOf<String>()
 
-        var totalScore = 0
+        var totalEarnedPoints = 0
+        var maxAvailablePoints = 0
         var evaluatedCriteriaCount = 0
 
         // 1. ESPÉCIE (Peso 20)
@@ -47,8 +48,9 @@ object PetMatchingService {
         val foundSpeciesNorm = normalizeText(foundAd.species)
         val speciesMatch = lostSpeciesNorm.isNotBlank() && foundSpeciesNorm.isNotBlank() && lostSpeciesNorm == foundSpeciesNorm
 
+        maxAvailablePoints += 20
         if (speciesMatch) {
-            totalScore += 20
+            totalEarnedPoints += 20
             matchingReasons.add("Espécie compatível (${lostAd.species})")
             details.add(MatchCriteriaDetail("Espécie", lostAd.species, foundAd.species, 20, 20, true))
         } else {
@@ -73,26 +75,29 @@ object PetMatchingService {
         val lostMarks = extractPhysicalMarksOnly(rawLostMarks)
         val foundMarks = extractPhysicalMarksOnly(rawFoundMarks)
 
-        val textSimilarity = calculateTextSimilarity(lostMarks, foundMarks)
-
-        if (lostMarks.isNotBlank() && foundMarks.isNotBlank()) {
-            evaluatedCriteriaCount++
-            val marksPoints = (textSimilarity * 25).toInt()
-            totalScore += marksPoints
-            if (marksPoints >= 12) {
-                matchingReasons.add("Marcas físicas e raça semelhantes ($lostMarks)")
-                details.add(MatchCriteriaDetail("Marcas físicas e raça", lostMarks, foundMarks, marksPoints, 25, true))
+        if (lostMarks.isNotBlank() || foundMarks.isNotBlank()) {
+            maxAvailablePoints += 25
+            if (lostMarks.isNotBlank() && foundMarks.isNotBlank()) {
+                evaluatedCriteriaCount++
+                val textSimilarity = calculateTextSimilarity(lostMarks, foundMarks)
+                val marksPoints = Math.round(textSimilarity * 25.0).toInt().coerceIn(0, 25)
+                totalEarnedPoints += marksPoints
+                if (marksPoints >= 12) {
+                    matchingReasons.add("Marcas físicas e raça semelhantes ($lostMarks)")
+                    details.add(MatchCriteriaDetail("Marcas físicas e raça", lostMarks, foundMarks, marksPoints, 25, true))
+                } else {
+                    divergingReasons.add("Marcas físicas e raça com pouca semelhança")
+                    details.add(MatchCriteriaDetail("Marcas físicas e raça", lostMarks, foundMarks, marksPoints, 25, false))
+                }
             } else {
-                divergingReasons.add("Marcas físicas e raça com pouca semelhança")
-                details.add(MatchCriteriaDetail("Marcas físicas e raça", lostMarks, foundMarks, marksPoints, 25, false))
+                details.add(MatchCriteriaDetail("Marcas físicas e raça", lostMarks.ifBlank { "Não informado" }, foundMarks.ifBlank { "Não informado" }, 0, 25, false))
             }
-        } else {
-            details.add(MatchCriteriaDetail("Marcas físicas e raça", lostMarks.ifBlank { "Não informado" }, foundMarks.ifBlank { "Não informado" }, 0, 25, false))
         }
 
         // 3. REAÇÃO AO NOME (Peso 15)
         val petName = lostAd.calledNames.firstOrNull()?.split(":")?.firstOrNull()?.trim() ?: ""
         if (petName.isNotBlank() && foundAd.calledNames.isNotEmpty()) {
+            maxAvailablePoints += 15
             evaluatedCriteriaCount++
             val normalizedPetName = normalizeText(petName)
             val reactedCall = foundAd.calledNames.any { call ->
@@ -103,7 +108,7 @@ object PetMatchingService {
             }
 
             if (reactedCall) {
-                totalScore += 15
+                totalEarnedPoints += 15
                 matchingReasons.add("Reagiu ao nome '$petName'")
                 details.add(MatchCriteriaDetail("Reação ao nome", petName, "Reagiu", 15, 15, true))
             } else {
@@ -119,14 +124,15 @@ object PetMatchingService {
         val foundNeigh = normalizeText(foundAd.neighborhood.orEmpty())
 
         if (lostCity.isNotBlank() && foundCity.isNotBlank()) {
+            maxAvailablePoints += 15
             evaluatedCriteriaCount++
             if (lostCity == foundCity) {
                 if (lostNeigh.isNotBlank() && foundNeigh.isNotBlank() && lostNeigh == foundNeigh) {
-                    totalScore += 15
+                    totalEarnedPoints += 15
                     matchingReasons.add("Mesmo bairro (${lostAd.neighborhood})")
                     details.add(MatchCriteriaDetail("Localização", "${lostAd.neighborhood}, ${lostAd.city}", "${foundAd.neighborhood}, ${foundAd.city}", 15, 15, true))
                 } else {
-                    totalScore += 10
+                    totalEarnedPoints += 10
                     matchingReasons.add("Mesma cidade (${lostAd.city})")
                     details.add(MatchCriteriaDetail("Localização", lostAd.city.orEmpty(), foundAd.city.orEmpty(), 10, 15, true))
                 }
@@ -137,8 +143,9 @@ object PetMatchingService {
         }
 
         // 5. DATA (Peso 10)
+        maxAvailablePoints += 10
         if (foundAd.publicationTimestamp >= lostAd.publicationTimestamp - 86_400_000L) {
-            totalScore += 10
+            totalEarnedPoints += 10
             matchingReasons.add("Sequência de datas compatível")
             details.add(MatchCriteriaDetail("Data", "Perdido em data anterior", "Encontrado em data coerente", 10, 10, true))
         } else {
@@ -150,9 +157,10 @@ object PetMatchingService {
         val lostSize = normalizeText(lostAd.size.orEmpty())
         val foundSize = normalizeText(foundAd.size.orEmpty())
         if (lostSize.isNotBlank() && foundSize.isNotBlank()) {
+            maxAvailablePoints += 5
             evaluatedCriteriaCount++
             if (lostSize == foundSize) {
-                totalScore += 5
+                totalEarnedPoints += 5
                 matchingReasons.add("Porte compatível (${lostAd.size})")
                 details.add(MatchCriteriaDetail("Porte", lostAd.size.orEmpty(), foundAd.size.orEmpty(), 5, 5, true))
             } else {
@@ -165,9 +173,10 @@ object PetMatchingService {
         val lostAge = normalizeText(lostAd.ageApprox.orEmpty())
         val foundAge = normalizeText(foundAd.ageApprox.orEmpty())
         if (lostAge.isNotBlank() && foundAge.isNotBlank()) {
+            maxAvailablePoints += 5
             evaluatedCriteriaCount++
             if (lostAge == foundAge) {
-                totalScore += 5
+                totalEarnedPoints += 5
                 matchingReasons.add("Idade aproximada compatível (${lostAd.ageApprox})")
                 details.add(MatchCriteriaDetail("Idade", lostAd.ageApprox.orEmpty(), foundAd.ageApprox.orEmpty(), 5, 5, true))
             } else {
@@ -177,11 +186,15 @@ object PetMatchingService {
         }
 
         val hasEnoughData = evaluatedCriteriaCount >= 3
-        val finalScore = totalScore.coerceIn(0, 98)
+        val matchPercentage = if (maxAvailablePoints > 0) {
+            Math.round((totalEarnedPoints.toDouble() / maxAvailablePoints.toDouble()) * 100.0).toInt()
+        } else {
+            0
+        }.coerceIn(0, 100)
 
         return PetMatchResult(
             foundAd = foundAd,
-            score = finalScore,
+            score = matchPercentage,
             hasEnoughData = hasEnoughData,
             matchingReasons = matchingReasons,
             divergingReasons = divergingReasons,
