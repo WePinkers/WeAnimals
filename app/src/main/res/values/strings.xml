@@ -349,6 +349,8 @@
     <string name="photo_section_label">FOTO DO ANIMAL OU LOCAL</string>
     <string name="photo_added">Foto adicionada</string>
     <string name="photo_selected_description">Foto selecionada do animal ou local</string>
+    <string name="lost_pet_photo">Foto do animal</string>
+    <string name="lost_pet_proof_photo">Foto que comprova a tutela</string>
     <string name="description_required">Descreva o que está acontecendo.</string>
     <string name="triage_coming_soon">Dados preenchidos. A triagem será aberta em breve.</string>
     <string name="sent_title">Denúncia enviada</string>
@@ -365,8 +367,6 @@
     <string name="no_reports">Você ainda não fez nenhuma denúncia.</string>
     <string name="reports_loading">Carregando suas denúncias…</string>
     <string name="reports_load_error">Não foi possível carregar suas denúncias.</string>
-    <string name="lost_pet_photo">Foto do animal perdido</string>
-    <string name="lost_pet_proof_photo">Foto de comprovação do dono</string>
     <string name="report_card_title">%1$s — %2$s</string>
     <string name="report_protocol_format">Protocolo #%1$d</string>
     <string name="report_accessibility">Denúncia de %1$s em %2$s. Urgência %3$s. Status %4$s.</string>

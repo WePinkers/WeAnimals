@@ -135,7 +135,33 @@
                 android:resource="@xml/file_paths" />
         </provider>
         <activity android:name=".user.profile.overview.presentation.ProfileActivity" android:exported="false" />
+        <activity android:name=".user.profile.overview.presentation.ProfilePhotoPreviewActivity" android:exported="false" />
         <activity android:name=".user.lostandfound.presentation.ReportLostPetActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.LostAndFoundActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.FoundPetFormActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.LostPetFormActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.AdjustLocationActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.MyAdDetailActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.MyAdsActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.PublicAdDetailActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.TutorVerificationActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.SubmittedAnswersActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.PossibleTutorsActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.TutorRequestDetailActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.LostAndFoundChatActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.MyRequestsActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.MySightingReportsActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.RegisterReunionActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.ReunionSubmittedActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.ConfirmReunionActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.MatchesListActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.ReportChatActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.ReportSubmittedActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.ReportAdActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.AdReportSubmittedActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.SightingFormActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.PossibleSightingsActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.SightingReportDetailActivity" android:exported="false" />
         <activity android:name=".user.profile.reports.presentation.MyReportsActivity" android:exported="false" />
         <activity android:name=".user.profile.campaigns.presentation.CampaignsActivity" android:exported="false" />
         <activity android:name=".user.profile.favorites.presentation.FavoritesActivity" android:exported="false" />

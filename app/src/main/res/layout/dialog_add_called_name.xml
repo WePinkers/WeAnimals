@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <EditText
+        android:id="@+id/et_called_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_card_white_border"
+        android:hint="Nome que você chamou (ex: Pipoca)"
+        android:padding="12dp"
+        android:textColor="@color/ink"
+        android:textSize="14sp" />
+
+    <RadioGroup
+        android:id="@+id/rg_reaction"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/rb_reacted"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="Reagiu"
+            android:textColor="@color/ink" />
+
+        <RadioButton
+            android:id="@+id/rb_not_reacted"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Não reagiu"
+            android:textColor="@color/ink" />
+    </RadioGroup>
+
+</LinearLayout>

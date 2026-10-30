@@ -53,6 +53,7 @@ dependencies {
     implementation(libs.play.services.auth)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
+    implementation("androidx.exifinterface:exifinterface:1.4.2")
     implementation("org.maplibre.gl:android-sdk:11.8.0")
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
