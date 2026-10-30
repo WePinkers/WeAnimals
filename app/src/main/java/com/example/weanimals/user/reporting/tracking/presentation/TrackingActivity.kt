@@ -112,6 +112,7 @@ class TrackingActivity : AppCompatActivity(), TrackingContract.View {
         binding.updateCard.setOnClickListener {
             startActivity(CaseChatActivity.newIntent(this, report.id, report.protocolNumber))
         }
+
     }
 
     override fun showReportError(error: Throwable) {

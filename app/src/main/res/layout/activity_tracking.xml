@@ -162,6 +162,8 @@
                     app:tint="@color/muted" />
             </LinearLayout>
 
+
+
             <LinearLayout
                 android:id="@+id/update_card"
                 android:layout_width="match_parent"

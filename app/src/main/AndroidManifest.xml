@@ -134,6 +134,47 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
+        <!-- Telas XML exclusivas integradas da feature/Tamer -->
+        <activity
+            android:name=".profile.overview.presentation.CustomCropImageActivity"
+            android:theme="@style/Theme.WeAnimals" />
+        <activity
+            android:name="com.canhub.cropper.CropImageActivity"
+            android:theme="@style/Theme.WeAnimals" />
+        <activity android:name=".profile.overview.presentation.ChangePasswordActivity" android:exported="false" />
+        <activity android:name=".lostandfound.presentation.ReportLostAnimalActivity" android:exported="false" />
+        <activity android:name=".lostandfound.presentation.LostAndFoundMapActivity" android:exported="false" />
+        <activity android:name=".lostandfound.presentation.AdExpiredActivity" android:exported="false" />
+        <activity android:name=".lostandfound.presentation.CloseFoundAdActivity" android:exported="false" />
+        <activity android:name=".lostandfound.presentation.CloseLostAdActivity" android:exported="false" />
+        <activity android:name=".lostandfound.presentation.FoundAdDetailActivity" android:exported="false" />
+        <activity android:name=".lostandfound.presentation.FoundAnimalPublicDetailActivity" android:exported="false" />
+        <activity android:name=".lostandfound.presentation.FoundAnimalPublicViewActivity" android:exported="false" />
+        <activity android:name=".lostandfound.presentation.FoundMatchesActivity" android:exported="false" />
+        <activity android:name=".lostandfound.presentation.LostAnimalPublicDetailActivity" android:exported="false" />
+        <activity android:name=".lostandfound.presentation.LostFoundChatActivity" android:exported="false" />
+        <activity android:name=".lostandfound.presentation.LostMatchesActivity" android:exported="false" />
+        <activity android:name=".lostandfound.presentation.MyLostAdDetailActivity" android:exported="false" />
+        <activity android:name=".lostandfound.presentation.OwnerRequestReviewActivity" android:exported="false" />
+        <activity android:name=".lostandfound.presentation.OwnerVerificationActivity" android:exported="false" />
+        <activity android:name=".lostandfound.presentation.ReportFoundAnimalActivity" android:exported="false" />
+        <activity android:name=".lostandfound.presentation.VerificationSentActivity" android:exported="false" />
+
+        <activity android:name=".ombudsman.presentation.AccountIssuesActivity" android:exported="false" />
+        <activity android:name=".ombudsman.presentation.AccountIssueSentActivity" android:exported="false" />
+        <activity android:name=".ombudsman.presentation.ContactUsActivity" android:exported="false" />
+        <activity android:name=".ombudsman.presentation.FaqActivity" android:exported="false" />
+        <activity android:name=".ombudsman.presentation.HelpAndSupportActivity" android:exported="false" />
+        <activity android:name=".ombudsman.presentation.ManifestationConfirmedActivity" android:exported="false" />
+        <activity android:name=".ombudsman.presentation.MyProtocolsActivity" android:exported="false" />
+        <activity android:name=".ombudsman.presentation.NewManifestationActivity" android:exported="false" />
+        <activity android:name=".ombudsman.presentation.OmbudsmanActivity" android:exported="false" />
+        <activity android:name=".ombudsman.presentation.ProtocolDetailActivity" android:exported="false" />
+        <activity android:name=".ombudsman.presentation.QuestionSentActivity" android:exported="false" />
+        <activity android:name=".ombudsman.presentation.SendQuestionActivity" android:exported="false" />
+        <activity android:name=".ombudsman.presentation.SupportChatActivity" android:exported="false" />
+
         <activity android:name=".user.profile.overview.presentation.ProfileActivity" android:exported="false" />
         <activity android:name=".user.profile.overview.presentation.ProfilePhotoPreviewActivity" android:exported="false" />
         <activity android:name=".user.lostandfound.presentation.ReportLostPetActivity" android:exported="false" />

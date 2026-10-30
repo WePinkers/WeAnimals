@@ -11,6 +11,7 @@ import com.example.weanimals.user.reporting.report.domain.Report
 import com.example.weanimals.user.reporting.report.domain.ReportProtocol
 import com.example.weanimals.user.reporting.report.domain.ReportStatus
 import com.example.weanimals.core.location.domain.Coordinates
+import com.example.weanimals.core.notification.ReportStatusNotifier
 import com.example.weanimals.user.map.overview.domain.PublicOccurrence
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
@@ -138,6 +139,15 @@ class FirebaseReportRepository(
         val savedReport = saveReport(report, user, protocolNumber, photoBytes, photoFileName)
         localSessionReports.add(0, savedReport)
         Log.d("DEBUG_DENUNCIAS", "submitReport adicionou denúncia local. Protocolo=#${savedReport.protocolNumber}, Endereço=${savedReport.address}")
+
+        val animalTypeLabel = if (savedReport.animalType == "cat") "Gato" else "Cão"
+        ReportStatusNotifier.notifyReportCreated(
+            context = context,
+            reportId = savedReport.id,
+            protocolNumber = savedReport.protocolNumber,
+            animalTypeAndLocation = "$animalTypeLabel — ${savedReport.address.ifBlank { "Localização registrada" }}",
+        )
+
         savedReport
     }
 

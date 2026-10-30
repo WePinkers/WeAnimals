@@ -7,6 +7,8 @@ import android.util.Log
 import com.example.weanimals.user.adoption.listing.presentation.AdoptionActivity
 import com.example.weanimals.user.reporting.chat.presentation.CaseChatActivity
 import com.example.weanimals.user.reporting.tracking.presentation.TrackingActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 
 class NotificationTestReceiver : BroadcastReceiver() {
 
@@ -29,6 +31,19 @@ class NotificationTestReceiver : BroadcastReceiver() {
 
         // Ensure notification channels are initialized
         NotificationChannelManager.initChannels(context)
+
+        if (type == TYPE_SIMULATION) {
+            ReportStatusNotifier.simulateStatusProgression(
+                context = context,
+                scope = CoroutineScope(Dispatchers.Main),
+                reportId = reportId,
+                protocolNumber = 4499,
+                animalTypeAndLocation = "Cão — Vila Maria Alta",
+                intervalMillis = 10_000L,
+            )
+            Log.d(TAG, "Simulação de progressão de status iniciada.")
+            return
+        }
 
         val channelId = when (type) {
             TYPE_CHAT -> NotificationChannelManager.CHANNEL_CHAT
@@ -66,6 +81,7 @@ class NotificationTestReceiver : BroadcastReceiver() {
         const val TYPE_REPORT = "report"
         const val TYPE_CHAT = "chat"
         const val TYPE_ADOPTION = "adoption"
+        const val TYPE_SIMULATION = "simulation"
 
         private const val DEFAULT_TITLE = "Protocolo #4499 atualizado"
         private const val DEFAULT_MESSAGE = "A equipe de resgate está a caminho do local."
