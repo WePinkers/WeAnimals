@@ -93,21 +93,6 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/chip_cat_adoption"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:background="@drawable/bg_chip_unselected"
-                android:clickable="true"
-                android:focusable="true"
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="8dp"
-                android:text="Adoção"
-                android:textColor="#132A20"
-                android:textSize="13sp"
-                android:textStyle="bold" />
-
-            <TextView
                 android:id="@+id/chip_cat_reports"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -123,7 +108,7 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/chip_cat_lost_found"
+                android:id="@+id/chip_cat_adoption"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -132,13 +117,13 @@
                 android:focusable="true"
                 android:paddingHorizontal="16dp"
                 android:paddingVertical="8dp"
-                android:text="Achados e Perdidos"
+                android:text="Adoção"
                 android:textColor="#132A20"
                 android:textSize="13sp"
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/chip_cat_ongs"
+                android:id="@+id/chip_cat_account"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -147,7 +132,22 @@
                 android:focusable="true"
                 android:paddingHorizontal="16dp"
                 android:paddingVertical="8dp"
-                android:text="ONGs"
+                android:text="Conta"
+                android:textColor="#132A20"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/chip_cat_scams"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_chip_unselected"
+                android:clickable="true"
+                android:focusable="true"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="8dp"
+                android:text="Golpes"
                 android:textColor="#132A20"
                 android:textSize="13sp"
                 android:textStyle="bold" />
@@ -161,5 +161,22 @@
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
         android:layout_weight="1" />
+
+    <!-- Send Question Footer Button -->
+    <Button
+        android:id="@+id/btn_send_question"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="12dp"
+        android:backgroundTint="@color/white"
+        android:text="Enviar uma pergunta"
+        android:textColor="#1F3D2E"
+        android:textSize="14.5sp"
+        android:textStyle="bold"
+        app:cornerRadius="12dp"
+        app:icon="@drawable/ic_document"
+        app:iconTint="#1F3D2E"
+        app:strokeColor="#DDD6C4" />
 
 </LinearLayout>

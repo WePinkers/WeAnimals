@@ -175,8 +175,10 @@
         <activity android:name=".lostandfound.presentation.LostAndFoundMapActivity" android:exported="false" />
         <activity android:name=".ombudsman.presentation.HelpAndSupportActivity" android:exported="false" />
         <activity android:name=".ombudsman.presentation.FaqActivity" android:exported="false" />
-        <activity android:name=".ombudsman.presentation.ContactUsActivity" android:exported="false" />
+        <activity android:name=".ombudsman.presentation.SendQuestionActivity" android:exported="false" />
+        <activity android:name=".ombudsman.presentation.QuestionSentActivity" android:exported="false" />
         <activity android:name=".ombudsman.presentation.AccountIssuesActivity" android:exported="false" />
+        <activity android:name=".ombudsman.presentation.AccountIssueSentActivity" android:exported="false" />
         <activity android:name=".ombudsman.presentation.OmbudsmanActivity" android:exported="false" />
         <activity android:name=".ombudsman.presentation.NewManifestationActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
         <activity android:name=".ombudsman.presentation.ManifestationConfirmedActivity" android:exported="false" />

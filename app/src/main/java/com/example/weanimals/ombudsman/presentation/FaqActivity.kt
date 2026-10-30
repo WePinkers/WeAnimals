@@ -1,14 +1,18 @@
 package com.example.weanimals.ombudsman.presentation
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.core.view.WindowCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.weanimals.R
 import com.example.weanimals.databinding.ActivityFaqBinding
 import com.example.weanimals.databinding.ItemFaqAccordionBinding
 
@@ -26,27 +30,33 @@ class FaqActivity : AppCompatActivity() {
     private val allFaqs = listOf(
         FaqItem(
             id = "1",
-            category = "Adoção",
-            question = "Como funciona o processo de adoção responsável?",
-            answer = "O processo envolve a escolha do animal no app, preenchimento do questionário de compatibilidade e alinhamento direto com a ONG ou protetor responsável."
+            category = "Denúncias",
+            question = "Como faço uma denúncia de animal em risco?",
+            answer = "Acesse a aba Início ou Denúncias, toque no botão Registre uma Ocorrência e siga as etapas descrevendo o local e a situação."
         ),
         FaqItem(
             id = "2",
             category = "Denúncias",
-            question = "O que acontece após eu registrar uma denúncia?",
-            answer = "A denúncia é triada pela nossa equipe e enviada para fiscalização e atendimento prioritário da autoridade responsável no seu município."
+            question = "Como acompanho o andamento da minha denúncia?",
+            answer = "Abra Perfil › Minhas denúncias e toque no protocolo. Lá você vê cada atualização e pode conversar com a equipe."
         ),
         FaqItem(
             id = "3",
-            category = "Achados e Perdidos",
-            question = "Como encontrar o tutor de um animal perdido?",
-            answer = "Ao cadastrar o animal em Achados e Perdidos, nosso sistema calcula a compatibilidade cruzando marcas, local e horário com os alertas de tutores em até 91% de match."
+            category = "Adoção",
+            question = "Como funciona a adoção pelo app?",
+            answer = "Você escolhe o animal, preenche o formulário de compatibilidade e conversa diretamente com a ONG ou protetor responsável."
         ),
         FaqItem(
             id = "4",
-            category = "ONGs",
-            question = "As ONGs cadastradas são verificadas pela plataforma?",
-            answer = "Sim. Todas as instituições parceiras passam por verificação documental e credenciamento de segurança no ecossistema WeAnimals."
+            category = "Conta",
+            question = "O que é o Nível de Confiabilidade?",
+            answer = "É um selo que indica o histórico positivo e a verificação do perfil para garantir a segurança da comunidade."
+        ),
+        FaqItem(
+            id = "5",
+            category = "Golpes",
+            question = "Pediram dinheiro para devolver um animal. E agora?",
+            answer = "Não faça nenhuma transferência adiantada. Registre uma denúncia de suspeita de golpe na nossa Ouvidoria imediatamente."
         )
     )
 
@@ -71,16 +81,31 @@ class FaqActivity : AppCompatActivity() {
             renderFaqList()
         }
 
-        binding.chipCatAll.setOnClickListener { selectCategory("Todas") }
-        binding.chipCatAdoption.setOnClickListener { selectCategory("Adoção") }
-        binding.chipCatReports.setOnClickListener { selectCategory("Denúncias") }
-        binding.chipCatLostFound.setOnClickListener { selectCategory("Achados e Perdidos") }
-        binding.chipCatOngs.setOnClickListener { selectCategory("ONGs") }
-    }
+        binding.btnSendQuestion.setOnClickListener {
+            startActivity(Intent(this, SendQuestionActivity::class.java))
+        }
 
-    private fun selectCategory(cat: String) {
-        currentFilterCategory = cat
-        renderFaqList()
+        val pineBg = R.drawable.bg_chip_selected_pine
+        val unselectedBg = R.drawable.bg_chip_unselected
+        val whiteColor = ContextCompat.getColor(this, R.color.white)
+        val inkColor = ContextCompat.getColor(this, R.color.ink)
+
+        fun updateChips(activeChip: android.widget.TextView, categoryName: String) {
+            currentFilterCategory = categoryName
+            listOf(binding.chipCatAll, binding.chipCatReports, binding.chipCatAdoption, binding.chipCatAccount, binding.chipCatScams).forEach { chip ->
+                chip.setBackgroundResource(unselectedBg)
+                chip.setTextColor(inkColor)
+            }
+            activeChip.setBackgroundResource(pineBg)
+            activeChip.setTextColor(whiteColor)
+            renderFaqList()
+        }
+
+        binding.chipCatAll.setOnClickListener { updateChips(binding.chipCatAll, "Todas") }
+        binding.chipCatReports.setOnClickListener { updateChips(binding.chipCatReports, "Denúncias") }
+        binding.chipCatAdoption.setOnClickListener { updateChips(binding.chipCatAdoption, "Adoção") }
+        binding.chipCatAccount.setOnClickListener { updateChips(binding.chipCatAccount, "Conta") }
+        binding.chipCatScams.setOnClickListener { updateChips(binding.chipCatScams, "Golpes") }
     }
 
     private fun renderFaqList() {
@@ -124,12 +149,27 @@ class FaqAccordionAdapter(
         holder.binding.apply {
             faqQuestion.text = item.question
             faqAnswer.text = item.answer
-            faqAnswer.visibility = if (item.isExpanded) View.VISIBLE else View.GONE
+            expandedContainer.visibility = if (item.isExpanded) View.VISIBLE else View.GONE
             faqChevron.rotation = if (item.isExpanded) 90f else 0f
+
+            val context = root.context
+            if (item.isExpanded) {
+                cardFaqRoot.setBackgroundResource(R.drawable.bg_card_press_selector)
+            } else {
+                cardFaqRoot.setBackgroundResource(R.drawable.bg_stat_card)
+            }
 
             cardFaqRoot.setOnClickListener {
                 item.isExpanded = !item.isExpanded
                 notifyItemChanged(position)
+            }
+
+            btnHelpfulYes.setOnClickListener {
+                Toast.makeText(context, "Obrigado pelo feedback!", Toast.LENGTH_SHORT).show()
+            }
+
+            btnHelpfulNo.setOnClickListener {
+                Toast.makeText(context, "Obrigado pelo feedback! Vamos melhorar a resposta.", Toast.LENGTH_SHORT).show()
             }
         }
     }

@@ -2,7 +2,6 @@ package com.example.weanimals.ombudsman.presentation
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import com.example.weanimals.databinding.ActivityHelpAndSupportBinding
@@ -24,11 +23,7 @@ class HelpAndSupportActivity : AppCompatActivity() {
         binding.btnBack.setOnClickListener { finish() }
 
         binding.cardFaq.setOnClickListener {
-            Toast.makeText(this, "Exibindo Perguntas Frequentes", Toast.LENGTH_SHORT).show()
-        }
-
-        binding.cardContact.setOnClickListener {
-            Toast.makeText(this, "Fale Conosco: suporte@weanimals.com.br", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, FaqActivity::class.java))
         }
 
         binding.cardOmbudsman.setOnClickListener {
@@ -36,7 +31,7 @@ class HelpAndSupportActivity : AppCompatActivity() {
         }
 
         binding.cardAccountIssues.setOnClickListener {
-            Toast.makeText(this, "Acessando suporte de conta", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, AccountIssuesActivity::class.java))
         }
     }
 

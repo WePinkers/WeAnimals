@@ -42,7 +42,7 @@
             android:textSize="26sp"
             android:textStyle="bold" />
 
-        <!-- Card 1: FAQ -->
+        <!-- Option 1: FAQ -->
         <LinearLayout
             android:id="@+id/card_faq"
             android:layout_width="match_parent"
@@ -95,60 +95,7 @@
                 app:tint="#5C5548" />
         </LinearLayout>
 
-        <!-- Card 2: Contact Us -->
-        <LinearLayout
-            android:id="@+id/card_contact"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/bg_card_press_selector"
-            android:clickable="true"
-            android:focusable="true"
-            android:foreground="?attr/selectableItemBackground"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="16dp">
-
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:contentDescription="@null"
-                android:src="@drawable/ic_email_outline"
-                app:tint="#1F3D2E" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="14dp"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Fale conosco"
-                    android:textColor="#132A20"
-                    android:textSize="15sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:text="Entre em contato com a nossa equipe de suporte."
-                    android:textColor="#5C5548"
-                    android:textSize="12sp" />
-            </LinearLayout>
-
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:contentDescription="@null"
-                android:src="@drawable/ic_chevron_right"
-                app:tint="#5C5548" />
-        </LinearLayout>
-
-        <!-- Card 3: Ombudsman -->
+        <!-- Option 2: Ombudsman -->
         <LinearLayout
             android:id="@+id/card_ombudsman"
             android:layout_width="match_parent"
@@ -201,7 +148,7 @@
                 app:tint="#5C5548" />
         </LinearLayout>
 
-        <!-- Card 4: Account Issues -->
+        <!-- Option 3: Account Issues -->
         <LinearLayout
             android:id="@+id/card_account_issues"
             android:layout_width="match_parent"
@@ -258,7 +205,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="36dp"
             android:gravity="center"
             android:orientation="vertical">
 

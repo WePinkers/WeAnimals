@@ -42,217 +42,375 @@
             android:textSize="26sp"
             android:textStyle="bold" />
 
-        <!-- Card 1: Reset Password -->
-        <LinearLayout
-            android:id="@+id/card_reset_password"
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/bg_card_press_selector"
-            android:clickable="true"
-            android:focusable="true"
-            android:foreground="?attr/selectableItemBackground"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="16dp">
+            android:layout_marginTop="6dp"
+            android:text="O que está acontecendo? Selecione o que mais se aproxima do seu caso."
+            android:textColor="#5C5548"
+            android:textSize="13.5sp" />
 
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:contentDescription="@null"
-                android:src="@drawable/ic_lock_outline"
-                app:tint="#1F3D2E" />
+        <!-- Radio Options List -->
+        <RadioGroup
+            android:id="@+id/radio_group_issues"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp">
 
+            <!-- Option 1 -->
             <LinearLayout
-                android:layout_width="0dp"
+                android:id="@+id/card_opt_1"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="14dp"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/bg_stat_card"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="14dp">
 
-                <TextView
-                    android:layout_width="match_parent"
+                <RadioButton
+                    android:id="@+id/radio_opt_1"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Redefinir ou recuperar senha"
-                    android:textColor="#132A20"
-                    android:textSize="15sp"
-                    android:textStyle="bold" />
+                    android:checked="true" />
 
-                <TextView
-                    android:layout_width="match_parent"
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:text="Envie um link de redefinição para o seu e-mail cadastrado."
-                    android:textColor="#5C5548"
-                    android:textSize="12sp" />
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Não consigo entrar na conta"
+                        android:textColor="#132A20"
+                        android:textSize="14.5sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Login ou senha não são aceitos"
+                        android:textColor="#5C5548"
+                        android:textSize="12sp" />
+                </LinearLayout>
             </LinearLayout>
 
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:contentDescription="@null"
-                android:src="@drawable/ic_chevron_right"
-                app:tint="#5C5548" />
-        </LinearLayout>
+            <!-- Option 2 -->
+            <LinearLayout
+                android:id="@+id/card_opt_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/bg_stat_card"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="14dp">
 
-        <!-- Card 2: Update Data -->
-        <LinearLayout
-            android:id="@+id/card_update_data"
+                <RadioButton
+                    android:id="@+id/radio_opt_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Não recebo e-mail ou código"
+                        android:textColor="#132A20"
+                        android:textSize="14.5sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Redefinição de senha ou verificação"
+                        android:textColor="#5C5548"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Option 3 -->
+            <LinearLayout
+                android:id="@+id/card_opt_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/bg_stat_card"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="14dp">
+
+                <RadioButton
+                    android:id="@+id/radio_opt_3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Conta bloqueada ou suspensa"
+                        android:textColor="#132A20"
+                        android:textSize="14.5sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Não consigo usar o app e não sei o motivo"
+                        android:textColor="#5C5548"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Option 4 -->
+            <LinearLayout
+                android:id="@+id/card_opt_4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/bg_stat_card"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="14dp">
+
+                <RadioButton
+                    android:id="@+id/radio_opt_4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Suspeita de acesso indevido"
+                        android:textColor="#132A20"
+                        android:textSize="14.5sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Atividades que não reconheço na conta"
+                        android:textColor="#5C5548"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Option 5 -->
+            <LinearLayout
+                android:id="@+id/card_opt_5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/bg_stat_card"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="14dp">
+
+                <RadioButton
+                    android:id="@+id/radio_opt_5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Erro ao cadastrar ou editar dados"
+                        android:textColor="#132A20"
+                        android:textSize="14.5sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Nome, foto, telefone ou e-mail"
+                        android:textColor="#5C5548"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Option 6 (Outro problema) -->
+            <LinearLayout
+                android:id="@+id/card_opt_6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/bg_stat_card"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="14dp">
+
+                <RadioButton
+                    android:id="@+id/radio_opt_6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Outro problema"
+                        android:textColor="#132A20"
+                        android:textSize="14.5sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Não encontrei minha situação aqui"
+                        android:textColor="#5C5548"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
+        </RadioGroup>
+
+        <!-- Dynamic Description Field -->
+        <TextView
+            android:id="@+id/label_details"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:fontFamily="monospace"
+            android:letterSpacing="0.08"
+            android:text="DETALHES (OPCIONAL)"
+            android:textColor="#5C5548"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/helper_text_other"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="Conte o que aconteceu, quando começou e o que você já tentou fazer."
+            android:textColor="#2C5240"
+            android:textSize="12sp"
+            android:visibility="gone" />
+
+        <EditText
+            android:id="@+id/input_details"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:background="@drawable/bg_stat_card"
+            android:gravity="top|start"
+            android:hint="Conte mais sobre o que aconteceu…"
+            android:inputType="textMultiLine"
+            android:maxLength="1000"
+            android:minLines="3"
+            android:padding="14dp"
+            android:textColor="#132A20"
+            android:textColorHint="#5C5548"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/char_counter_issue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="4dp"
+            android:text="0/1000"
+            android:textColor="#5C5548"
+            android:textSize="11sp" />
+
+        <!-- Optional Screenshot Attachment Button -->
+        <LinearLayout
+            android:id="@+id/btn_attach_screenshot"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
             android:layout_marginTop="12dp"
-            android:background="@drawable/bg_card_press_selector"
+            android:background="@drawable/bg_dashed_support_button"
             android:clickable="true"
             android:focusable="true"
             android:foreground="?attr/selectableItemBackground"
-            android:gravity="center_vertical"
+            android:gravity="center"
             android:orientation="horizontal"
-            android:padding="16dp">
+            android:paddingHorizontal="14dp"
+            android:visibility="gone">
 
             <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
                 android:contentDescription="@null"
-                android:src="@drawable/ic_profile"
-                app:tint="#1F3D2E" />
+                android:src="@drawable/ic_document"
+                app:tint="#2C5240" />
 
-            <LinearLayout
-                android:layout_width="0dp"
+            <TextView
+                android:id="@+id/txt_attached_screenshot"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="14dp"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Atualizar e-mail ou dados cadastrais"
-                    android:textColor="#132A20"
-                    android:textSize="15sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:text="Altere seu nome, foto e contatos no perfil."
-                    android:textColor="#5C5548"
-                    android:textSize="12sp" />
-            </LinearLayout>
-
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:contentDescription="@null"
-                android:src="@drawable/ic_chevron_right"
-                app:tint="#5C5548" />
+                android:layout_marginStart="8dp"
+                android:text="Anexar print (opcional)"
+                android:textColor="#2C5240"
+                android:textSize="13sp"
+                android:textStyle="bold" />
         </LinearLayout>
 
-        <!-- Card 3: Verification Seal -->
-        <LinearLayout
-            android:id="@+id/card_verified_seal"
+        <!-- Submit Button -->
+        <Button
+            android:id="@+id/btn_submit_issue"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/bg_card_press_selector"
-            android:clickable="true"
-            android:focusable="true"
-            android:foreground="?attr/selectableItemBackground"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="16dp">
-
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:contentDescription="@null"
-                android:src="@drawable/ic_shield_check"
-                app:tint="#1F3D2E" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="14dp"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Verificação de conta e selo comunitário"
-                    android:textColor="#132A20"
-                    android:textSize="15sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:text="Saiba como obter a verificação oficial no app."
-                    android:textColor="#5C5548"
-                    android:textSize="12sp" />
-            </LinearLayout>
-
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:contentDescription="@null"
-                android:src="@drawable/ic_chevron_right"
-                app:tint="#5C5548" />
-        </LinearLayout>
-
-        <!-- Card 4: Delete Account -->
-        <LinearLayout
-            android:id="@+id/card_delete_account"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/bg_card_press_selector"
-            android:clickable="true"
-            android:focusable="true"
-            android:foreground="?attr/selectableItemBackground"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="16dp">
-
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:contentDescription="@null"
-                android:src="@drawable/ic_warning"
-                app:tint="#A83232" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="14dp"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Excluir conta ou dados da plataforma"
-                    android:textColor="#A83232"
-                    android:textSize="15sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:text="Orientações e solicitação de exclusão definitiva conforme LGPD."
-                    android:textColor="#5C5548"
-                    android:textSize="12sp" />
-            </LinearLayout>
-
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:contentDescription="@null"
-                android:src="@drawable/ic_chevron_right"
-                app:tint="#5C5548" />
-        </LinearLayout>
+            android:layout_height="52dp"
+            android:layout_marginTop="28dp"
+            android:backgroundTint="#1F3D2E"
+            android:text="Enviar"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            app:cornerRadius="12dp" />
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
