@@ -6,15 +6,12 @@
 
     <!-- Base application theme inheriting from Material 3 DayNight NoActionBar -->
     <style name="Base.Theme.WeAnimals" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Sets the default sans-serif font family across the app -->
-        <item name="android:fontFamily">sans</item>
-        <!-- Ensures status bar icons are dark/light appropriate for the dark theme background -->
-        <item name="android:windowLightStatusBar">true</item>
-        <!-- Background color for the system status bar -->
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:windowLightStatusBar">false</item>
         <item name="android:statusBarColor">@color/background</item>
         <!-- Background color for the system navigation bar -->
         <item name="android:navigationBarColor">@color/background</item>
-        <!-- Ensures navigation bar icons are dark/light appropriate -->
-        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:windowLightNavigationBar" tools:ignore="NewApi">false</item>
+        <item name="android:colorAccent">@color/terracotta</item>
     </style>
 </resources>

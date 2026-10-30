@@ -334,7 +334,7 @@ class ReportActivity : AppCompatActivity(), ReportContract.View {
 
     private fun styleAnimalButton(button: MaterialButton, selected: Boolean) {
         val backgroundColor = if (selected) R.color.ink else R.color.surface
-        val foregroundColor = if (selected) R.color.white else R.color.muted
+        val foregroundColor = if (selected) R.color.background else R.color.ink
         val strokeColor = if (selected) R.color.ink else R.color.border
         button.backgroundTintList = colorStateList(backgroundColor)
         button.setTextColor(ContextCompat.getColor(this, foregroundColor))
@@ -352,7 +352,7 @@ class ReportActivity : AppCompatActivity(), ReportContract.View {
 
     private fun styleUrgencyButton(button: MaterialButton, urgency: Urgency, selected: Boolean) {
         val backgroundColor = if (selected) urgency.selectedBackgroundRes else R.color.surface
-        val textColor = if (selected) urgency.accentColorRes else R.color.muted
+        val textColor = if (selected) urgency.accentColorRes else R.color.ink
         val strokeColor = if (selected) urgency.accentColorRes else R.color.border
         button.backgroundTintList = colorStateList(backgroundColor)
         button.setTextColor(ContextCompat.getColor(this, textColor))

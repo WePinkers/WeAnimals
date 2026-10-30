@@ -6,6 +6,7 @@ import android.os.Bundle
 import com.example.weanimals.core.di.AppContainer
 import com.example.weanimals.core.notification.NotificationChannelManager
 import com.example.weanimals.core.notification.NotificationDispatcher
+import com.example.weanimals.core.theme.ThemeManager
 
 class WeAnimalsApplication : Application() {
     val appContainer: AppContainer by lazy { AppContainer(this) }
@@ -14,6 +15,7 @@ class WeAnimalsApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        ThemeManager.initTheme(this)
         NotificationChannelManager.initChannels(this)
         registerActivityLifecycleTracker()
     }

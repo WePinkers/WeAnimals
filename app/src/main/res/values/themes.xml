@@ -1,7 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.WeAnimals" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="android:fontFamily">sans</item>
+        <item name="android:fontFamily">sans-serif</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:statusBarColor">@color/background</item>
         <item name="android:navigationBarColor">@color/background</item>
@@ -10,4 +10,11 @@
     </style>
 
     <style name="Theme.WeAnimals" parent="Base.Theme.WeAnimals" />
+
+    <style name="TextAppearance.Profile.StatValue" parent="TextAppearance.MaterialComponents.Headline4">
+        <item name="android:fontFamily">serif</item>
+        <item name="android:textColor">@color/ink</item>
+        <item name="android:textSize">28sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
 </resources>
