@@ -11,9 +11,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.weanimals.core.utils.ImageThumbnailLoader
 import com.example.weanimals.databinding.ActivityReportAdBinding
-import com.example.weanimals.lostandfound.model.AnnouncementReport
-import com.example.weanimals.lostandfound.model.FoundPetAd
-import com.example.weanimals.lostandfound.repository.LostAndFoundRepository
+import com.example.weanimals.user.lostandfound.model.AnnouncementReport
+import com.example.weanimals.user.lostandfound.model.FoundPetAd
+import com.example.weanimals.user.lostandfound.repository.LostAndFoundRepository
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 
@@ -83,7 +83,8 @@ class ReportAdActivity : AppCompatActivity() {
     }
 
     private fun setupListeners() {
-        binding.btnBackReportAd.setOnClickListener { finish() }
+        binding.screenHeader.headerTitle.text = "Denunciar anúncio"
+        binding.screenHeader.backButton.setOnClickListener { finish() }
 
         binding.layoutAdReportEvidence.setOnClickListener {
             photoPickerLauncher.launch("image/*")

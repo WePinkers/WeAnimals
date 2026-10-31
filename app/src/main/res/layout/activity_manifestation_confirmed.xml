@@ -39,7 +39,7 @@
             android:layout_marginTop="16dp"
             android:fontFamily="serif"
             android:text="Manifestação registrada!"
-            android:textColor="#132A20"
+            android:textColor="@color/pine900"
             android:textSize="20sp"
             android:textStyle="bold" />
 
@@ -48,7 +48,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
             android:text="Seu protocolo foi gerado com sucesso."
-            android:textColor="#5C5548"
+            android:textColor="@color/ink600"
             android:textSize="13.5sp" />
 
         <!-- Protocol Card -->
@@ -67,7 +67,7 @@
                 android:fontFamily="monospace"
                 android:letterSpacing="0.08"
                 android:text="NÚMERO DO PROTOCOLO"
-                android:textColor="#5C5548"
+                android:textColor="@color/ink600"
                 android:textSize="11sp"
                 android:textStyle="bold" />
 
@@ -84,7 +84,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="monospace"
                     android:text="WA-2026-000123"
-                    android:textColor="#132A20"
+                    android:textColor="@color/pine900"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
@@ -97,7 +97,7 @@
                     android:contentDescription="Copiar protocolo"
                     android:padding="6dp"
                     android:src="@drawable/ic_copy"
-                    app:tint="#1F3D2E" />
+                    app:tint="@color/pine800" />
             </LinearLayout>
         </LinearLayout>
 
@@ -107,7 +107,7 @@
             android:layout_marginTop="16dp"
             android:gravity="center"
             android:text="Você pode acompanhar o andamento da sua manifestação na seção “Meus protocolos”."
-            android:textColor="#5C5548"
+            android:textColor="@color/ink600"
             android:textSize="12.5sp" />
 
         <!-- Actions -->
@@ -116,7 +116,7 @@
             android:layout_width="match_parent"
             android:layout_height="52dp"
             android:layout_marginTop="32dp"
-            android:backgroundTint="#1F3D2E"
+            android:backgroundTint="@color/pine800"
             android:text="Ver meus protocolos"
             android:textColor="@color/white"
             android:textSize="15sp"
@@ -133,7 +133,7 @@
             android:focusable="true"
             android:padding="8dp"
             android:text="Voltar para o início"
-            android:textColor="#2C5240"
+            android:textColor="@color/pine700"
             android:textSize="14sp"
             android:textStyle="bold" />
 

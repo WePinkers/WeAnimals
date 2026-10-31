@@ -13,7 +13,8 @@ class AdReportSubmittedActivity : AppCompatActivity() {
         binding = ActivityAdReportSubmittedBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.btnBackAdReportSubmitted.setOnClickListener { finish() }
+        binding.screenHeader.headerTitle.text = "Denúncia enviada"
+        binding.screenHeader.backButton.setOnClickListener { finish() }
         binding.btnBackToAd.setOnClickListener { finish() }
     }
 }

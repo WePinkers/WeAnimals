@@ -6,9 +6,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.weanimals.databinding.ActivityMyAdDetailBinding
-import com.example.weanimals.lostandfound.model.FoundPetAd
-import com.example.weanimals.lostandfound.repository.LostAndFoundRepository
-import com.example.weanimals.lostandfound.service.PetMatchingService
+import com.example.weanimals.user.lostandfound.model.FoundPetAd
+import com.example.weanimals.user.lostandfound.repository.LostAndFoundRepository
+import com.example.weanimals.user.lostandfound.service.PetMatchingService
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

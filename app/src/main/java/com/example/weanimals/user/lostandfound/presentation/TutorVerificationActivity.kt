@@ -11,9 +11,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.weanimals.core.utils.ImageThumbnailLoader
 import com.example.weanimals.databinding.ActivityTutorVerificationBinding
-import com.example.weanimals.lostandfound.model.FoundPetAd
-import com.example.weanimals.lostandfound.model.TutorVerificationRequest
-import com.example.weanimals.lostandfound.repository.LostAndFoundRepository
+import com.example.weanimals.user.lostandfound.model.FoundPetAd
+import com.example.weanimals.user.lostandfound.model.TutorVerificationRequest
+import com.example.weanimals.user.lostandfound.repository.LostAndFoundRepository
 import kotlinx.coroutines.launch
 
 class TutorVerificationActivity : AppCompatActivity() {
@@ -88,7 +88,8 @@ class TutorVerificationActivity : AppCompatActivity() {
     }
 
     private fun setupListeners() {
-        binding.btnBackVerification.setOnClickListener { finish() }
+        binding.screenHeader.headerTitle.text = "Verificação de tutor"
+        binding.screenHeader.backButton.setOnClickListener { finish() }
 
         binding.etPetName.setOnFocusChangeListener { view, hasFocus ->
             if (hasFocus) {

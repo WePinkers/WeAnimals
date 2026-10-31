@@ -54,6 +54,8 @@ class AdjustLocationActivity : AppCompatActivity() {
         binding = ActivityAdjustLocationBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.screenHeader.headerTitle.text = "Onde encontrou o animal?"
+
         setupSpinner()
         prefillFromIntent()
         setupListeners()
@@ -91,7 +93,7 @@ class AdjustLocationActivity : AppCompatActivity() {
     }
 
     private fun setupListeners() {
-        binding.btnBack.setOnClickListener { finish() }
+        binding.screenHeader.backButton.setOnClickListener { finish() }
 
         binding.btnUseCurrentLocation.setOnClickListener {
             checkAndRequestLocationPermission()

@@ -19,7 +19,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Olá! Vi que você registrou que encontrou o Pipoca."
-            android:textColor="#132A20"
+            android:textColor="@color/pine900"
             android:textSize="14sp" />
 
         <TextView
@@ -29,7 +29,7 @@
             android:layout_gravity="end"
             android:layout_marginTop="2dp"
             android:text="14:32"
-            android:textColor="#5C5548"
+            android:textColor="@color/ink600"
             android:textSize="10sp" />
     </LinearLayout>
 </LinearLayout>

@@ -13,9 +13,9 @@ import androidx.lifecycle.lifecycleScope
 import com.example.weanimals.R
 import com.example.weanimals.core.utils.ImageThumbnailLoader
 import com.example.weanimals.databinding.ActivitySightingFormBinding
-import com.example.weanimals.lostandfound.model.FoundPetAd
-import com.example.weanimals.lostandfound.model.TutorVerificationRequest
-import com.example.weanimals.lostandfound.repository.LostAndFoundRepository
+import com.example.weanimals.user.lostandfound.model.FoundPetAd
+import com.example.weanimals.user.lostandfound.model.TutorVerificationRequest
+import com.example.weanimals.user.lostandfound.repository.LostAndFoundRepository
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 import java.util.Calendar

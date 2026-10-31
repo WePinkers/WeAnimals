@@ -13,8 +13,8 @@ import androidx.lifecycle.lifecycleScope
 import com.example.weanimals.R
 import com.example.weanimals.core.utils.ImageThumbnailLoader
 import com.example.weanimals.databinding.ActivityMyAdsBinding
-import com.example.weanimals.lostandfound.model.FoundPetAd
-import com.example.weanimals.lostandfound.repository.LostAndFoundRepository
+import com.example.weanimals.user.lostandfound.model.FoundPetAd
+import com.example.weanimals.user.lostandfound.repository.LostAndFoundRepository
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -31,7 +31,8 @@ class MyAdsActivity : AppCompatActivity() {
         binding = ActivityMyAdsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.btnBack.setOnClickListener { finish() }
+        binding.screenHeader.headerTitle.text = "Meus anúncios"
+        binding.screenHeader.backButton.setOnClickListener { finish() }
     }
 
     override fun onResume() {

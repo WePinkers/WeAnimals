@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="serif"
             android:text="Revisar manifestação"
-            android:textColor="#132A20"
+            android:textColor="@color/pine900"
             android:textSize="20sp"
             android:textStyle="bold" />
 
@@ -39,7 +39,7 @@
                 android:fontFamily="monospace"
                 android:letterSpacing="0.08"
                 android:text="TIPO"
-                android:textColor="#5C5548"
+                android:textColor="@color/ink600"
                 android:textSize="11sp"
                 android:textStyle="bold" />
 
@@ -52,7 +52,7 @@
                 android:paddingHorizontal="12dp"
                 android:paddingVertical="4dp"
                 android:text="Denúncia"
-                android:textColor="#1F3D2E"
+                android:textColor="@color/pine800"
                 android:textSize="12sp"
                 android:textStyle="bold" />
 
@@ -69,7 +69,7 @@
                 android:fontFamily="monospace"
                 android:letterSpacing="0.08"
                 android:text="ASSUNTO"
-                android:textColor="#5C5548"
+                android:textColor="@color/ink600"
                 android:textSize="11sp"
                 android:textStyle="bold" />
 
@@ -79,7 +79,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:text="Suposto golpe / cobrança indevida"
-                android:textColor="#132A20"
+                android:textColor="@color/pine900"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
@@ -96,7 +96,7 @@
                 android:fontFamily="monospace"
                 android:letterSpacing="0.08"
                 android:text="DESCRIÇÃO"
-                android:textColor="#5C5548"
+                android:textColor="@color/ink600"
                 android:textSize="11sp"
                 android:textStyle="bold" />
 
@@ -106,7 +106,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:text="Relato sobre cobrança indevida em campanha."
-                android:textColor="#132A20"
+                android:textColor="@color/pine900"
                 android:textSize="13.5sp" />
 
             <View
@@ -122,7 +122,7 @@
                 android:fontFamily="monospace"
                 android:letterSpacing="0.08"
                 android:text="IDENTIFICAÇÃO"
-                android:textColor="#5C5548"
+                android:textColor="@color/ink600"
                 android:textSize="11sp"
                 android:textStyle="bold" />
 
@@ -132,7 +132,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:text="Manifestação identificada"
-                android:textColor="#132A20"
+                android:textColor="@color/pine900"
                 android:textSize="13.5sp"
                 android:textStyle="bold" />
 
@@ -149,7 +149,7 @@
                 android:fontFamily="monospace"
                 android:letterSpacing="0.08"
                 android:text="ANEXOS"
-                android:textColor="#5C5548"
+                android:textColor="@color/ink600"
                 android:textSize="11sp"
                 android:textStyle="bold" />
 
@@ -159,7 +159,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:text="Nenhum arquivo"
-                android:textColor="#132A20"
+                android:textColor="@color/pine900"
                 android:textSize="13.5sp" />
         </LinearLayout>
 
@@ -169,7 +169,7 @@
             android:layout_width="match_parent"
             android:layout_height="52dp"
             android:layout_marginTop="28dp"
-            android:backgroundTint="#1F3D2E"
+            android:backgroundTint="@color/pine800"
             android:text="Enviar manifestação"
             android:textColor="@color/white"
             android:textSize="15sp"
@@ -187,7 +187,7 @@
             android:focusable="true"
             android:padding="8dp"
             android:text="Editar"
-            android:textColor="#2C5240"
+            android:textColor="@color/pine700"
             android:textSize="14sp"
             android:textStyle="bold" />
 

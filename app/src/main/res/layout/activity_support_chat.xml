@@ -27,7 +27,7 @@
             android:elevation="1dp"
             android:padding="6dp"
             android:src="@drawable/ic_arrow_back"
-            app:tint="#132A20" />
+            app:tint="@color/pine900" />
 
         <FrameLayout
             android:layout_width="38dp"
@@ -63,7 +63,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Atendimento WeAnimals"
-                android:textColor="#132A20"
+                android:textColor="@color/pine900"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
@@ -73,7 +73,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
                 android:text="● Online"
-                android:textColor="#2C5240"
+                android:textColor="@color/pine700"
                 android:textSize="11sp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -127,7 +127,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="serif"
                 android:text="Como foi seu atendimento?"
-                android:textColor="#132A20"
+                android:textColor="@color/pine900"
                 android:textSize="15sp"
                 android:textStyle="bold" />
 
@@ -143,7 +143,7 @@
                     android:layout_height="wrap_content"
                     android:padding="4dp"
                     android:text="★"
-                    android:textColor="#D9A441"
+                    android:textColor="@color/brass500"
                     android:textSize="24sp" />
 
                 <TextView
@@ -152,7 +152,7 @@
                     android:layout_height="wrap_content"
                     android:padding="4dp"
                     android:text="★"
-                    android:textColor="#D9A441"
+                    android:textColor="@color/brass500"
                     android:textSize="24sp" />
 
                 <TextView
@@ -161,7 +161,7 @@
                     android:layout_height="wrap_content"
                     android:padding="4dp"
                     android:text="★"
-                    android:textColor="#D9A441"
+                    android:textColor="@color/brass500"
                     android:textSize="24sp" />
 
                 <TextView
@@ -170,7 +170,7 @@
                     android:layout_height="wrap_content"
                     android:padding="4dp"
                     android:text="★"
-                    android:textColor="#D9A441"
+                    android:textColor="@color/brass500"
                     android:textSize="24sp" />
 
                 <TextView
@@ -179,7 +179,7 @@
                     android:layout_height="wrap_content"
                     android:padding="4dp"
                     android:text="★"
-                    android:textColor="#D9A441"
+                    android:textColor="@color/brass500"
                     android:textSize="24sp" />
             </LinearLayout>
 
@@ -193,8 +193,8 @@
                 android:inputType="text"
                 android:minHeight="40dp"
                 android:paddingHorizontal="12dp"
-                android:textColor="#132A20"
-                android:textColorHint="#5C5548"
+                android:textColor="@color/pine900"
+                android:textColorHint="@color/ink600"
                 android:textSize="13sp" />
 
             <Button
@@ -202,7 +202,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="44dp"
                 android:layout_marginTop="10dp"
-                android:backgroundTint="#1F3D2E"
+                android:backgroundTint="@color/pine800"
                 android:text="Enviar avaliação"
                 android:textColor="@color/white"
                 android:textSize="13sp"
@@ -219,7 +219,7 @@
                 android:focusable="true"
                 android:padding="6dp"
                 android:text="Iniciar nova conversa"
-                android:textColor="#2C5240"
+                android:textColor="@color/pine700"
                 android:textSize="12sp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -247,7 +247,7 @@
                     android:paddingHorizontal="12dp"
                     android:paddingVertical="6dp"
                     android:text="Denúncia de animal"
-                    android:textColor="#1F3D2E"
+                    android:textColor="@color/pine800"
                     android:textSize="12sp"
                     android:textStyle="bold" />
 
@@ -262,7 +262,7 @@
                     android:paddingHorizontal="12dp"
                     android:paddingVertical="6dp"
                     android:text="Adoção"
-                    android:textColor="#1F3D2E"
+                    android:textColor="@color/pine800"
                     android:textSize="12sp"
                     android:textStyle="bold" />
 
@@ -277,7 +277,7 @@
                     android:paddingHorizontal="12dp"
                     android:paddingVertical="6dp"
                     android:text="Minha conta"
-                    android:textColor="#1F3D2E"
+                    android:textColor="@color/pine800"
                     android:textSize="12sp"
                     android:textStyle="bold" />
 
@@ -292,7 +292,7 @@
                     android:paddingHorizontal="12dp"
                     android:paddingVertical="6dp"
                     android:text="Golpe ou cobrança"
-                    android:textColor="#1F3D2E"
+                    android:textColor="@color/pine800"
                     android:textSize="12sp"
                     android:textStyle="bold" />
 
@@ -307,7 +307,7 @@
                     android:paddingHorizontal="12dp"
                     android:paddingVertical="6dp"
                     android:text="Outro assunto"
-                    android:textColor="#1F3D2E"
+                    android:textColor="@color/pine800"
                     android:textSize="12sp"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -328,7 +328,7 @@
                 android:layout_height="16dp"
                 android:contentDescription="@null"
                 android:src="@drawable/ic_shield_outline"
-                app:tint="#BE6D46" />
+                app:tint="@color/clay600" />
 
             <TextView
                 android:layout_width="0dp"
@@ -336,7 +336,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_weight="1"
                 android:text="Atendimento oficial WeAnimals. Nunca pedimos senha ou transferências financeiras."
-                android:textColor="#132A20"
+                android:textColor="@color/pine900"
                 android:textSize="11sp" />
         </LinearLayout>
 
@@ -357,7 +357,7 @@
                 android:contentDescription="Anexar"
                 android:padding="6dp"
                 android:src="@drawable/ic_document"
-                app:tint="#5C5548" />
+                app:tint="@color/ink600" />
 
             <EditText
                 android:id="@+id/input_support_message"
@@ -370,8 +370,8 @@
                 android:imeOptions="actionSend"
                 android:inputType="textCapSentences"
                 android:paddingHorizontal="14dp"
-                android:textColor="#132A20"
-                android:textColorHint="#5C5548"
+                android:textColor="@color/pine900"
+                android:textColorHint="@color/ink600"
                 android:textSize="14sp" />
 
             <ImageButton

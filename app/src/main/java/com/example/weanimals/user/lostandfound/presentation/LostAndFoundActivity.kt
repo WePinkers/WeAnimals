@@ -2,27 +2,56 @@ package com.example.weanimals.user.lostandfound.presentation
 
 import android.content.Intent
 import android.graphics.Typeface
-import android.net.Uri
 import android.os.Bundle
 import android.view.Gravity
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import com.example.weanimals.R
+import com.example.weanimals.WeAnimalsApplication
 import com.example.weanimals.core.navigation.MainNavigation
 import com.example.weanimals.databinding.ActivityLostAndFoundBinding
-import com.example.weanimals.lostandfound.model.FoundPetAd
-import com.example.weanimals.lostandfound.repository.LostAndFoundRepository
+import com.example.weanimals.databinding.ItemLostFoundReportCardBinding
+import com.example.weanimals.user.home.presenter.HomeContract
+import com.example.weanimals.user.lostandfound.repository.LostAndFoundRepository
 import com.example.weanimals.user.map.overview.presentation.MapActivity
+import com.example.weanimals.user.reporting.report.domain.Report
+import com.example.weanimals.user.reporting.report.domain.ReportStatus
+import com.example.weanimals.user.reporting.tracking.presentation.TrackingActivity
 
 class LostAndFoundActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLostAndFoundBinding
     private var currentFilter = FilterType.ALL
+    private var allReports: List<Report> = emptyList()
+
+    private val reportsPresenter: HomeContract.Presenter by lazy {
+        (application as WeAnimalsApplication).appContainer.createHomePresenter()
+    }
+
+    private val reportsView = object : HomeContract.View {
+        override fun showGreeting(name: String?) = Unit
+
+        override fun showLoading() = Unit
+
+        override fun showReports(reports: List<Report>) {
+            allReports = reports
+            updateIndicators()
+            loadRecentReports(currentFilter)
+        }
+
+        override fun showReportsError(error: Throwable) {
+            allReports = emptyList()
+            updateIndicators()
+            loadRecentReports(currentFilter)
+        }
+
+        override fun openReport(report: Report) = Unit
+    }
 
     private enum class FilterType { ALL, LOST, FOUND }
 
@@ -36,6 +65,17 @@ class LostAndFoundActivity : AppCompatActivity() {
         setupListeners()
     }
 
+    override fun onStart() {
+        super.onStart()
+        reportsPresenter.attachView(reportsView)
+        reportsPresenter.loadReports()
+    }
+
+    override fun onStop() {
+        reportsPresenter.detachView()
+        super.onStop()
+    }
+
     override fun onResume() {
         super.onResume()
         updateIndicators()
@@ -44,9 +84,14 @@ class LostAndFoundActivity : AppCompatActivity() {
 
     private fun updateIndicators() {
         val summary = LostAndFoundRepository.getIndicatorsSummary(this)
-        binding.statLostCount.text = summary.lostCount.toString()
-        binding.statFoundCount.text = summary.foundCount.toString()
-        binding.statReunitedCount.text = summary.reunitedCount.toString()
+        val remoteLost = allReports.count { it.isLostReport() }
+        val remoteFound = allReports.count { !it.isLostReport() && it.status != ReportStatus.CLOSED }
+        val remoteReunited = allReports.count {
+            it.status == ReportStatus.RESCUED || it.status == ReportStatus.CLOSED
+        }
+        binding.statLostCount.text = (summary.lostCount + remoteLost).toString()
+        binding.statFoundCount.text = (summary.foundCount + remoteFound).toString()
+        binding.statReunitedCount.text = (summary.reunitedCount + remoteReunited).toString()
     }
 
     private fun setupListeners() {
@@ -68,6 +113,10 @@ class LostAndFoundActivity : AppCompatActivity() {
 
         binding.btnMySightingReports.setOnClickListener {
             startActivity(Intent(this, MySightingReportsActivity::class.java))
+        }
+
+        binding.btnViewMap.setOnClickListener {
+            startActivity(Intent(this, MapActivity::class.java))
         }
 
         binding.filterAll.setOnClickListener {
@@ -117,7 +166,17 @@ class LostAndFoundActivity : AppCompatActivity() {
             }
             .sortedByDescending { it.publicationTimestamp }
 
-        if (filtered.isEmpty()) {
+        val filteredReports = allReports
+            .filter { report ->
+                when (filter) {
+                    FilterType.ALL -> true
+                    FilterType.LOST -> report.isLostReport()
+                    FilterType.FOUND -> !report.isLostReport()
+                }
+            }
+            .sortedByDescending { it.createdAtMillis }
+
+        if (filtered.isEmpty() && filteredReports.isEmpty()) {
             val emptyMsg = when (filter) {
                 FilterType.ALL -> "Nenhum relato disponível no momento."
                 FilterType.LOST -> "Nenhum animal perdido foi registrado recentemente."
@@ -131,6 +190,10 @@ class LostAndFoundActivity : AppCompatActivity() {
             }
             container.addView(emptyTv)
             return
+        }
+
+        filteredReports.forEach { report ->
+            addReportCard(report, container)
         }
 
         for (ad in filtered) {
@@ -221,4 +284,46 @@ class LostAndFoundActivity : AppCompatActivity() {
             container.addView(card)
         }
     }
+
+    private fun addReportCard(report: Report, container: LinearLayout) {
+        val cardBinding = ItemLostFoundReportCardBinding.inflate(layoutInflater, container, false)
+        val isLost = report.isLostReport()
+        val animalLabel = when (report.animalType) {
+            Report.ANIMAL_CAT -> "Gato"
+            Report.ANIMAL_OTHER -> "Animal"
+            else -> "Cão"
+        }
+        val title = if (report.description.isNotBlank()) {
+            "$animalLabel — ${report.description.take(28)}"
+        } else {
+            "$animalLabel (#${report.protocolNumber})"
+        }
+        val status = when (report.status) {
+            ReportStatus.RESCUED -> "Resgatado"
+            ReportStatus.CLOSED -> "Reencontrado"
+            ReportStatus.IN_PROGRESS -> "Em atendimento"
+            else -> if (isLost) "Perdido" else "Encontrado"
+        }
+
+        cardBinding.reportTitle.text = title
+        cardBinding.reportSubtitle.text = "${report.address.ifBlank { "Localização registrada" }} · Relato da comunidade"
+        cardBinding.statusBadge.text = status
+        val accent = ContextCompat.getColor(this, if (isLost) R.color.alert600 else R.color.pine700)
+        cardBinding.indicatorBorder.setBackgroundColor(accent)
+        cardBinding.statusBadge.setTextColor(accent)
+        cardBinding.cardRoot.setOnClickListener {
+            if (isLost) {
+                startActivity(TrackingActivity.newIntent(this, report.id))
+            } else {
+                startActivity(
+                    Intent(this, FoundAnimalPublicDetailActivity::class.java)
+                        .putExtra("extra_report_id", report.id)
+                )
+            }
+        }
+        container.addView(cardBinding.root)
+    }
+
+    private fun Report.isLostReport(): Boolean =
+        urgency == Report.URGENCY_HIGH || status == ReportStatus.NEW
 }

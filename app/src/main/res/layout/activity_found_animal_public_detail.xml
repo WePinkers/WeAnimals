@@ -33,7 +33,7 @@
                     android:alpha="0.55"
                     android:contentDescription="@null"
                     android:src="@drawable/ic_paw"
-                    app:tint="#BE6D46" />
+                    app:tint="@color/clay600" />
 
                 <!-- Real photo preview -->
                 <ImageView
@@ -57,7 +57,7 @@
                     android:elevation="2dp"
                     android:padding="8dp"
                     android:src="@drawable/ic_arrow_back"
-                    app:tint="#132A20" />
+                    app:tint="@color/pine900" />
 
                 <!-- Floating Status Badge (Pill) -->
                 <TextView
@@ -92,7 +92,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="serif"
                     android:text="Cão caramelo encontrado"
-                    android:textColor="#132A20"
+                    android:textColor="@color/pine900"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
@@ -102,7 +102,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:text="Praça Central · achado há 2 dias"
-                    android:textColor="#5C5548"
+                    android:textColor="@color/ink600"
                     android:textSize="11sp" />
 
                 <!-- Tags / Chips Row -->
@@ -119,7 +119,7 @@
                         android:paddingHorizontal="12dp"
                         android:paddingVertical="4dp"
                         android:text="Cão"
-                        android:textColor="#1F3D2E"
+                        android:textColor="@color/pine800"
                         android:textSize="12sp"
                         android:textStyle="bold" />
 
@@ -131,7 +131,7 @@
                         android:paddingHorizontal="12dp"
                         android:paddingVertical="4dp"
                         android:text="Porte médio"
-                        android:textColor="#1F3D2E"
+                        android:textColor="@color/pine800"
                         android:textSize="12sp"
                         android:textStyle="bold" />
 
@@ -143,7 +143,7 @@
                         android:paddingHorizontal="12dp"
                         android:paddingVertical="4dp"
                         android:text="Adulto"
-                        android:textColor="#1F3D2E"
+                        android:textColor="@color/pine800"
                         android:textSize="12sp"
                         android:textStyle="bold" />
 
@@ -155,7 +155,7 @@
                         android:paddingHorizontal="12dp"
                         android:paddingVertical="4dp"
                         android:text="SRD"
-                        android:textColor="#1F3D2E"
+                        android:textColor="@color/pine800"
                         android:textSize="12sp"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -181,7 +181,7 @@
                             android:layout_weight="1"
                             android:fontFamily="serif"
                             android:text="Anúncio ativo"
-                            android:textColor="#132A20"
+                            android:textColor="@color/pine900"
                             android:textSize="13.5sp"
                             android:textStyle="bold" />
 
@@ -189,7 +189,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Restam 3 dias"
-                            android:textColor="#BE6D46"
+                            android:textColor="@color/clay600"
                             android:textSize="12sp"
                             android:textStyle="bold" />
                     </LinearLayout>
@@ -224,7 +224,7 @@
                             android:layout_height="20dp"
                             android:contentDescription="@null"
                             android:src="@drawable/ic_search"
-                            app:tint="#1F3D2E" />
+                            app:tint="@color/pine800" />
 
                         <LinearLayout
                             android:layout_width="0dp"
@@ -237,7 +237,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="Reação a nome"
-                                android:textColor="#5C5548"
+                                android:textColor="@color/ink600"
                                 android:textSize="11sp"
                                 android:textStyle="bold" />
 
@@ -246,7 +246,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
                                 android:text="Pareceu reconhecer &quot;Pipoca&quot;: veio em direção à voz e abanou o rabo."
-                                android:textColor="#132A20"
+                                android:textColor="@color/pine900"
                                 android:textSize="13sp" />
                         </LinearLayout>
                     </LinearLayout>
@@ -268,7 +268,7 @@
                             android:layout_height="20dp"
                             android:contentDescription="@null"
                             android:src="@drawable/ic_paw"
-                            app:tint="#1F3D2E" />
+                            app:tint="@color/pine800" />
 
                         <LinearLayout
                             android:layout_width="0dp"
@@ -281,7 +281,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="Marcas observadas"
-                                android:textColor="#5C5548"
+                                android:textColor="@color/ink600"
                                 android:textSize="11sp"
                                 android:textStyle="bold" />
 
@@ -290,7 +290,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
                                 android:text="Mancha branca em formato de coração no peito, orelha esquerda meio caída."
-                                android:textColor="#132A20"
+                                android:textColor="@color/pine900"
                                 android:textSize="13sp" />
                         </LinearLayout>
                     </LinearLayout>
@@ -312,7 +312,7 @@
                             android:layout_height="20dp"
                             android:contentDescription="@null"
                             android:src="@drawable/ic_map_pin"
-                            app:tint="#1F3D2E" />
+                            app:tint="@color/pine800" />
 
                         <LinearLayout
                             android:layout_width="0dp"
@@ -325,7 +325,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="Onde foi achado"
-                                android:textColor="#5C5548"
+                                android:textColor="@color/ink600"
                                 android:textSize="11sp"
                                 android:textStyle="bold" />
 
@@ -334,7 +334,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
                                 android:text="Praça Central, Vila Marlene · 26/08, pela manhã"
-                                android:textColor="#132A20"
+                                android:textColor="@color/pine900"
                                 android:textSize="13sp" />
                         </LinearLayout>
                     </LinearLayout>
@@ -356,7 +356,7 @@
                             android:layout_height="20dp"
                             android:contentDescription="@null"
                             android:src="@drawable/ic_profile"
-                            app:tint="#1F3D2E" />
+                            app:tint="@color/pine800" />
 
                         <LinearLayout
                             android:layout_width="0dp"
@@ -369,7 +369,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="Cuidado atual"
-                                android:textColor="#5C5548"
+                                android:textColor="@color/ink600"
                                 android:textSize="11sp"
                                 android:textStyle="bold" />
 
@@ -378,7 +378,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
                                 android:text="Com Marta N., informado por quem encontrou."
-                                android:textColor="#132A20"
+                                android:textColor="@color/pine900"
                                 android:textSize="13sp" />
                         </LinearLayout>
                     </LinearLayout>
@@ -395,7 +395,7 @@
                     android:focusable="true"
                     android:padding="8dp"
                     android:text="Denunciar anúncio"
-                    android:textColor="#A83232"
+                    android:textColor="@color/alert600"
                     android:textSize="13sp"
                     android:textStyle="bold" />
 
@@ -423,11 +423,11 @@
             android:layout_weight="1"
             android:backgroundTint="@color/white"
             android:text="Voltar"
-            android:textColor="#1F3D2E"
+            android:textColor="@color/pine800"
             android:textSize="14sp"
             android:textStyle="bold"
             app:cornerRadius="12dp"
-            app:strokeColor="#DDD6C4" />
+            app:strokeColor="@color/border" />
 
         <Button
             android:id="@+id/btn_claim_pet"

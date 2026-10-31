@@ -29,7 +29,7 @@
                 android:layout_gravity="center"
                 android:contentDescription="@null"
                 android:src="@drawable/ic_clock"
-                app:tint="#7A5710" />
+                app:tint="@color/gold" />
         </FrameLayout>
 
         <!-- Title & Subtitle -->
@@ -39,7 +39,7 @@
             android:layout_marginTop="16dp"
             android:fontFamily="serif"
             android:text="Respostas enviadas"
-            android:textColor="#132A20"
+            android:textColor="@color/pine900"
             android:textSize="22sp"
             android:textStyle="bold" />
 
@@ -49,7 +49,7 @@
             android:layout_marginTop="8dp"
             android:gravity="center"
             android:text="quem encontrou vai comparar com o que ela observou. Você recebe um aviso assim que o chat for liberado."
-            android:textColor="#5C5548"
+            android:textColor="@color/ink600"
             android:textSize="13.5sp" />
 
         <!-- Horizontal Step Flowbar -->
@@ -76,7 +76,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="4dp"
                 android:text="›"
-                android:textColor="#5C5548"
+                android:textColor="@color/ink600"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
@@ -87,7 +87,7 @@
                 android:paddingHorizontal="10dp"
                 android:paddingVertical="6dp"
                 android:text="Em análise"
-                android:textColor="#132A20"
+                android:textColor="@color/pine900"
                 android:textSize="11sp" />
 
             <TextView
@@ -95,7 +95,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="4dp"
                 android:text="›"
-                android:textColor="#5C5548"
+                android:textColor="@color/ink600"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
@@ -106,7 +106,7 @@
                 android:paddingHorizontal="10dp"
                 android:paddingVertical="6dp"
                 android:text="Chat liberado"
-                android:textColor="#132A20"
+                android:textColor="@color/pine900"
                 android:textSize="11sp" />
         </LinearLayout>
 
@@ -125,7 +125,7 @@
                 android:fontFamily="monospace"
                 android:letterSpacing="0.08"
                 android:text="SUAS RESPOSTAS"
-                android:textColor="#5C5548"
+                android:textColor="@color/ink600"
                 android:textSize="11sp"
                 android:textStyle="bold" />
 
@@ -135,7 +135,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:text="✓  Nome: Pipoca"
-                android:textColor="#132A20"
+                android:textColor="@color/pine900"
                 android:textSize="13.5sp"
                 android:textStyle="bold" />
 
@@ -145,7 +145,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
                 android:text="✓  Marca: mancha em formato de coração"
-                android:textColor="#132A20"
+                android:textColor="@color/pine900"
                 android:textSize="13.5sp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -168,7 +168,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Tempo médio de resposta: algumas horas"
-            android:textColor="#5C5548"
+            android:textColor="@color/ink600"
             android:textSize="11.5sp" />
 
         <!-- Shortcut Button to Test Screen 11 (Finder View) -->
@@ -179,7 +179,7 @@
             android:layout_height="48dp"
             android:layout_marginTop="20dp"
             android:text="Ver visão de quem encontrou"
-            android:textColor="#1F3D2E"
+            android:textColor="@color/pine800"
             android:textSize="12sp"
             android:textStyle="bold"
             app:cornerRadius="10dp"

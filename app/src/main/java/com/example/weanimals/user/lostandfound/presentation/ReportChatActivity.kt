@@ -6,9 +6,9 @@ import android.widget.RadioButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.weanimals.databinding.ActivityReportChatBinding
-import com.example.weanimals.lostandfound.model.ChatReport
-import com.example.weanimals.lostandfound.model.TutorVerificationRequest
-import com.example.weanimals.lostandfound.repository.LostAndFoundRepository
+import com.example.weanimals.user.lostandfound.model.ChatReport
+import com.example.weanimals.user.lostandfound.model.TutorVerificationRequest
+import com.example.weanimals.user.lostandfound.repository.LostAndFoundRepository
 import com.google.firebase.auth.FirebaseAuth
 
 class ReportChatActivity : AppCompatActivity() {
@@ -39,7 +39,8 @@ class ReportChatActivity : AppCompatActivity() {
     }
 
     private fun setupListeners() {
-        binding.btnBackReport.setOnClickListener { finish() }
+        binding.screenHeader.headerTitle.text = "Denunciar conversa"
+        binding.screenHeader.backButton.setOnClickListener { finish() }
 
         binding.btnSubmitReport.setOnClickListener {
             val checkedId = binding.rgReportReasons.checkedRadioButtonId

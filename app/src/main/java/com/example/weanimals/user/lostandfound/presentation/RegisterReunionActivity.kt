@@ -5,9 +5,9 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.weanimals.databinding.ActivityRegisterReunionBinding
-import com.example.weanimals.lostandfound.model.ReunionRequest
-import com.example.weanimals.lostandfound.model.TutorVerificationRequest
-import com.example.weanimals.lostandfound.repository.LostAndFoundRepository
+import com.example.weanimals.user.lostandfound.model.ReunionRequest
+import com.example.weanimals.user.lostandfound.model.TutorVerificationRequest
+import com.example.weanimals.user.lostandfound.repository.LostAndFoundRepository
 import com.google.firebase.auth.FirebaseAuth
 
 class RegisterReunionActivity : AppCompatActivity() {
@@ -21,6 +21,8 @@ class RegisterReunionActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityRegisterReunionBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        binding.screenHeader.headerTitle.text = "Registrar reencontro"
 
         val requestId = intent.getStringExtra(EXTRA_REQUEST_ID)
         if (requestId.isNullOrBlank()) {
@@ -40,7 +42,7 @@ class RegisterReunionActivity : AppCompatActivity() {
     }
 
     private fun setupListeners() {
-        binding.btnBackRegisterReunion.setOnClickListener { finish() }
+        binding.screenHeader.backButton.setOnClickListener { finish() }
 
         binding.cardOptionYes.setOnClickListener {
             selectedOptionYes = true

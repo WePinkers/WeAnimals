@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="serif"
             android:text="Tipo de manifestação"
-            android:textColor="#132A20"
+            android:textColor="@color/pine900"
             android:textSize="20sp"
             android:textStyle="bold" />
 
@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:text="Selecione o tipo de manifestação que deseja registrar."
-            android:textColor="#5C5548"
+            android:textColor="@color/ink600"
             android:textSize="13.5sp" />
 
         <!-- Option 1: Reclamação -->
@@ -50,7 +50,7 @@
                 android:layout_height="24dp"
                 android:contentDescription="@null"
                 android:src="@drawable/ic_community_comment"
-                app:tint="#1F3D2E" />
+                app:tint="@color/pine800" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -63,7 +63,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Reclamação"
-                    android:textColor="#132A20"
+                    android:textColor="@color/pine900"
                     android:textSize="15sp"
                     android:textStyle="bold" />
 
@@ -72,7 +72,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
                     android:text="Para relatar problemas com o app, ONGs e o atendimento."
-                    android:textColor="#5C5548"
+                    android:textColor="@color/ink600"
                     android:textSize="12sp" />
             </LinearLayout>
 
@@ -104,7 +104,7 @@
                 android:layout_height="24dp"
                 android:contentDescription="@null"
                 android:src="@drawable/ic_shield_outline"
-                app:tint="#1F3D2E" />
+                app:tint="@color/pine800" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -117,7 +117,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Denúncia"
-                    android:textColor="#132A20"
+                    android:textColor="@color/pine900"
                     android:textSize="15sp"
                     android:textStyle="bold" />
 
@@ -126,7 +126,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
                     android:text="Para comunicar suspeitas de golpes, fraudes ou campanhas falsas."
-                    android:textColor="#5C5548"
+                    android:textColor="@color/ink600"
                     android:textSize="12sp" />
             </LinearLayout>
 
@@ -158,7 +158,7 @@
                 android:layout_height="24dp"
                 android:contentDescription="@null"
                 android:src="@drawable/ic_info"
-                app:tint="#1F3D2E" />
+                app:tint="@color/pine800" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -171,7 +171,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Solicitação"
-                    android:textColor="#132A20"
+                    android:textColor="@color/pine900"
                     android:textSize="15sp"
                     android:textStyle="bold" />
 
@@ -180,7 +180,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
                     android:text="Para pedir esclarecimentos ou providências."
-                    android:textColor="#5C5548"
+                    android:textColor="@color/ink600"
                     android:textSize="12sp" />
             </LinearLayout>
 
@@ -199,7 +199,7 @@
             android:layout_width="match_parent"
             android:layout_height="52dp"
             android:layout_marginTop="32dp"
-            android:backgroundTint="#1F3D2E"
+            android:backgroundTint="@color/pine800"
             android:text="Próximo"
             android:textColor="@color/white"
             android:textSize="15sp"

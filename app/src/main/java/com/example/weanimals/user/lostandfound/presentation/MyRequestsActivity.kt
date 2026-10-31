@@ -1,7 +1,6 @@
 package com.example.weanimals.user.lostandfound.presentation
 
 import android.content.Intent
-import android.graphics.Color
 import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
@@ -13,8 +12,8 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.weanimals.R
 import com.example.weanimals.databinding.ActivityMyRequestsBinding
-import com.example.weanimals.lostandfound.model.TutorVerificationRequest
-import com.example.weanimals.lostandfound.repository.LostAndFoundRepository
+import com.example.weanimals.user.lostandfound.model.TutorVerificationRequest
+import com.example.weanimals.user.lostandfound.repository.LostAndFoundRepository
 import com.google.firebase.auth.FirebaseAuth
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -362,7 +361,7 @@ class MyRequestsActivity : AppCompatActivity() {
             when {
                 statusUpper == "RECUSADO" || statusUpper == "RECUSADA" -> {
                     text = "Recusada"
-                    setTextColor(Color.parseColor("#A83232"))
+                    setTextColor(getColor(R.color.alert600))
                     setBackgroundResource(R.drawable.bg_bar_red)
                     isClickable = false
                     isFocusable = false
@@ -370,7 +369,7 @@ class MyRequestsActivity : AppCompatActivity() {
                 }
                 else -> {
                     text = "Em análise"
-                    setTextColor(Color.parseColor("#7A5710"))
+                    setTextColor(getColor(R.color.gold))
                     setBackgroundResource(R.drawable.bg_bar_yellow)
                     isClickable = false
                     isFocusable = false

@@ -25,7 +25,7 @@
             android:layout_weight="1"
             android:fontFamily="monospace"
             android:text="WA-2026-000123"
-            android:textColor="#132A20"
+            android:textColor="@color/pine900"
             android:textSize="14sp"
             android:textStyle="bold" />
 
@@ -37,7 +37,7 @@
             android:paddingHorizontal="10dp"
             android:paddingVertical="4dp"
             android:text="Em análise"
-            android:textColor="#8A6413"
+            android:textColor="@color/gold"
             android:textSize="11.5sp"
             android:textStyle="bold" />
     </LinearLayout>
@@ -49,7 +49,7 @@
         android:layout_marginTop="8dp"
         android:fontFamily="serif"
         android:text="Suposto golpe / cobrança indevida"
-        android:textColor="#132A20"
+        android:textColor="@color/pine900"
         android:textSize="15sp"
         android:textStyle="bold" />
 
@@ -66,7 +66,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Denúncia · 22/10/2026"
-            android:textColor="#5C5548"
+            android:textColor="@color/ink600"
             android:textSize="12sp" />
 
         <ImageView
@@ -74,6 +74,6 @@
             android:layout_height="16dp"
             android:contentDescription="@null"
             android:src="@drawable/ic_chevron_right"
-            app:tint="#5C5548" />
+            app:tint="@color/ink600" />
     </LinearLayout>
 </LinearLayout>

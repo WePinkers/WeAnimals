@@ -14,6 +14,6 @@
         android:paddingHorizontal="14dp"
         android:paddingVertical="8dp"
         android:text="Chat liberado. Combinem a entrega em um lugar público."
-        android:textColor="#5C5548"
+        android:textColor="@color/ink600"
         android:textSize="12sp" />
 </LinearLayout>

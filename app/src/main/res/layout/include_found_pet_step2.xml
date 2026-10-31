@@ -179,7 +179,7 @@
                 android:minLines="3"
                 android:padding="14dp"
                 android:textColor="@color/ink"
-                android:textColorHint="#9C968A"
+                android:textColorHint="@color/ink600"
                 android:textSize="13sp" />
 
             <!-- NOMES QUE VOCÊ CHAMOU -->

@@ -39,7 +39,7 @@
             android:layout_marginTop="16dp"
             android:fontFamily="serif"
             android:text="Recebemos seu relato"
-            android:textColor="#132A20"
+            android:textColor="@color/pine900"
             android:textSize="20sp"
             android:textStyle="bold" />
 
@@ -49,7 +49,7 @@
             android:layout_marginTop="8dp"
             android:gravity="center"
             android:text="A equipe vai analisar e responder por e-mail e notificação."
-            android:textColor="#5C5548"
+            android:textColor="@color/ink600"
             android:textSize="13.5sp" />
 
         <!-- Summary Card -->
@@ -67,7 +67,7 @@
                 android:fontFamily="monospace"
                 android:letterSpacing="0.08"
                 android:text="PROBLEMA INFORMADO"
-                android:textColor="#5C5548"
+                android:textColor="@color/ink600"
                 android:textSize="11sp"
                 android:textStyle="bold" />
 
@@ -77,7 +77,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="Outro problema"
-                android:textColor="#132A20"
+                android:textColor="@color/pine900"
                 android:textSize="15sp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -97,7 +97,7 @@
                 android:layout_height="20dp"
                 android:contentDescription="@null"
                 android:src="@drawable/ic_lock_outline"
-                app:tint="#BE6D46" />
+                app:tint="@color/clay600" />
 
             <TextView
                 android:layout_width="0dp"
@@ -105,7 +105,7 @@
                 android:layout_marginStart="10dp"
                 android:layout_weight="1"
                 android:text="Por segurança, a equipe nunca pede sua senha por chat, e-mail ou telefone."
-                android:textColor="#132A20"
+                android:textColor="@color/pine900"
                 android:textSize="12sp" />
         </LinearLayout>
 
@@ -115,7 +115,7 @@
             android:layout_width="match_parent"
             android:layout_height="52dp"
             android:layout_marginTop="32dp"
-            android:backgroundTint="#1F3D2E"
+            android:backgroundTint="@color/pine800"
             android:text="Voltar à Ajuda e suporte"
             android:textColor="@color/white"
             android:textSize="15sp"

@@ -3,16 +3,22 @@ package com.example.weanimals.user.profile.overview.presentation
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.graphics.Matrix
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.view.View
 import android.view.Window
 import android.view.WindowManager
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
+import androidx.exifinterface.media.ExifInterface
 import androidx.lifecycle.lifecycleScope
 import com.example.weanimals.R
 import com.example.weanimals.WeAnimalsApplication
@@ -27,7 +33,8 @@ import com.example.weanimals.databinding.DialogEditProfileBinding
 import com.example.weanimals.databinding.DialogLogoutConfirmationBinding
 import com.example.weanimals.databinding.DialogPhotoOptionsBinding
 import com.example.weanimals.user.entry.presentation.EntryActivity
-import com.example.weanimals.user.lostandfound.presentation.ReportLostPetActivity
+import com.example.weanimals.user.lostandfound.presentation.LostAndFoundActivity
+import com.example.weanimals.user.ombudsman.presentation.HelpAndSupportActivity
 import com.example.weanimals.user.profile.campaigns.presentation.CampaignsActivity
 import com.example.weanimals.user.profile.favorites.presentation.FavoritesActivity
 import com.example.weanimals.user.profile.overview.presenter.ProfileContract
@@ -36,6 +43,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
+import java.io.File
+import java.io.FileOutputStream
 
 class ProfileActivity : AppCompatActivity(), ProfileContract.View {
     private lateinit var binding: ActivityProfileBinding
@@ -47,20 +56,42 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
 
     private var nomeAtual = "Usuário"
     private var bioAtual: String? = null
-    private var fotoUri: Uri? = null
+
+    private val previewLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            loadSavedProfilePicture()
+        }
+    }
 
     private val galleryLauncher = registerForActivityResult(
         ActivityResultContracts.GetContent()
-    ) { uri -> updatePhoto(uri) }
+    ) { uri ->
+        if (uri != null) openPhotoPreview(uri)
+    }
 
     private val cameraLauncher = registerForActivityResult(
         ActivityResultContracts.TakePicturePreview()
     ) { bitmap ->
         if (bitmap != null) {
-            binding.profileContent.profileHeader.profileAvatarImage.setImageBitmap(bitmap)
-            binding.profileContent.profileHeader.profileAvatarImage.visibility = android.view.View.VISIBLE
-            binding.profileContent.profileHeader.profileAvatarInitial.visibility = android.view.View.GONE
+            try {
+                val tempFile = File(cacheDir, "temp_camera_photo.jpg")
+                FileOutputStream(tempFile).use { out ->
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out)
+                }
+                openPhotoPreview(Uri.fromFile(tempFile))
+            } catch (error: Exception) {
+                error.printStackTrace()
+            }
         }
+    }
+
+    private fun openPhotoPreview(uri: Uri) {
+        val intent = Intent(this, ProfilePhotoPreviewActivity::class.java).apply {
+            putExtra(ProfilePhotoPreviewActivity.EXTRA_IMAGE_URI, uri.toString())
+        }
+        previewLauncher.launch(intent)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,11 +106,29 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
         setContentView(binding.root)
         MainNavigation.bind(this, binding.mainNavigation, MainNavigation.Destination.PROFILE)
         setupProfileActions()
+        loadSavedProfilePicture()
+        loadSavedProfileData()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadSavedProfilePicture()
+        loadSavedProfileData()
     }
 
     private fun setupProfileActions() {
-        binding.profileContent.profileHeader.profileEdit.setOnClickListener {
-            showEditProfileDialog()
+        binding.profileContent.profileHeader.profileSettings.setOnClickListener { view ->
+            val popup = PopupMenu(this, view)
+            popup.menu.add(0, MENU_EDIT_PROFILE, 0, "Editar perfil")
+            popup.setOnMenuItemClickListener { item ->
+                if (item.itemId == MENU_EDIT_PROFILE) {
+                    showEditProfileDialog()
+                    true
+                } else {
+                    false
+                }
+            }
+            popup.show()
         }
         binding.profileContent.profileHeader.profileBio.setOnClickListener {
             showEditProfileDialog()
@@ -87,8 +136,14 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
         binding.profileContent.profileHeader.profileEditPhoto.setOnClickListener {
             showPhotoOptions()
         }
-        binding.profileContent.lostAndFoundSection.reportLostPet.setOnClickListener {
-            startActivity(Intent(this, ReportLostPetActivity::class.java))
+        binding.profileContent.itemLostFound.rootLostFound.setOnClickListener {
+            startActivity(Intent(this, LostAndFoundActivity::class.java))
+        }
+        binding.profileContent.itemMyAds.rootMyAds.setOnClickListener {
+            startActivity(Intent(this, com.example.weanimals.user.lostandfound.presentation.MyAdsActivity::class.java))
+        }
+        binding.profileContent.btnHelpSupport.setOnClickListener {
+            startActivity(Intent(this, HelpAndSupportActivity::class.java))
         }
         binding.profileContent.itemMyReports.root.setOnClickListener {
             startActivity(Intent(this, MyReportsActivity::class.java))
@@ -108,10 +163,26 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
             }
         }
 
-        binding.profileContent.logoutButton.setOnClickListener {
+        binding.profileContent.itemLogoutRow.rootLogoutRow.setOnClickListener {
             showLogoutConfirmation()
         }
+        setupAccountSection()
         updateHeader()
+    }
+
+    private fun setupAccountSection() {
+        val hasPasswordProvider = FirebaseAuth.getInstance().currentUser?.providerData?.any {
+            it.providerId == "password"
+        } == true
+
+        if (hasPasswordProvider) {
+            binding.profileContent.sectionAccount.visibility = View.VISIBLE
+            binding.profileContent.itemChangePassword.rootChangePassword.setOnClickListener {
+                startActivity(Intent(this, ChangePasswordActivity::class.java))
+            }
+        } else {
+            binding.profileContent.sectionAccount.visibility = View.GONE
+        }
     }
 
     override fun onStart() {
@@ -119,11 +190,6 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
         presenter.attachView(this)
         presenter.start()
         loadCampaignSummary()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        presenter.start()
     }
 
     override fun onStop() {
@@ -137,7 +203,9 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
     }
 
     override fun showIdentity(name: String?) {
-        if (!name.isNullOrBlank()) {
+        val savedName = getSharedPreferences(PROFILE_PREFS, MODE_PRIVATE)
+            .getString(KEY_USER_NAME, null)
+        if (savedName.isNullOrBlank() && !name.isNullOrBlank()) {
             nomeAtual = name
             updateHeader()
         }
@@ -148,7 +216,35 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
     }
 
     override fun showReportsError() {
-        binding.profileContent.reportCount.text = "0"
+        binding.profileContent.reportCount.text = "—"
+    }
+
+    private fun loadSavedProfileData() {
+        val prefs = getSharedPreferences(PROFILE_PREFS, MODE_PRIVATE)
+        val savedName = prefs.getString(KEY_USER_NAME, null)
+        val savedBio = prefs.getString(KEY_USER_BIO, null)
+        val firebaseName = FirebaseAuth.getInstance().currentUser?.displayName
+
+        if (!savedName.isNullOrBlank()) {
+            nomeAtual = savedName
+        } else if (!firebaseName.isNullOrBlank()) {
+            nomeAtual = firebaseName
+        }
+        if (savedBio != null) {
+            bioAtual = savedBio.ifBlank { null }
+        }
+        updateHeader()
+    }
+
+    private fun saveProfileData(name: String, bio: String?) {
+        nomeAtual = name
+        bioAtual = bio
+        getSharedPreferences(PROFILE_PREFS, MODE_PRIVATE)
+            .edit()
+            .putString(KEY_USER_NAME, name)
+            .putString(KEY_USER_BIO, bio ?: "")
+            .apply()
+        updateHeader()
     }
 
     private fun updateHeader() {
@@ -159,8 +255,65 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
             bioAtual?.takeIf(String::isNotBlank) ?: "Toque para adicionar bio"
     }
 
+    private fun rotateBitmapIfNeeded(bitmap: Bitmap, imagePath: String): Bitmap {
+        return try {
+            val exif = ExifInterface(imagePath)
+            val orientation = exif.getAttributeInt(
+                ExifInterface.TAG_ORIENTATION,
+                ExifInterface.ORIENTATION_NORMAL
+            )
+            val rotation = when (orientation) {
+                ExifInterface.ORIENTATION_ROTATE_90 -> 90f
+                ExifInterface.ORIENTATION_ROTATE_180 -> 180f
+                ExifInterface.ORIENTATION_ROTATE_270 -> 270f
+                else -> 0f
+            }
+            if (rotation == 0f) bitmap else {
+                Bitmap.createBitmap(
+                    bitmap,
+                    0,
+                    0,
+                    bitmap.width,
+                    bitmap.height,
+                    Matrix().apply { postRotate(rotation) },
+                    true
+                )
+            }
+        } catch (error: Exception) {
+            error.printStackTrace()
+            bitmap
+        }
+    }
+
+    private fun removeProfilePicture() {
+        val prefs = getSharedPreferences(PROFILE_PREFS, MODE_PRIVATE)
+        prefs.getString(KEY_PROFILE_PICTURE_PATH, null)?.let { path ->
+            File(path).takeIf(File::exists)?.delete()
+        }
+        prefs.edit().remove(KEY_PROFILE_PICTURE_PATH).apply()
+        val image = binding.profileContent.profileHeader.profileAvatarImage
+        image.setImageDrawable(null)
+        image.visibility = View.GONE
+        binding.profileContent.profileHeader.profileAvatarInitial.visibility = View.VISIBLE
+    }
+
+    private fun loadSavedProfilePicture() {
+        val path = getSharedPreferences(PROFILE_PREFS, MODE_PRIVATE)
+            .getString(KEY_PROFILE_PICTURE_PATH, null)
+        if (path.isNullOrBlank()) return
+
+        val file = File(path)
+        if (!file.exists()) return
+
+        BitmapFactory.decodeFile(file.absolutePath)?.let { rawBitmap ->
+            val bitmap = rotateBitmapIfNeeded(rawBitmap, file.absolutePath)
+            binding.profileContent.profileHeader.profileAvatarImage.setImageBitmap(bitmap)
+            binding.profileContent.profileHeader.profileAvatarImage.visibility = View.VISIBLE
+            binding.profileContent.profileHeader.profileAvatarInitial.visibility = View.GONE
+        }
+    }
+
     private fun updatePhoto(uri: Uri?) {
-        fotoUri = uri
         val image = binding.profileContent.profileHeader.profileAvatarImage
         val initial = binding.profileContent.profileHeader.profileAvatarInitial
         if (uri == null) {
@@ -184,9 +337,11 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
             .setNegativeButton("Cancelar", null)
             .setPositiveButton("Salvar") { _, _ ->
                 val newName = dialogBinding.editName.text.toString().trim()
-                if (newName.isNotBlank()) nomeAtual = newName
-                bioAtual = dialogBinding.editBio.text.toString().trim().takeIf(String::isNotBlank)
-                updateHeader()
+                val newBio = dialogBinding.editBio.text.toString().trim().takeIf(String::isNotBlank)
+                saveProfileData(
+                    name = newName.ifBlank { nomeAtual },
+                    bio = newBio
+                )
             }
             .show()
     }
@@ -206,7 +361,7 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
         }
         dialogBinding.removePhotoButton.setOnClickListener {
             dialog.dismiss()
-            updatePhoto(null)
+            removeProfilePicture()
         }
         dialog.setOnShowListener {
             dialog.window?.apply {
@@ -292,5 +447,13 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
                 Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             )
         )
+    }
+
+    private companion object {
+        const val MENU_EDIT_PROFILE = 1
+        const val PROFILE_PREFS = "profile_prefs"
+        const val KEY_USER_NAME = "user_name"
+        const val KEY_USER_BIO = "user_bio"
+        const val KEY_PROFILE_PICTURE_PATH = "profile_picture_path"
     }
 }

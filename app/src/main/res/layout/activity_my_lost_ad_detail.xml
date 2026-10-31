@@ -28,7 +28,7 @@
                 android:alpha="0.55"
                 android:contentDescription="@null"
                 android:src="@drawable/ic_paw"
-                app:tint="#BE6D46" />
+                app:tint="@color/clay600" />
 
             <!-- Real photo preview -->
             <ImageView
@@ -52,7 +52,7 @@
                 android:elevation="2dp"
                 android:padding="8dp"
                 android:src="@drawable/ic_arrow_back"
-                app:tint="#132A20" />
+                app:tint="@color/pine900" />
 
             <!-- Floating Status Badge (Pill) -->
             <TextView
@@ -66,7 +66,7 @@
                 android:paddingHorizontal="12dp"
                 android:paddingVertical="4dp"
                 android:text="Ativo"
-                android:textColor="#A83232"
+                android:textColor="@color/alert600"
                 android:textSize="11.5sp"
                 android:textStyle="bold" />
         </FrameLayout>
@@ -87,7 +87,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="serif"
                 android:text="Pipoca, desaparecido há 4 dias"
-                android:textColor="#132A20"
+                android:textColor="@color/pine900"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
@@ -97,7 +97,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:text="Vila Marlene · publicado em 24/08/2026"
-                android:textColor="#5C5548"
+                android:textColor="@color/ink600"
                 android:textSize="11sp" />
 
             <!-- Tags / Chips Row -->
@@ -114,7 +114,7 @@
                     android:paddingHorizontal="12dp"
                     android:paddingVertical="4dp"
                     android:text="Cão"
-                    android:textColor="#1F3D2E"
+                    android:textColor="@color/pine800"
                     android:textSize="12sp"
                     android:textStyle="bold" />
 
@@ -126,7 +126,7 @@
                     android:paddingHorizontal="12dp"
                     android:paddingVertical="4dp"
                     android:text="Porte médio"
-                    android:textColor="#1F3D2E"
+                    android:textColor="@color/pine800"
                     android:textSize="12sp"
                     android:textStyle="bold" />
 
@@ -138,7 +138,7 @@
                     android:paddingHorizontal="12dp"
                     android:paddingVertical="4dp"
                     android:text="Adulto"
-                    android:textColor="#1F3D2E"
+                    android:textColor="@color/pine800"
                     android:textSize="12sp"
                     android:textStyle="bold" />
 
@@ -150,7 +150,7 @@
                     android:paddingHorizontal="12dp"
                     android:paddingVertical="4dp"
                     android:text="SRD"
-                    android:textColor="#1F3D2E"
+                    android:textColor="@color/pine800"
                     android:textSize="12sp"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -170,7 +170,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="serif"
                     android:text="3 possíveis matches"
-                    android:textColor="#1F3D2E"
+                    android:textColor="@color/pine800"
                     android:textSize="13sp"
                     android:textStyle="bold" />
 
@@ -179,7 +179,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
                     android:text="O melhor tem 91% de compatibilidade."
-                    android:textColor="#5C5548"
+                    android:textColor="@color/ink600"
                     android:textSize="11sp" />
 
                 <Button
@@ -187,7 +187,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="44dp"
                     android:layout_marginTop="12dp"
-                    android:backgroundTint="#1F3D2E"
+                    android:backgroundTint="@color/pine800"
                     android:text="VER MATCHES"
                     android:textColor="@color/white"
                     android:textSize="13sp"
@@ -216,15 +216,15 @@
                     android:paddingHorizontal="2dp"
                     android:singleLine="true"
                     android:text="Compartilhar"
-                    android:textColor="#1F3D2E"
+                    android:textColor="@color/pine800"
                     android:textSize="10.5sp"
                     android:textStyle="bold"
                     app:cornerRadius="8dp"
                     app:icon="@drawable/ic_share"
                     app:iconPadding="4dp"
                     app:iconSize="14dp"
-                    app:iconTint="#1F3D2E"
-                    app:strokeColor="#DDD6C4" />
+                    app:iconTint="@color/pine800"
+                    app:strokeColor="@color/border" />
 
                 <Button
                     android:id="@+id/btn_copy_link"
@@ -241,15 +241,15 @@
                     android:paddingHorizontal="2dp"
                     android:singleLine="true"
                     android:text="Copiar link"
-                    android:textColor="#1F3D2E"
+                    android:textColor="@color/pine800"
                     android:textSize="10.5sp"
                     android:textStyle="bold"
                     app:cornerRadius="8dp"
                     app:icon="@drawable/ic_copy"
                     app:iconPadding="4dp"
                     app:iconSize="14dp"
-                    app:iconTint="#1F3D2E"
-                    app:strokeColor="#DDD6C4" />
+                    app:iconTint="@color/pine800"
+                    app:strokeColor="@color/border" />
 
                 <Button
                     android:id="@+id/btn_poster"
@@ -266,15 +266,15 @@
                     android:paddingHorizontal="2dp"
                     android:singleLine="true"
                     android:text="Cartaz"
-                    android:textColor="#1F3D2E"
+                    android:textColor="@color/pine800"
                     android:textSize="10.5sp"
                     android:textStyle="bold"
                     app:cornerRadius="8dp"
                     app:icon="@drawable/ic_document"
                     app:iconPadding="4dp"
                     app:iconSize="14dp"
-                    app:iconTint="#1F3D2E"
-                    app:strokeColor="#DDD6C4" />
+                    app:iconTint="@color/pine800"
+                    app:strokeColor="@color/border" />
             </LinearLayout>
 
             <!-- 5. Management Rows -->
@@ -295,7 +295,7 @@
                     android:layout_height="18dp"
                     android:contentDescription="@null"
                     android:src="@drawable/ic_edit"
-                    app:tint="#1F3D2E" />
+                    app:tint="@color/pine800" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -303,7 +303,7 @@
                     android:layout_marginStart="12dp"
                     android:layout_weight="1"
                     android:text="Editar anúncio"
-                    android:textColor="#132A20"
+                    android:textColor="@color/pine900"
                     android:textSize="13.5sp"
                     android:textStyle="bold" />
 
@@ -312,7 +312,7 @@
                     android:layout_height="16dp"
                     android:contentDescription="@null"
                     android:src="@drawable/ic_chevron_right"
-                    app:tint="#5C5548" />
+                    app:tint="@color/ink600" />
             </LinearLayout>
 
             <View
@@ -336,7 +336,7 @@
                     android:layout_height="18dp"
                     android:contentDescription="@null"
                     android:src="@drawable/ic_close"
-                    app:tint="#5C5548" />
+                    app:tint="@color/ink600" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -344,7 +344,7 @@
                     android:layout_marginStart="12dp"
                     android:layout_weight="1"
                     android:text="Encerrar anúncio"
-                    android:textColor="#5C5548"
+                    android:textColor="@color/ink600"
                     android:textSize="13.5sp"
                     android:textStyle="bold" />
 
@@ -353,7 +353,7 @@
                     android:layout_height="16dp"
                     android:contentDescription="@null"
                     android:src="@drawable/ic_chevron_right"
-                    app:tint="#5C5548" />
+                    app:tint="@color/ink600" />
             </LinearLayout>
 
         </LinearLayout>

@@ -25,7 +25,7 @@
             android:layout_weight="1"
             android:fontFamily="serif"
             android:text="Como funciona o processo de adoção responsável?"
-            android:textColor="#132A20"
+            android:textColor="@color/pine900"
             android:textSize="15sp"
             android:textStyle="bold" />
 
@@ -36,7 +36,7 @@
             android:layout_marginStart="8dp"
             android:contentDescription="@null"
             android:src="@drawable/ic_chevron_right"
-            app:tint="#5C5548" />
+            app:tint="@color/ink600" />
     </LinearLayout>
 
     <LinearLayout
@@ -57,7 +57,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="O processo envolve a escolha do animal, preenchimento do questionário de compatibilidade e conversa direta com a ONG responsável."
-            android:textColor="#5C5548"
+            android:textColor="@color/ink600"
             android:textSize="13sp" />
 
         <!-- Helpful Feedback Row -->
@@ -73,7 +73,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Isso ajudou?"
-                android:textColor="#5C5548"
+                android:textColor="@color/ink600"
                 android:textSize="12sp" />
 
             <TextView
@@ -86,7 +86,7 @@
                 android:paddingHorizontal="12dp"
                 android:paddingVertical="4dp"
                 android:text="Sim"
-                android:textColor="#1F3D2E"
+                android:textColor="@color/pine800"
                 android:textSize="12sp"
                 android:textStyle="bold" />
 
@@ -101,7 +101,7 @@
                 android:paddingHorizontal="12dp"
                 android:paddingVertical="4dp"
                 android:text="Não"
-                android:textColor="#1F3D2E"
+                android:textColor="@color/pine800"
                 android:textSize="12sp"
                 android:textStyle="bold" />
         </LinearLayout>

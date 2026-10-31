@@ -16,8 +16,8 @@ import com.example.weanimals.core.utils.ImageThumbnailLoader
 import kotlinx.coroutines.launch
 import com.example.weanimals.R
 import com.example.weanimals.databinding.ActivityPublicAdDetailBinding
-import com.example.weanimals.lostandfound.model.FoundPetAd
-import com.example.weanimals.lostandfound.repository.LostAndFoundRepository
+import com.example.weanimals.user.lostandfound.model.FoundPetAd
+import com.example.weanimals.user.lostandfound.repository.LostAndFoundRepository
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -91,7 +91,7 @@ class PublicAdDetailActivity : AppCompatActivity() {
         // Section: MARCAS QUE DIFERENCIAM
         val marks = ad.marks?.trim()
         if (!marks.isNullOrBlank()) {
-            val cleanPhysicalMarks = com.example.weanimals.lostandfound.service.PetMatchingService.extractPhysicalMarksOnly(marks)
+            val cleanPhysicalMarks = com.example.weanimals.user.lostandfound.service.PetMatchingService.extractPhysicalMarksOnly(marks)
             if (cleanPhysicalMarks.isNotBlank()) {
                 binding.layoutMarksSection.visibility = View.VISIBLE
                 binding.tvMarksTextPublic.text = cleanPhysicalMarks

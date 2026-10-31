@@ -74,13 +74,15 @@ class FoundPetFormActivity : AppCompatActivity() {
         binding = ActivityFoundPetFormBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.screenHeader.headerTitle.text = "Encontrei um animal"
+
         setupHeader()
         setupStep1()
         setupStep2()
     }
 
     private fun setupHeader() {
-        binding.btnBackHeader.setOnClickListener {
+        binding.screenHeader.backButton.setOnClickListener {
             if (binding.viewFlipper.displayedChild == 1) {
                 showStep1()
             } else {
@@ -197,7 +199,7 @@ class FoundPetFormActivity : AppCompatActivity() {
                 ?: com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.displayName
                 ?: "Usuário"
 
-            val ad = com.example.weanimals.lostandfound.model.FoundPetAd(
+            val ad = com.example.weanimals.user.lostandfound.model.FoundPetAd(
                 category = "ENCONTRADO",
                 publisherName = currentProfileName,
                 species = finalSpecies,
@@ -219,7 +221,7 @@ class FoundPetFormActivity : AppCompatActivity() {
                 currentSituation = selectedCurrentSituation ?: "Comigo"
             )
 
-            com.example.weanimals.lostandfound.repository.LostAndFoundRepository.saveAd(this, ad)
+            com.example.weanimals.user.lostandfound.repository.LostAndFoundRepository.saveAd(this, ad)
 
             Toast.makeText(this, "Anúncio publicado com sucesso!", Toast.LENGTH_SHORT).show()
 

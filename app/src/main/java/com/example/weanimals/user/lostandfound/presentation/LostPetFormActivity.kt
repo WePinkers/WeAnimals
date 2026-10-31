@@ -14,8 +14,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.example.weanimals.R
 import com.example.weanimals.databinding.ActivityLostPetFormBinding
-import com.example.weanimals.lostandfound.model.FoundPetAd
-import com.example.weanimals.lostandfound.repository.LostAndFoundRepository
+import com.example.weanimals.user.lostandfound.model.FoundPetAd
+import com.example.weanimals.user.lostandfound.repository.LostAndFoundRepository
 import com.google.firebase.auth.FirebaseAuth
 import java.util.Calendar
 import java.util.Locale
@@ -72,6 +72,8 @@ class LostPetFormActivity : AppCompatActivity() {
         binding = ActivityLostPetFormBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.screenHeader.headerTitle.text = "Perdi meu animal"
+
         setupHeader()
         setupStep1()
         setupStep2()
@@ -79,7 +81,7 @@ class LostPetFormActivity : AppCompatActivity() {
     }
 
     private fun setupHeader() {
-        binding.btnBackHeader.setOnClickListener {
+        binding.screenHeader.backButton.setOnClickListener {
             when (binding.viewFlipper.displayedChild) {
                 1 -> showStep1()
                 2 -> showStep2()

@@ -15,10 +15,10 @@ import androidx.lifecycle.lifecycleScope
 import com.example.weanimals.R
 import com.example.weanimals.core.utils.ImageThumbnailLoader
 import com.example.weanimals.databinding.ActivityMatchesListBinding
-import com.example.weanimals.lostandfound.model.FoundPetAd
-import com.example.weanimals.lostandfound.repository.LostAndFoundRepository
-import com.example.weanimals.lostandfound.service.PetMatchResult
-import com.example.weanimals.lostandfound.service.PetMatchingService
+import com.example.weanimals.user.lostandfound.model.FoundPetAd
+import com.example.weanimals.user.lostandfound.repository.LostAndFoundRepository
+import com.example.weanimals.user.lostandfound.service.PetMatchResult
+import com.example.weanimals.user.lostandfound.service.PetMatchingService
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date

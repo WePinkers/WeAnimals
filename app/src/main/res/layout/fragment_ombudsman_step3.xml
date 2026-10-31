@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="serif"
             android:text="Identificação"
-            android:textColor="#132A20"
+            android:textColor="@color/pine900"
             android:textSize="20sp"
             android:textStyle="bold" />
 
@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:text="Como você deseja se identificar?"
-            android:textColor="#5C5548"
+            android:textColor="@color/ink600"
             android:textSize="13.5sp" />
 
         <!-- Option 1: Identificada -->
@@ -50,7 +50,7 @@
                 android:layout_height="24dp"
                 android:contentDescription="@null"
                 android:src="@drawable/ic_profile"
-                app:tint="#1F3D2E" />
+                app:tint="@color/pine800" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -63,7 +63,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Manifestação identificada"
-                    android:textColor="#132A20"
+                    android:textColor="@color/pine900"
                     android:textSize="15sp"
                     android:textStyle="bold" />
 
@@ -72,7 +72,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
                     android:text="Seu nome e dados serão registrados."
-                    android:textColor="#5C5548"
+                    android:textColor="@color/ink600"
                     android:textSize="12sp" />
             </LinearLayout>
 
@@ -104,7 +104,7 @@
                 android:layout_height="24dp"
                 android:contentDescription="@null"
                 android:src="@drawable/ic_lock_outline"
-                app:tint="#1F3D2E" />
+                app:tint="@color/pine800" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -117,7 +117,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Manifestação anônima"
-                    android:textColor="#132A20"
+                    android:textColor="@color/pine900"
                     android:textSize="15sp"
                     android:textStyle="bold" />
 
@@ -126,7 +126,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
                     android:text="Sua identidade não será revelada. O acompanhamento poderá ser feito por um código."
-                    android:textColor="#5C5548"
+                    android:textColor="@color/ink600"
                     android:textSize="12sp" />
             </LinearLayout>
 
@@ -154,7 +154,7 @@
                 android:layout_height="20dp"
                 android:contentDescription="@null"
                 android:src="@drawable/ic_info"
-                app:tint="#BE6D46" />
+                app:tint="@color/clay600" />
 
             <TextView
                 android:layout_width="0dp"
@@ -162,7 +162,7 @@
                 android:layout_marginStart="10dp"
                 android:layout_weight="1"
                 android:text="A opção anônima fica sujeita às regras definidas para o projeto. O acompanhamento precisará de um mecanismo que não dependa da identificação pessoal."
-                android:textColor="#132A20"
+                android:textColor="@color/pine900"
                 android:textSize="12sp" />
         </LinearLayout>
 
@@ -172,7 +172,7 @@
             android:layout_width="match_parent"
             android:layout_height="52dp"
             android:layout_marginTop="28dp"
-            android:backgroundTint="#1F3D2E"
+            android:backgroundTint="@color/pine800"
             android:text="Revisar e enviar"
             android:textColor="@color/white"
             android:textSize="15sp"

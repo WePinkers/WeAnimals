@@ -153,7 +153,7 @@
                     android:inputType="textCapSentences"
                     android:paddingHorizontal="14dp"
                     android:textColor="@color/ink"
-                    android:textColorHint="#9C968A"
+                    android:textColorHint="@color/ink600"
                     android:textSize="14sp" />
 
             </LinearLayout>

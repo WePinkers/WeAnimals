@@ -4,8 +4,8 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.weanimals.databinding.ActivityConfirmReunionBinding
-import com.example.weanimals.lostandfound.model.ReunionRequest
-import com.example.weanimals.lostandfound.repository.LostAndFoundRepository
+import com.example.weanimals.user.lostandfound.model.ReunionRequest
+import com.example.weanimals.user.lostandfound.repository.LostAndFoundRepository
 
 class ConfirmReunionActivity : AppCompatActivity() {
 
@@ -18,6 +18,8 @@ class ConfirmReunionActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityConfirmReunionBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        binding.screenHeader.headerTitle.text = "Confirmar reencontro"
 
         val requestId = intent.getStringExtra(EXTRA_REQUEST_ID)
         if (requestId.isNullOrBlank()) {
@@ -37,7 +39,7 @@ class ConfirmReunionActivity : AppCompatActivity() {
     }
 
     private fun setupListeners() {
-        binding.btnBackConfirmReunion.setOnClickListener { finish() }
+        binding.screenHeader.backButton.setOnClickListener { finish() }
 
         binding.cardConfirmYes.setOnClickListener {
             selectedYes = true

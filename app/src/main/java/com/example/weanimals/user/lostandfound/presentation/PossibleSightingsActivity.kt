@@ -12,7 +12,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.weanimals.R
 import com.example.weanimals.databinding.ActivityPossibleSightingsBinding
-import com.example.weanimals.lostandfound.repository.LostAndFoundRepository
+import com.example.weanimals.user.lostandfound.repository.LostAndFoundRepository
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
