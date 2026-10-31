@@ -30,6 +30,28 @@ data class FoundPetAd(
     var isReunited: Boolean = false,
     var reunitedTimestamp: Long? = null
 ) {
+    fun getMapLatLng(): Pair<Double, Double> {
+        val baseLat = when (city?.lowercase()?.trim()) {
+            "rio de janeiro" -> -22.9068
+            "brasília", "brasilia" -> -15.7975
+            "salvador" -> -12.9777
+            "belo horizonte" -> -19.9167
+            else -> -23.5135
+        }
+        val baseLng = when (city?.lowercase()?.trim()) {
+            "rio de janeiro" -> -43.1729
+            "brasília", "brasilia" -> -47.8919
+            "salvador" -> -38.5016
+            "belo horizonte" -> -43.9345
+            else -> -46.5812
+        }
+
+        val offsetLat = ((id.hashCode() % 50) * 0.0003)
+        val offsetLng = (((id.hashCode() / 50) % 50) * 0.0003)
+
+        return Pair(baseLat + offsetLat, baseLng + offsetLng)
+    }
+
     fun isOwnedByCurrent(): Boolean {
         val currentUid = FirebaseAuth.getInstance().currentUser?.uid ?: "local_user"
         return ownerUserId == currentUid

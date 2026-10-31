@@ -24,6 +24,11 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        val mapsApiKey = project.findProperty("MAPS_API_KEY") as? String
+            ?: System.getenv("MAPS_API_KEY")
+            ?: ""
+        manifestPlaceholders["mapsApiKey"] = mapsApiKey
     }
 
     buildTypes {
@@ -58,6 +63,7 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
     implementation("androidx.exifinterface:exifinterface:1.4.2")
+    implementation("com.google.android.gms:play-services-maps:19.0.0")
     implementation("org.maplibre.gl:android-sdk:11.8.0")
     implementation(platform("androidx.compose:compose-bom:2024.10.01"))
     implementation("androidx.compose.ui:ui")
