@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    tools:context=".adoption.tracking.presentation.AdoptionTrackingActivity">
+    tools:context=".user.adoption.tracking.presentation.AdoptionTrackingActivity">
 
     <ScrollView
         android:layout_width="match_parent"

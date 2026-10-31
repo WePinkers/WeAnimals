@@ -42,7 +42,7 @@
                 android:minLines="3"
                 android:padding="14dp"
                 android:textColor="@color/ink"
-                android:textColorHint="#9C968A"
+                android:textColorHint="@color/ink600"
                 android:textSize="14sp" />
 
             <!-- Foto do animal (opcional) -->
@@ -119,7 +119,7 @@
                 android:minLines="3"
                 android:padding="14dp"
                 android:textColor="@color/ink"
-                android:textColorHint="#9C968A"
+                android:textColorHint="@color/ink600"
                 android:textSize="14sp" />
 
             <!-- Card de Privacidade -->

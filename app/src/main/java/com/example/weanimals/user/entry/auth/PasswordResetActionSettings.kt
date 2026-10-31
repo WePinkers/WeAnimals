@@ -1,0 +1,21 @@
+package com.example.weanimals.user.entry.auth
+
+import android.content.Context
+import android.net.Uri
+import com.google.firebase.auth.ActionCodeSettings
+
+object PasswordResetActionSettings {
+
+    fun forContext(context: Context): ActionCodeSettings {
+        val continueUrl = Uri.parse(ACTION_HOST_URL).toString()
+
+        return ActionCodeSettings.newBuilder()
+            .setUrl(continueUrl)
+            .setAndroidPackageName(context.packageName, false, null)
+            .setHandleCodeInApp(false)
+            .build()
+    }
+
+    private const val ACTION_HOST_URL =
+        "https://weanimals-642a9.web.app/password-reset-complete"
+}

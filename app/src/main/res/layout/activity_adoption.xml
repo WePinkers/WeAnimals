@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/background"
     android:orientation="vertical"
-    tools:context=".adoption.listing.presentation.AdoptionActivity">
+    tools:context=".user.adoption.listing.presentation.AdoptionActivity">
 
     <LinearLayout
         android:id="@+id/screen_body"

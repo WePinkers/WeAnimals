@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/background"
     android:orientation="vertical"
-    tools:context=".reporting.triage.presentation.TriageActivity">
+    tools:context=".user.reporting.triage.presentation.TriageActivity">
 
     <include
         android:id="@+id/triage_header"

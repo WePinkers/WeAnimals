@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/background"
     android:orientation="vertical"
-    tools:context=".adoption.confirmation.presentation.AdoptionConfirmationActivity">
+    tools:context=".user.adoption.confirmation.presentation.AdoptionConfirmationActivity">
 
     <include
         android:id="@+id/confirmation_header"

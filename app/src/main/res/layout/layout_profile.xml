@@ -35,6 +35,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:baselineAligned="false"
                 android:orientation="horizontal"
                 tools:ignore="UselessParent">
 
@@ -49,13 +50,10 @@
 
                     <TextView
                         android:id="@+id/report_count"
+                        style="@style/TextAppearance.Profile.StatValue"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="serif"
-                        android:text="0"
-                        android:textColor="@color/ink"
-                        android:textSize="28sp"
-                        android:textStyle="bold" />
+                        tools:text="0" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -76,13 +74,10 @@
 
                     <TextView
                         android:id="@+id/campaign_count"
+                        style="@style/TextAppearance.Profile.StatValue"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="serif"
-                        android:text="0"
-                        android:textColor="@color/ink"
-                        android:textSize="28sp"
-                        android:textStyle="bold" />
+                        tools:text="0" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -93,7 +88,6 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- Reliability Card -->
             <include layout="@layout/item_profile_reliability_card" />
 
             <!-- Activity Section -->
@@ -133,7 +127,12 @@
 
             <include android:id="@+id/item_favorites" layout="@layout/item_profile_activity_favorites" />
 
-            <!-- Account Section -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/border"
+                android:layout_marginHorizontal="0dp"/>
+
             <LinearLayout
                 android:id="@+id/section_account"
                 android:layout_width="match_parent"
@@ -163,7 +162,6 @@
                     layout="@layout/item_profile_change_password" />
             </LinearLayout>
 
-            <!-- Animais Achados e Perdidos Section -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -197,7 +195,65 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
+                android:layout_marginTop="12dp"
                 android:background="@color/border" />
+
+            <LinearLayout
+                android:id="@+id/btn_help_support"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingVertical="16dp">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_headset"
+                    app:tint="@color/ink" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-medium"
+                        android:text="Ajuda e suporte"
+                        android:textColor="@color/ink"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="FAQ, ouvidoria e atendimento"
+                        android:textColor="@color/muted"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_chevron_right"
+                    app:tint="@color/muted" />
+            </LinearLayout>
+
+            <include android:id="@+id/item_dark_mode" layout="@layout/item_profile_dark_mode" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/border"
+                android:layout_marginHorizontal="0dp"/>
 
             <include
                 android:id="@+id/item_logout_row"

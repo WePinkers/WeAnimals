@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    tools:context=".community.campaign.presentation.CampaignDetailActivity">
+    tools:context=".user.community.campaign.presentation.CampaignDetailActivity">
 
     <LinearLayout
         android:id="@+id/content_root"

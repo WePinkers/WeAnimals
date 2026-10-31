@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/ink"
+    android:background="@color/profile_header_bg"
     android:orientation="vertical"
     android:paddingStart="20dp"
     android:paddingTop="28dp"
@@ -32,14 +32,14 @@
             android:layout_width="64dp"
             android:layout_height="64dp">
 
-            <com.google.android.material.imageview.ShapeableImageView
+            <ImageView
                 android:id="@+id/profile_avatar_image"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:background="@drawable/bg_profile_avatar"
                 android:contentDescription="Foto do perfil"
                 android:scaleType="centerCrop"
-                android:visibility="gone"
-                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.Corner.Percent50" />
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/profile_avatar_initial"
@@ -53,24 +53,17 @@
                 android:textSize="24sp"
                 android:textStyle="bold" />
 
-            <FrameLayout
+            <ImageButton
                 android:id="@+id/profile_edit_photo"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:layout_gravity="bottom|end"
                 android:background="@drawable/bg_profile_photo_badge"
-                android:clickable="true"
-                android:focusable="true"
-                android:contentDescription="Editar foto">
-
-                <ImageView
-                    android:layout_width="11dp"
-                    android:layout_height="11dp"
-                    android:layout_gravity="center"
-                    android:contentDescription="@null"
-                    android:src="@drawable/ic_camera"
-                    app:tint="@color/white" />
-            </FrameLayout>
+                android:contentDescription="Editar foto"
+                android:padding="4dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_camera"
+                app:tint="@color/white" />
         </FrameLayout>
 
         <LinearLayout
