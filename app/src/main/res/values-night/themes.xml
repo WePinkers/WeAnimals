@@ -1,10 +1,17 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+    <!--
+      ~ Night mode (dark theme) configuration for WeAnimals.
+      ~ Defines the base application theme and system bar appearances for dark mode.
+      -->
+
+    <!-- Base application theme inheriting from Material 3 DayNight NoActionBar -->
     <style name="Base.Theme.WeAnimals" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="android:fontFamily">sans</item>
-        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:windowLightStatusBar">false</item>
         <item name="android:statusBarColor">@color/background</item>
+        <!-- Background color for the system navigation bar -->
         <item name="android:navigationBarColor">@color/background</item>
-        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:windowLightNavigationBar" tools:ignore="NewApi">false</item>
+        <item name="android:colorAccent">@color/terracotta</item>
     </style>
 </resources>

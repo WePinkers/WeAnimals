@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/background"
     android:orientation="vertical"
-    tools:context=".adoption.checkin.presentation.AdoptionFollowUpActivity">
+    tools:context=".user.adoption.checkin.presentation.AdoptionFollowUpActivity">
 
     <include
         android:id="@+id/follow_up_header"

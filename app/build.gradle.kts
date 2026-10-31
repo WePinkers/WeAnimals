@@ -9,9 +9,7 @@ android {
         viewBinding = true
     }
     compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
+        version = release(37)
     }
 
     defaultConfig {
@@ -55,6 +53,7 @@ dependencies {
     implementation(libs.play.services.auth)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
+    implementation("androidx.exifinterface:exifinterface:1.4.2")
     implementation("org.maplibre.gl:android-sdk:11.8.0")
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
@@ -62,4 +61,5 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
+    implementation("com.github.CanHub:Android-Image-Cropper:4.5.0")
 }

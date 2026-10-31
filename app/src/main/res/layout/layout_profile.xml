@@ -5,7 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
+    android:clipToPadding="false"
     android:fillViewport="true"
+    android:paddingBottom="96dp"
     tools:ignore="UnusedResources">
 
     <LinearLayout
@@ -24,7 +26,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="-40dp"
+            android:layout_marginTop="-36dp"
             android:orientation="vertical"
             android:paddingHorizontal="20dp"
             android:paddingBottom="24dp">
@@ -33,12 +35,13 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:baselineAligned="false"
                 android:orientation="horizontal"
                 tools:ignore="UselessParent">
 
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="110dp"
+                    android:layout_height="104dp"
                     android:layout_marginEnd="6dp"
                     android:layout_weight="1"
                     android:background="@drawable/bg_stat_card"
@@ -47,13 +50,10 @@
 
                     <TextView
                         android:id="@+id/report_count"
+                        style="@style/TextAppearance.Profile.StatValue"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="serif"
-                        android:text="0"
-                        android:textColor="@color/ink"
-                        android:textSize="28sp"
-                        android:textStyle="bold" />
+                        tools:text="0" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -65,7 +65,7 @@
 
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="110dp"
+                    android:layout_height="104dp"
                     android:layout_marginStart="6dp"
                     android:layout_weight="1"
                     android:background="@drawable/bg_stat_card"
@@ -74,13 +74,10 @@
 
                     <TextView
                         android:id="@+id/campaign_count"
+                        style="@style/TextAppearance.Profile.StatValue"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="serif"
-                        android:text="0"
-                        android:textColor="@color/ink"
-                        android:textSize="28sp"
-                        android:textStyle="bold" />
+                        tools:text="0" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -90,6 +87,8 @@
                         android:textSize="12sp" />
                 </LinearLayout>
             </LinearLayout>
+
+            <include layout="@layout/item_profile_reliability_card" />
 
             <!-- Activity Section -->
             <TextView
@@ -134,40 +133,131 @@
                 android:background="@color/border"
                 android:layout_marginHorizontal="0dp"/>
 
-            <include
-                android:id="@+id/lost_and_found_section"
-                layout="@layout/view_lost_and_found_section"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
             <LinearLayout
-                android:id="@+id/logout_button"
+                android:id="@+id/section_account"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="28dp"
+                    android:fontFamily="monospace"
+                    android:letterSpacing="0.1"
+                    android:text="CONTA"
+                    android:textColor="@color/muted"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="12dp"
+                    android:background="@color/border" />
+
+                <include
+                    android:id="@+id/item_change_password"
+                    layout="@layout/item_profile_change_password" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:fontFamily="monospace"
+                android:letterSpacing="0.1"
+                android:text="ANIMAIS ACHADOS E PERDIDOS"
+                android:textColor="@color/muted"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
                 android:layout_marginTop="12dp"
+                android:background="@color/border" />
+
+            <include
+                android:id="@+id/item_lost_found"
+                layout="@layout/item_profile_lost_found" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/border" />
+
+            <include
+                android:id="@+id/item_my_ads"
+                layout="@layout/item_profile_my_ads" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="12dp"
+                android:background="@color/border" />
+
+            <LinearLayout
+                android:id="@+id/btn_help_support"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:background="?attr/selectableItemBackground"
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center_vertical"
-                android:minHeight="56dp"
                 android:orientation="horizontal"
-                android:paddingVertical="12dp">
+                android:paddingVertical="16dp">
 
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:contentDescription="@null"
-                    android:src="@drawable/ic_logout" />
+                    android:src="@drawable/ic_headset"
+                    app:tint="@color/ink" />
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:text="@string/profile_logout"
-                    android:textColor="@color/alert600"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-medium"
+                        android:text="Ajuda e suporte"
+                        android:textColor="@color/ink"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="FAQ, ouvidoria e atendimento"
+                        android:textColor="@color/muted"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_chevron_right"
+                    app:tint="@color/muted" />
             </LinearLayout>
+
+            <include android:id="@+id/item_dark_mode" layout="@layout/item_profile_dark_mode" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/border"
+                android:layout_marginHorizontal="0dp"/>
+
+            <include
+                android:id="@+id/item_logout_row"
+                layout="@layout/item_profile_logout_row" />
 
         </LinearLayout>
     </LinearLayout>

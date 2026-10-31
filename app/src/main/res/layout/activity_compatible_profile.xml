@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/background"
     android:orientation="vertical"
-    tools:context=".adoption.compatibility.presentation.CompatibleProfileActivity">
+    tools:context=".user.adoption.compatibility.presentation.CompatibleProfileActivity">
 
     <include
         android:id="@+id/compatible_profile_header"

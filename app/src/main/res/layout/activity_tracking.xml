@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    tools:context=".reporting.tracking.presentation.TrackingActivity">
+    tools:context=".user.reporting.tracking.presentation.TrackingActivity">
 
     <ScrollView
         android:id="@+id/tracking_scroll"
@@ -161,6 +161,8 @@
                     android:src="@drawable/ic_chevron_right"
                     app:tint="@color/muted" />
             </LinearLayout>
+
+
 
             <LinearLayout
                 android:id="@+id/update_card"

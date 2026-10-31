@@ -11,12 +11,12 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.widget.ImageViewCompat
 import com.example.weanimals.R
-import com.example.weanimals.adoption.listing.presentation.AdoptionActivity
+import com.example.weanimals.user.adoption.listing.presentation.AdoptionActivity
 import com.example.weanimals.databinding.ViewMainNavigationBinding
-import com.example.weanimals.home.presentation.HomeActivity
-import com.example.weanimals.community.feed.presentation.CommunityActivity
-import com.example.weanimals.profile.overview.presentation.ProfileActivity
-import com.example.weanimals.map.overview.presentation.MapActivity
+import com.example.weanimals.user.home.presentation.HomeActivity
+import com.example.weanimals.user.community.feed.presentation.CommunityActivity
+import com.example.weanimals.user.profile.overview.presentation.ProfileActivity
+import com.example.weanimals.user.map.overview.presentation.MapActivity
 
 object MainNavigation {
     enum class Destination { HOME, MAP, COMMUNITY, ADOPTION, PROFILE }

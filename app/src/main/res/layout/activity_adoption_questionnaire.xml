@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/background"
     android:orientation="vertical"
-    tools:context=".adoption.questionnaire.presentation.AdoptionQuestionnaireActivity">
+    tools:context=".user.adoption.questionnaire.presentation.AdoptionQuestionnaireActivity">
 
     <include
         android:id="@+id/questionnaire_header"

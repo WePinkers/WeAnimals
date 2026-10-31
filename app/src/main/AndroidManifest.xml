@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-feature android:name="android.hardware.camera" android:required="false" />
 
     <application
@@ -20,7 +21,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.WeAnimals">
         <activity
-            android:name=".entry.presentation.EntryActivity"
+            android:name=".user.entry.presentation.EntryActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,16 +30,16 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".entry.presentation.LoginActivity"
+            android:name=".user.entry.presentation.LoginActivity"
             android:exported="false" />
         <activity
-            android:name=".entry.presentation.PasswordRecoveryActivity"
+            android:name=".user.entry.presentation.PasswordRecoveryActivity"
             android:exported="false" />
         <activity
-            android:name=".entry.presentation.PasswordRecoverySentActivity"
+            android:name=".user.entry.presentation.PasswordRecoverySentActivity"
             android:exported="false" />
         <activity
-            android:name=".entry.presentation.PasswordResetCompletedActivity"
+            android:name=".user.entry.presentation.PasswordResetCompletedActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -59,72 +60,70 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".entry.presentation.CitizenRegistrationActivity"
+            android:name=".user.entry.presentation.CitizenRegistrationActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".entry.presentation.LegalDocumentActivity"
+            android:name=".user.entry.presentation.LegalDocumentActivity"
             android:exported="false" />
         <activity
-            android:name=".organization.accreditation.presentation.OrganizationAccreditationActivity"
+            android:name=".user.home.presentation.HomeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".user.adoption.listing.presentation.AdoptionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".user.adoption.detail.presentation.AnimalDetailsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".user.adoption.questionnaire.presentation.AdoptionQuestionnaireActivity"
+            android:exported="false" />
+        <activity
+            android:name=".user.adoption.compatibility.presentation.CompatibleProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".user.adoption.confirmation.presentation.AdoptionConfirmationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".user.adoption.sent.presentation.AdoptionSentActivity"
+            android:exported="false" />
+        <activity
+            android:name=".user.adoption.tracking.presentation.AdoptionTrackingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".user.adoption.checkin.presentation.AdoptionFollowUpActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".organization.accreditation.presentation.OrganizationVerificationPendingActivity"
+            android:name=".user.reporting.report.presentation.ReportActivity"
             android:exported="false" />
         <activity
-            android:name=".organization.accreditation.presentation.OrganizationLoginBlockedActivity"
+            android:name=".user.reporting.report.presentation.sent.ReportSentActivity"
             android:exported="false" />
         <activity
-            android:name=".home.presentation.HomeActivity"
+            android:name=".user.reporting.locationsearch.presentation.LocationSearchActivity"
             android:exported="false" />
         <activity
-            android:name=".adoption.listing.presentation.AdoptionActivity"
+            android:name=".user.reporting.triage.presentation.TriageActivity"
             android:exported="false" />
         <activity
-            android:name=".adoption.detail.presentation.AnimalDetailsActivity"
+            android:name=".user.reporting.tracking.presentation.TrackingActivity"
             android:exported="false" />
         <activity
-            android:name=".adoption.questionnaire.presentation.AdoptionQuestionnaireActivity"
+            android:name=".user.reporting.details.presentation.ReportDetailsActivity"
             android:exported="false" />
         <activity
-            android:name=".adoption.compatibility.presentation.CompatibleProfileActivity"
-            android:exported="false" />
-        <activity
-            android:name=".adoption.confirmation.presentation.AdoptionConfirmationActivity"
-            android:exported="false" />
-        <activity
-            android:name=".adoption.sent.presentation.AdoptionSentActivity"
-            android:exported="false" />
-        <activity
-            android:name=".adoption.tracking.presentation.AdoptionTrackingActivity"
-            android:exported="false" />
-        <activity
-            android:name=".adoption.checkin.presentation.AdoptionFollowUpActivity"
+            android:name=".user.reporting.chat.presentation.CaseChatActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".reporting.report.presentation.ReportActivity"
-            android:exported="false" />
-        <activity
-            android:name=".reporting.report.presentation.sent.ReportSentActivity"
-            android:exported="false" />
-        <activity
-            android:name=".reporting.locationsearch.presentation.LocationSearchActivity"
-            android:exported="false" />
-        <activity
-            android:name=".reporting.triage.presentation.TriageActivity"
-            android:exported="false" />
-        <activity
-            android:name=".reporting.tracking.presentation.TrackingActivity"
-            android:exported="false" />
-        <activity
-            android:name=".reporting.details.presentation.ReportDetailsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".reporting.chat.presentation.CaseChatActivity"
-            android:exported="false"
-            android:windowSoftInputMode="adjustResize" />
+
+        <receiver
+            android:name=".core.notification.NotificationTestReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.example.weanimals.TEST_NOTIFICATION" />
+            </intent-filter>
+        </receiver>
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -135,43 +134,110 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
-        <activity android:name=".profile.overview.presentation.ProfileActivity" android:exported="false" />
-        <activity android:name=".lostandfound.presentation.ReportLostPetActivity" android:exported="false" />
-        <activity android:name=".profile.reports.presentation.MyReportsActivity" android:exported="false" />
-        <activity android:name=".profile.campaigns.presentation.CampaignsActivity" android:exported="false" />
-        <activity android:name=".profile.favorites.presentation.FavoritesActivity" android:exported="false" />
-        <activity android:name=".map.overview.presentation.MapActivity" android:exported="false" />
-        <activity android:name=".community.feed.presentation.CommunityActivity" android:exported="false" />
+
+        <!-- Telas XML exclusivas integradas da feature/Tamer -->
         <activity
-            android:name=".community.detail.presentation.CommunityPostDetailActivity"
+            android:name=".user.profile.overview.presentation.CustomCropImageActivity"
+            android:theme="@style/Theme.WeAnimals" />
+        <activity
+            android:name="com.canhub.cropper.CropImageActivity"
+            android:theme="@style/Theme.WeAnimals" />
+        <activity android:name=".user.profile.overview.presentation.ChangePasswordActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.ReportLostAnimalActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.LostAndFoundMapActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.AdExpiredActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.CloseFoundAdActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.CloseLostAdActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.FoundAdDetailActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.FoundAnimalPublicDetailActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.FoundAnimalPublicViewActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.FoundMatchesActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.LostAnimalPublicDetailActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.LostFoundChatActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.LostMatchesActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.MyLostAdDetailActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.OwnerRequestReviewActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.OwnerVerificationActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.ReportFoundAnimalActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.VerificationSentActivity" android:exported="false" />
+
+        <activity android:name=".user.ombudsman.presentation.AccountIssuesActivity" android:exported="false" />
+        <activity android:name=".user.ombudsman.presentation.AccountIssueSentActivity" android:exported="false" />
+        <activity android:name=".user.ombudsman.presentation.ContactUsActivity" android:exported="false" />
+        <activity android:name=".user.ombudsman.presentation.FaqActivity" android:exported="false" />
+        <activity android:name=".user.ombudsman.presentation.HelpAndSupportActivity" android:exported="false" />
+        <activity android:name=".user.ombudsman.presentation.ManifestationConfirmedActivity" android:exported="false" />
+        <activity android:name=".user.ombudsman.presentation.MyProtocolsActivity" android:exported="false" />
+        <activity android:name=".user.ombudsman.presentation.NewManifestationActivity" android:exported="false" />
+        <activity android:name=".user.ombudsman.presentation.OmbudsmanActivity" android:exported="false" />
+        <activity android:name=".user.ombudsman.presentation.ProtocolDetailActivity" android:exported="false" />
+        <activity android:name=".user.ombudsman.presentation.QuestionSentActivity" android:exported="false" />
+        <activity android:name=".user.ombudsman.presentation.SendQuestionActivity" android:exported="false" />
+        <activity android:name=".user.ombudsman.presentation.SupportChatActivity" android:exported="false" />
+
+        <activity android:name=".user.profile.overview.presentation.ProfileActivity" android:exported="false" />
+        <activity android:name=".user.profile.overview.presentation.ProfilePhotoPreviewActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.ReportLostPetActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.LostAndFoundActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.FoundPetFormActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.LostPetFormActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.AdjustLocationActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.MyAdDetailActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.MyAdsActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.PublicAdDetailActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.TutorVerificationActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.SubmittedAnswersActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.PossibleTutorsActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.TutorRequestDetailActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.LostAndFoundChatActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.MyRequestsActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.MySightingReportsActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.RegisterReunionActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.ReunionSubmittedActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.ConfirmReunionActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.MatchesListActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.ReportChatActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.ReportSubmittedActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.ReportAdActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.AdReportSubmittedActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.SightingFormActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.PossibleSightingsActivity" android:exported="false" />
+        <activity android:name=".user.lostandfound.presentation.SightingReportDetailActivity" android:exported="false" />
+        <activity android:name=".user.profile.reports.presentation.MyReportsActivity" android:exported="false" />
+        <activity android:name=".user.profile.campaigns.presentation.CampaignsActivity" android:exported="false" />
+        <activity android:name=".user.profile.favorites.presentation.FavoritesActivity" android:exported="false" />
+        <activity android:name=".user.map.overview.presentation.MapActivity" android:exported="false" />
+        <activity android:name=".user.community.feed.presentation.CommunityActivity" android:exported="false" />
+        <activity
+            android:name=".user.community.detail.presentation.CommunityPostDetailActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".community.create.presentation.CreateCommunityPostActivity"
+            android:name=".user.community.create.presentation.CreateCommunityPostActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".community.campaign.presentation.CampaignDetailActivity"
+            android:name=".user.community.campaign.presentation.CampaignDetailActivity"
             android:exported="false" />
         <activity
-            android:name=".community.campaign.presentation.DonationHelpActivity"
+            android:name=".user.community.campaign.presentation.DonationHelpActivity"
             android:exported="false" />
         <activity
-            android:name=".community.campaign.presentation.DonationPixActivity"
+            android:name=".user.community.campaign.presentation.DonationPixActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".community.campaign.presentation.DonationConfirmationActivity"
+            android:name=".user.community.campaign.presentation.DonationConfirmationActivity"
             android:exported="false" />
         <activity
-            android:name=".community.campaign.presentation.DonationItemsActivity"
+            android:name=".user.community.campaign.presentation.DonationItemsActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".community.campaign.presentation.CampaignAnimalsActivity"
+            android:name=".user.community.campaign.presentation.CampaignAnimalsActivity"
             android:exported="false" />
         <activity
-            android:name=".community.campaign.presentation.CreateCommunityCampaignActivity"
+            android:name=".user.community.campaign.presentation.CreateCommunityCampaignActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
     </application>

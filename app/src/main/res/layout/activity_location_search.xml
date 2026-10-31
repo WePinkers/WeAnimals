@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="@color/background"
     android:orientation="vertical"
-    tools:context=".reporting.locationsearch.presentation.LocationSearchActivity">
+    tools:context=".user.reporting.locationsearch.presentation.LocationSearchActivity">
 
     <include
         android:id="@+id/location_header"

@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="@color/background"
     android:orientation="vertical"
-    tools:context=".reporting.chat.presentation.CaseChatActivity">
+    tools:context=".user.reporting.chat.presentation.CaseChatActivity">
 
     <LinearLayout
         android:id="@+id/chat_header"
