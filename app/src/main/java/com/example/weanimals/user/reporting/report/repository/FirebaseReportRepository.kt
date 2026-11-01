@@ -39,7 +39,7 @@ class FirebaseReportRepository(
     private val localSessionReports = CopyOnWriteArrayList<Report>()
 
     override fun observeCurrentUserReports(): Flow<Result<List<Report>>> = callbackFlow {
-        try {
+        val user = try {
             ensureSignedIn()
         } catch (exception: Exception) {
             Log.e(TAG, "Error signing in for observeCurrentUserReports", exception)
@@ -49,6 +49,7 @@ class FirebaseReportRepository(
         }
 
         val registration = firestore.collection(REPORTS_COLLECTION)
+            .whereEqualTo(FIELD_USER_ID, user.uid)
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
                     Log.e(TAG, "Firestore error in observeCurrentUserReports", error)

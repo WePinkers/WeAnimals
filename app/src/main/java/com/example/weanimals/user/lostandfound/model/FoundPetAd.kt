@@ -28,28 +28,15 @@ data class FoundPetAd(
     val possibleTutorsCount: Int = 0,
     var isEnded: Boolean = false,
     var isReunited: Boolean = false,
-    var reunitedTimestamp: Long? = null
+    var reunitedTimestamp: Long? = null,
+    val latitude: Double? = null,
+    val longitude: Double? = null
 ) {
-    fun getMapLatLng(): Pair<Double, Double> {
-        val baseLat = when (city?.lowercase()?.trim()) {
-            "rio de janeiro" -> -22.9068
-            "brasília", "brasilia" -> -15.7975
-            "salvador" -> -12.9777
-            "belo horizonte" -> -19.9167
-            else -> -23.5135
+    fun getMapLatLng(): Pair<Double, Double>? {
+        if (latitude != null && longitude != null) {
+            return Pair(latitude, longitude)
         }
-        val baseLng = when (city?.lowercase()?.trim()) {
-            "rio de janeiro" -> -43.1729
-            "brasília", "brasilia" -> -47.8919
-            "salvador" -> -38.5016
-            "belo horizonte" -> -43.9345
-            else -> -46.5812
-        }
-
-        val offsetLat = ((id.hashCode() % 50) * 0.0003)
-        val offsetLng = (((id.hashCode() / 50) % 50) * 0.0003)
-
-        return Pair(baseLat + offsetLat, baseLng + offsetLng)
+        return null
     }
 
     fun isOwnedByCurrent(): Boolean {

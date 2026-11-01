@@ -2,7 +2,7 @@ package com.example.weanimals.user.lostandfound.presentation
 
 import android.content.Intent
 import android.graphics.Typeface
-import android.net.Uri
+import android.location.Location
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
@@ -80,7 +80,19 @@ class MatchesListActivity : AppCompatActivity() {
 
         if (matchResults.isEmpty()) {
             binding.tvMatchesSummary.text = "Nenhum possível match encontrado por enquanto."
+            binding.btnViewMatchesMap.visibility = View.GONE
             return
+        }
+
+        binding.btnViewMatchesMap.visibility = View.VISIBLE
+        binding.btnViewMatchesMap.setOnClickListener {
+            val best = matchResults.firstOrNull()
+            val intent = Intent(this, LostAndFoundMapActivity::class.java).apply {
+                if (best != null && best.foundAd.latitude != null && best.foundAd.longitude != null) {
+                    putExtra(LostAndFoundMapActivity.EXTRA_FOCUS_AD_ID, best.foundAd.id)
+                }
+            }
+            startActivity(intent)
         }
 
         val categoryLabel = if (isSourceLost) "encontrados" else "perdidos"
@@ -118,6 +130,18 @@ class MatchesListActivity : AppCompatActivity() {
             for (match in remainingMatches) {
                 container.addView(createMatchCard(currentSourceAd, match, isBest = false))
             }
+        }
+    }
+
+    private fun calculateDistanceText(lat1: Double?, lon1: Double?, lat2: Double?, lon2: Double?): String? {
+        if (lat1 == null || lon1 == null || lat2 == null || lon2 == null) return null
+        val results = FloatArray(1)
+        Location.distanceBetween(lat1, lon1, lat2, lon2, results)
+        val meters = results[0]
+        return if (meters < 1000f) {
+            "${meters.toInt()} m"
+        } else {
+            String.format(Locale.forLanguageTag("pt-BR"), "%.1f km", meters / 1000f)
         }
     }
 
@@ -175,8 +199,15 @@ class MatchesListActivity : AppCompatActivity() {
         }
 
         val pubDateStr = dateFormat.format(Date(targetAd.publicationTimestamp))
+        val distanceText = calculateDistanceText(sourceAd.latitude, sourceAd.longitude, targetAd.latitude, targetAd.longitude)
+        val locationDetails = listOfNotNull(
+            targetAd.getDisplayLocation(),
+            pubDateStr,
+            distanceText
+        ).joinToString(" · ")
+
         val locTv = TextView(this).apply {
-            text = "${targetAd.getDisplayLocation()} · $pubDateStr"
+            text = locationDetails
             textSize = 12f
             setTextColor(getColor(R.color.muted))
             setPadding(0, 2, 0, 0)
@@ -277,7 +308,7 @@ class MatchesListActivity : AppCompatActivity() {
         }
         card.addView(toggleDetailsBtn)
 
-        // Action Buttons Row
+        // Action Buttons Row (Discard, Ver no mapa, Ver detalhes)
         val actionsRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
@@ -286,12 +317,12 @@ class MatchesListActivity : AppCompatActivity() {
         }
 
         val btnDiscard = androidx.appcompat.widget.AppCompatButton(this).apply {
-            layoutParams = LinearLayout.LayoutParams(0, (46 * resources.displayMetrics.density).toInt(), 1f).apply {
-                marginEnd = 8
+            layoutParams = LinearLayout.LayoutParams(0, (44 * resources.displayMetrics.density).toInt(), 1f).apply {
+                marginEnd = 4
             }
-            text = "Não é o mesmo animal"
+            text = "Descartar"
             isAllCaps = false
-            textSize = 12f
+            textSize = 11f
             setTypeface(null, Typeface.BOLD)
             setTextColor(getColor(R.color.pine800))
             setBackgroundResource(R.drawable.bg_btn_outline)
@@ -307,13 +338,37 @@ class MatchesListActivity : AppCompatActivity() {
             }
         }
 
-        val btnDetails = androidx.appcompat.widget.AppCompatButton(this).apply {
-            layoutParams = LinearLayout.LayoutParams(0, (46 * resources.displayMetrics.density).toInt(), 1.2f).apply {
-                marginStart = 8
+        val btnMap = androidx.appcompat.widget.AppCompatButton(this).apply {
+            layoutParams = LinearLayout.LayoutParams(0, (44 * resources.displayMetrics.density).toInt(), 1f).apply {
+                marginEnd = 4
+                marginStart = 4
             }
-            text = "Ver detalhes"
+            text = "Ver no mapa"
             isAllCaps = false
-            textSize = 13f
+            textSize = 11f
+            setTypeface(null, Typeface.BOLD)
+            setTextColor(getColor(R.color.white))
+            setBackgroundResource(R.drawable.bg_btn_terracotta)
+
+            setOnClickListener {
+                if (targetAd.latitude != null && targetAd.longitude != null) {
+                    val intent = Intent(this@MatchesListActivity, LostAndFoundMapActivity::class.java).apply {
+                        putExtra(LostAndFoundMapActivity.EXTRA_FOCUS_AD_ID, targetAd.id)
+                    }
+                    startActivity(intent)
+                } else {
+                    Toast.makeText(this@MatchesListActivity, "Este candidato não possui localização geográfica válida para exibição no mapa.", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+        val btnDetails = androidx.appcompat.widget.AppCompatButton(this).apply {
+            layoutParams = LinearLayout.LayoutParams(0, (44 * resources.displayMetrics.density).toInt(), 1.1f).apply {
+                marginStart = 4
+            }
+            text = "Detalhes"
+            isAllCaps = false
+            textSize = 11f
             setTypeface(null, Typeface.BOLD)
             setTextColor(getColor(R.color.white))
             setBackgroundResource(R.drawable.bg_btn_dark_green)
@@ -327,6 +382,7 @@ class MatchesListActivity : AppCompatActivity() {
         }
 
         actionsRow.addView(btnDiscard)
+        actionsRow.addView(btnMap)
         actionsRow.addView(btnDetails)
         card.addView(actionsRow)
 

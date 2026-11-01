@@ -43,6 +43,8 @@ class LostPetFormActivity : AppCompatActivity() {
     private var addressCity: String? = null
     private var addressState: String? = null
     private var addressComplement: String? = null
+    private var addressLatitude: Double? = null
+    private var addressLongitude: Double? = null
 
     private val photoPickerLauncher =
         registerForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris ->
@@ -62,6 +64,10 @@ class LostPetFormActivity : AppCompatActivity() {
                 addressCity = data.getStringExtra(AdjustLocationActivity.EXTRA_CITY)
                 addressState = data.getStringExtra(AdjustLocationActivity.EXTRA_STATE)
                 addressComplement = data.getStringExtra(AdjustLocationActivity.EXTRA_COMPLEMENT)
+                if (data.hasExtra(AdjustLocationActivity.EXTRA_LATITUDE)) {
+                    addressLatitude = data.getDoubleExtra(AdjustLocationActivity.EXTRA_LATITUDE, 0.0)
+                    addressLongitude = data.getDoubleExtra(AdjustLocationActivity.EXTRA_LONGITUDE, 0.0)
+                }
 
                 updateLocationCardInStep3()
             }
@@ -330,7 +336,9 @@ class LostPetFormActivity : AppCompatActivity() {
                 whenDate = whenFullDate.ifBlank { selectedWhenDate },
                 marks = fullMarks,
                 calledNames = listOf("$name: reagiu"),
-                currentSituation = "Procurado"
+                currentSituation = "Procurado",
+                latitude = addressLatitude,
+                longitude = addressLongitude
             )
 
             LostAndFoundRepository.saveAd(this, ad)
@@ -353,6 +361,10 @@ class LostPetFormActivity : AppCompatActivity() {
             putExtra(AdjustLocationActivity.EXTRA_CITY, addressCity)
             putExtra(AdjustLocationActivity.EXTRA_STATE, addressState)
             putExtra(AdjustLocationActivity.EXTRA_COMPLEMENT, addressComplement)
+            if (addressLatitude != null && addressLongitude != null) {
+                putExtra(AdjustLocationActivity.EXTRA_LATITUDE, addressLatitude!!)
+                putExtra(AdjustLocationActivity.EXTRA_LONGITUDE, addressLongitude!!)
+            }
         }
         adjustLocationLauncher.launch(intent)
     }

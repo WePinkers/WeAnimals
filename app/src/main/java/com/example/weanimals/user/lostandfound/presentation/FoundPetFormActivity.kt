@@ -43,6 +43,8 @@ class FoundPetFormActivity : AppCompatActivity() {
     private var addressCity: String? = null
     private var addressState: String? = null
     private var addressComplement: String? = null
+    private var addressLatitude: Double? = null
+    private var addressLongitude: Double? = null
 
     data class CalledNameItem(var name: String, var reacted: Boolean)
 
@@ -64,6 +66,10 @@ class FoundPetFormActivity : AppCompatActivity() {
                 addressCity = data.getStringExtra(AdjustLocationActivity.EXTRA_CITY)
                 addressState = data.getStringExtra(AdjustLocationActivity.EXTRA_STATE)
                 addressComplement = data.getStringExtra(AdjustLocationActivity.EXTRA_COMPLEMENT)
+                if (data.hasExtra(AdjustLocationActivity.EXTRA_LATITUDE)) {
+                    addressLatitude = data.getDoubleExtra(AdjustLocationActivity.EXTRA_LATITUDE, 0.0)
+                    addressLongitude = data.getDoubleExtra(AdjustLocationActivity.EXTRA_LONGITUDE, 0.0)
+                }
 
                 updateLocationCardInStep2()
             }
@@ -218,7 +224,9 @@ class FoundPetFormActivity : AppCompatActivity() {
                 whenDate = selectedWhenDate,
                 marks = step2.etMarks.text?.toString()?.trim(),
                 calledNames = calledNamesList.map { "${it.name}: ${if (it.reacted) "reagiu" else "não reagiu"}" },
-                currentSituation = selectedCurrentSituation ?: "Comigo"
+                currentSituation = selectedCurrentSituation ?: "Comigo",
+                latitude = addressLatitude,
+                longitude = addressLongitude
             )
 
             com.example.weanimals.user.lostandfound.repository.LostAndFoundRepository.saveAd(this, ad)
@@ -241,6 +249,10 @@ class FoundPetFormActivity : AppCompatActivity() {
             putExtra(AdjustLocationActivity.EXTRA_CITY, addressCity)
             putExtra(AdjustLocationActivity.EXTRA_STATE, addressState)
             putExtra(AdjustLocationActivity.EXTRA_COMPLEMENT, addressComplement)
+            if (addressLatitude != null && addressLongitude != null) {
+                putExtra(AdjustLocationActivity.EXTRA_LATITUDE, addressLatitude!!)
+                putExtra(AdjustLocationActivity.EXTRA_LONGITUDE, addressLongitude!!)
+            }
         }
         adjustLocationLauncher.launch(intent)
     }

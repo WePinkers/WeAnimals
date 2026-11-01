@@ -64,6 +64,18 @@ class SubmittedAnswersActivity : AppCompatActivity() {
             binding.layoutPhotoAttached.visibility = View.GONE
         }
 
+        val ownTestRequest = LostAndFoundRepository.canTestOwnAnnouncement(this) &&
+            request.ownerUserId == request.requesterUserId &&
+            request.ownerUserId == (com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid ?: "local_user")
+        binding.btnReviewTestRequest.visibility = if (ownTestRequest && request.status.equals("PENDENTE", true))
+            View.VISIBLE else View.GONE
+        binding.btnReviewTestRequest.setOnClickListener {
+            val destination = if (ad?.category.equals("PERDIDO", true))
+                SightingReportDetailActivity::class.java else TutorRequestDetailActivity::class.java
+            startActivity(android.content.Intent(this, destination).putExtra(EXTRA_REQUEST_ID, request.id))
+            finish()
+        }
+
         binding.btnBackToMyAds.setOnClickListener {
             finish()
         }

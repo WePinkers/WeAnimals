@@ -86,8 +86,7 @@ object MainNavigation {
         }
         binding.navMap.setOnClickListener {
             if (selected != Destination.MAP) activity.startActivity(
-                Intent(activity, MapActivity::class.java)
-                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                MapActivity.newIntent(activity)
             )
         }
         binding.navCommunity.setOnClickListener {

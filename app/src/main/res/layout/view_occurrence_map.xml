@@ -44,12 +44,109 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
+        <!-- Shared contrast panel. Controls retain their existing safe-area positioning. -->
+        <View
+            android:id="@+id/map_controls_background"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@color/sand50"
+            android:elevation="3dp"
+            android:importantForAccessibility="no"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/map_controls_bottom" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/map_controls_bottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:barrierMargin="8dp"
+            app:barrierAllowsGoneWidgets="false"
+            app:constraint_referenced_ids="map_search_controls,filter_scroll_view,secondary_filter_scroll" />
+
+        <LinearLayout
+            android:id="@+id/map_search_controls"
+            android:elevation="4dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="8dp"
+            android:orientation="vertical"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:gravity="center_vertical"
+                android:background="@drawable/bg_map_search">
+                <FrameLayout
+                    android:layout_width="48dp"
+                    android:layout_height="48dp">
+                    <ImageButton
+                        android:id="@+id/map_search_submit"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:src="@drawable/ic_search"
+                        android:contentDescription="@string/map_search_submit" />
+                    <ProgressBar
+                        android:id="@+id/map_search_progress"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center"
+                        android:contentDescription="@string/map_search_loading"
+                        android:visibility="gone" />
+                </FrameLayout>
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/map_search_input"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:hint="@string/map_search_hint"
+                    android:inputType="textPostalAddress"
+                    android:imeOptions="actionSearch"
+                    android:singleLine="true"
+                    android:maxLength="250"
+                    android:paddingVertical="0dp"
+                    android:textSize="14sp"
+                    android:textColor="@color/ink900"
+                    android:textColorHint="@color/ink600" />
+                <ImageButton
+                    android:id="@+id/map_search_clear"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@android:drawable/ic_menu_close_clear_cancel"
+                    app:tint="@color/ink600"
+                    android:contentDescription="@string/map_search_clear"
+                    android:visibility="invisible" />
+            </LinearLayout>
+            <TextView
+                android:id="@+id/map_search_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="4dp"
+                android:background="@drawable/bg_map_search"
+                android:accessibilityLiveRegion="polite"
+                android:textColor="@color/ink900"
+                android:textSize="12sp"
+                android:visibility="gone" />
+        </LinearLayout>
+
         <!-- Filter Chips in Horizontal Scroll -->
         <HorizontalScrollView
             android:id="@+id/filter_scroll_view"
+            android:elevation="4dp"
+            android:fillViewport="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="4dp"
             android:clipChildren="false"
             android:clipToPadding="false"
             android:paddingStart="16dp"
@@ -57,9 +154,13 @@
             android:scrollbars="none"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@id/map_search_controls">
 
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
             <com.google.android.material.chip.ChipGroup
+                android:layout_gravity="center_horizontal"
                 android:id="@+id/chip_group_filters"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -76,20 +177,108 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checked="true"
-                    android:text="@string/map_filter_all"
+                    android:text="Todos"
                     android:textColor="@color/white"
                     app:checkedIconVisible="false"
-                    app:chipBackgroundColor="@color/pine800"
+                    app:chipBackgroundColor="@color/map_filter_green"
                     app:chipCornerRadius="20dp"
                     app:chipStrokeWidth="0dp" />
 
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_reports"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Denúncias"
+                    android:textColor="@color/map_filter_green"
+                    app:checkedIconVisible="false"
+                    app:chipBackgroundColor="@color/chip_unselected_bg"
+                    app:chipCornerRadius="20dp"
+                    app:chipStrokeColor="@color/line_border"
+                    app:chipStrokeWidth="1dp" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_lost_found"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Achados e Perdidos"
+                    android:textColor="@color/map_filter_green"
+                    app:checkedIconVisible="false"
+                    app:chipBackgroundColor="@color/chip_unselected_bg"
+                    app:chipCornerRadius="20dp"
+                    app:chipStrokeColor="@color/line_border"
+                    app:chipStrokeWidth="1dp" />
+
+            </com.google.android.material.chip.ChipGroup>
+            </FrameLayout>
+        </HorizontalScrollView>
+
+        <HorizontalScrollView
+            android:id="@+id/secondary_filter_scroll"
+            android:elevation="4dp"
+            android:fillViewport="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:scrollbars="none"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/filter_scroll_view"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+            <com.google.android.material.chip.ChipGroup
+                android:layout_gravity="center_horizontal"
+                android:id="@+id/chip_group_secondary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:chipSpacingHorizontal="8dp"
+                app:singleLine="true"
+                app:singleSelection="true"
+                app:selectionRequired="true">
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_secondary_all"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="Todos"
+                    app:checkedIconVisible="false"
+                    app:chipCornerRadius="20dp"
+                    app:chipStrokeColor="@color/line_border"
+                    app:chipStrokeWidth="1dp" />
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_lost"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:text="Perdidos"
+                    app:checkedIconVisible="false"
+                    app:chipCornerRadius="20dp"
+                    app:chipStrokeColor="@color/line_border"
+                    app:chipStrokeWidth="1dp" />
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_found"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:text="Encontrados"
+                    app:checkedIconVisible="false"
+                    app:chipCornerRadius="20dp"
+                    app:chipStrokeColor="@color/line_border"
+                    app:chipStrokeWidth="1dp" />
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chip_high"
                     style="@style/Widget.Material3.Chip.Filter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/map_filter_high"
-                    android:textColor="@color/map_card_text"
+                    android:textColor="@color/map_filter_green"
                     app:checkedIconVisible="false"
                     app:chipBackgroundColor="@color/chip_unselected_bg"
                     app:chipCornerRadius="20dp"
@@ -102,7 +291,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/map_filter_medium"
-                    android:textColor="@color/map_card_text"
+                    android:textColor="@color/map_filter_green"
                     app:checkedIconVisible="false"
                     app:chipBackgroundColor="@color/chip_unselected_bg"
                     app:chipCornerRadius="20dp"
@@ -115,16 +304,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/map_filter_low"
-                    android:textColor="@color/map_card_text"
+                    android:textColor="@color/map_filter_green"
                     app:checkedIconVisible="false"
                     app:chipBackgroundColor="@color/chip_unselected_bg"
                     app:chipCornerRadius="20dp"
                     app:chipStrokeColor="@color/line_border"
                     app:chipStrokeWidth="1dp" />
             </com.google.android.material.chip.ChipGroup>
+            </FrameLayout>
         </HorizontalScrollView>
 
-        <!-- Floating Recenter / GPS My Location Button (Elevated Position) -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/btn_my_location"
             android:layout_width="44dp"
@@ -296,7 +485,7 @@
         android:id="@+id/bottom_sheet"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/bg_report_card"
+        android:background="@drawable/bg_map_bottom_sheet"
         android:clickable="true"
         android:elevation="12dp"
         android:focusable="true"
@@ -316,12 +505,28 @@
             android:layout_gravity="center_horizontal"
             android:background="@color/border" />
 
+        <LinearLayout
+            android:id="@+id/map_records_panel"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+        <TextView
+            android:id="@+id/map_records_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/map_records_title"
+            android:textColor="@color/ink900"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
         <!-- Occurrence Count Header -->
         <TextView
             android:id="@+id/occurrence_count_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="2dp"
             android:fontFamily="sans-serif"
             android:text="@string/map_loading"
             android:textColor="@color/ink900"
@@ -330,6 +535,7 @@
 
         <!-- Urgency Legend in Bottom Sheet -->
         <LinearLayout
+            android:id="@+id/sheet_urgency_legend"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -417,12 +623,19 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_occurrences"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:layout_marginTop="14dp"
             android:clipToPadding="false"
-            android:paddingBottom="88dp"
+            android:paddingBottom="16dp"
             tools:listitem="@layout/item_occurrence" />
-
+        </LinearLayout>
+        <include
+            android:id="@+id/animal_details"
+            layout="@layout/view_map_animal_details"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
     </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -181,7 +181,7 @@ class HomeActivity : AppCompatActivity(), HomeContract.View {
             startActivity(Intent(this, ReportActivity::class.java))
         }
         val openMap = View.OnClickListener {
-            startActivity(Intent(this, MapActivity::class.java))
+            startActivity(MapActivity.newIntent(this))
         }
         binding.viewMapButton.setOnClickListener(openMap)
         binding.mapPreview.mapRoot.setOnClickListener(openMap)

@@ -34,6 +34,16 @@ class AdjustLocationActivity : AppCompatActivity() {
         LocationServices.getFusedLocationProviderClient(this)
     }
 
+    private var selectedLatitude: Double? = null
+    private var selectedLongitude: Double? = null
+    private var coordinateAddress: List<String>? = null
+
+    private fun addressFields() = listOf(
+        binding.etStreet.text.toString().trim(), binding.etNumber.text.toString().trim(),
+        binding.etNeighborhood.text.toString().trim(), binding.etCity.text.toString().trim(),
+        binding.spState.selectedItem?.toString().orEmpty()
+    )
+
     private val permissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
             val fineGranted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true
@@ -58,6 +68,7 @@ class AdjustLocationActivity : AppCompatActivity() {
 
         setupSpinner()
         prefillFromIntent()
+        coordinateAddress = addressFields()
         setupListeners()
     }
 
@@ -71,7 +82,6 @@ class AdjustLocationActivity : AppCompatActivity() {
         }
         binding.spState.adapter = adapter
 
-        // Default to SP (index 24)
         val defaultPosition = adapter.getPosition("SP")
         if (defaultPosition >= 0) {
             binding.spState.setSelection(defaultPosition)
@@ -84,6 +94,11 @@ class AdjustLocationActivity : AppCompatActivity() {
         intent.getStringExtra(EXTRA_NEIGHBORHOOD)?.let { binding.etNeighborhood.setText(it) }
         intent.getStringExtra(EXTRA_CITY)?.let { binding.etCity.setText(it) }
         intent.getStringExtra(EXTRA_COMPLEMENT)?.let { binding.etComplement.setText(it) }
+
+        if (intent.hasExtra(EXTRA_LATITUDE) && intent.hasExtra(EXTRA_LONGITUDE)) {
+            selectedLatitude = intent.getDoubleExtra(EXTRA_LATITUDE, 0.0)
+            selectedLongitude = intent.getDoubleExtra(EXTRA_LONGITUDE, 0.0)
+        }
 
         intent.getStringExtra(EXTRA_STATE)?.let { state ->
             val adapter = binding.spState.adapter as? ArrayAdapter<String>
@@ -137,9 +152,12 @@ class AdjustLocationActivity : AppCompatActivity() {
                 ).await() ?: fusedLocationClient.lastLocation.await()
 
                 if (location != null) {
+                    selectedLatitude = location.latitude
+                    selectedLongitude = location.longitude
                     val address = reverseGeocode(location.latitude, location.longitude)
                     if (address != null) {
                         populateAddressFields(address)
+                        coordinateAddress = addressFields()
                         Toast.makeText(
                             this@AdjustLocationActivity,
                             "Endereço obtido com sucesso!",
@@ -148,7 +166,7 @@ class AdjustLocationActivity : AppCompatActivity() {
                     } else {
                         Toast.makeText(
                             this@AdjustLocationActivity,
-                            "Não foi possível identificar o endereço. Preencha manualmente.",
+                            "Localização obtida, mas endereço detalhado incompleto.",
                             Toast.LENGTH_SHORT
                         ).show()
                     }
@@ -197,6 +215,25 @@ class AdjustLocationActivity : AppCompatActivity() {
             withContext(Dispatchers.IO) {
                 @Suppress("DEPRECATION")
                 geocoder.getFromLocation(latitude, longitude, 1)?.firstOrNull()
+            }
+        }
+    }
+
+    private suspend fun forwardGeocode(addressStr: String): Pair<Double, Double>? {
+        if (!Geocoder.isPresent()) return null
+        return withContext(Dispatchers.IO) {
+            try {
+                val geocoder = Geocoder(applicationContext, Locale.forLanguageTag("pt-BR"))
+                @Suppress("DEPRECATION")
+                val results = geocoder.getFromLocationName(addressStr, 1)
+                val addr = results?.firstOrNull()
+                if (addr != null && addr.hasLatitude() && addr.hasLongitude()) {
+                    Pair(addr.latitude, addr.longitude)
+                } else {
+                    null
+                }
+            } catch (e: Exception) {
+                null
             }
         }
     }
@@ -250,17 +287,37 @@ class AdjustLocationActivity : AppCompatActivity() {
 
         if (hasError) return
 
-        val resultIntent = Intent().apply {
-            putExtra(EXTRA_STREET, street)
-            putExtra(EXTRA_NUMBER, number)
-            putExtra(EXTRA_NEIGHBORHOOD, neighborhood)
-            putExtra(EXTRA_CITY, city)
-            putExtra(EXTRA_STATE, state)
-            putExtra(EXTRA_COMPLEMENT, complement)
-        }
+        lifecycleScope.launch {
+            // Edited text invalidates GPS/previous address coordinates.
+            val sameAddress = coordinateAddress == addressFields()
+            var lat = selectedLatitude.takeIf { sameAddress }
+            var lng = selectedLongitude.takeIf { sameAddress }
 
-        setResult(RESULT_OK, resultIntent)
-        finish()
+            if (lat == null || lng == null) {
+                val addressStr = "$street, $number, $neighborhood, $city - $state"
+                val coords = forwardGeocode(addressStr)
+                if (coords != null) {
+                    lat = coords.first
+                    lng = coords.second
+                }
+            }
+
+            val resultIntent = Intent().apply {
+                putExtra(EXTRA_STREET, street)
+                putExtra(EXTRA_NUMBER, number)
+                putExtra(EXTRA_NEIGHBORHOOD, neighborhood)
+                putExtra(EXTRA_CITY, city)
+                putExtra(EXTRA_STATE, state)
+                putExtra(EXTRA_COMPLEMENT, complement)
+                if (lat != null && lng != null) {
+                    putExtra(EXTRA_LATITUDE, lat)
+                    putExtra(EXTRA_LONGITUDE, lng)
+                }
+            }
+
+            setResult(RESULT_OK, resultIntent)
+            finish()
+        }
     }
 
     companion object {
@@ -270,5 +327,7 @@ class AdjustLocationActivity : AppCompatActivity() {
         const val EXTRA_CITY = "extra_city"
         const val EXTRA_STATE = "extra_state"
         const val EXTRA_COMPLEMENT = "extra_complement"
+        const val EXTRA_LATITUDE = "extra_latitude"
+        const val EXTRA_LONGITUDE = "extra_longitude"
     }
 }

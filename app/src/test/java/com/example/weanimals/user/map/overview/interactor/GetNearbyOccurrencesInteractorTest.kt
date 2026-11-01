@@ -52,6 +52,34 @@ class GetNearbyOccurrencesInteractorTest {
         assertEquals(0, repository.calls)
     }
 
+    @Test
+    fun mapLoadsPublicPointsWithoutGpsAndOutsideTheHomeRadius() = runTest {
+        val points = listOf(point("far", -2350, -4650), point("near", -2356, -4664))
+        val noGps = GetNearbyOccurrencesInteractor(FakeRepository(points),
+            GetUserLocationInteractor(FakeLocation(null)), CalculateDistanceInteractor(),
+            restrictToUserRadius = false)().getOrThrow()
+        assertEquals(2, noGps.occurrences.size)
+        assertNull(noGps.occurrences.first().distanceKm)
+        val withGps = GetNearbyOccurrencesInteractor(FakeRepository(points),
+            GetUserLocationInteractor(FakeLocation(Coordinates(-23.5505, -46.6333))),
+            CalculateDistanceInteractor(), restrictToUserRadius = false)().getOrThrow()
+        assertEquals(2, withGps.occurrences.size)
+    }
+
+    @Test
+    fun mapKeepsGpsWhenTheReportServerFails() = runTest {
+        val location = Coordinates(-23.55, -46.63)
+        val failing = object : PublicOccurrenceRepository {
+            override suspend fun getOccurrences() = Result.failure<List<PublicOccurrence>>(IllegalStateException("offline"))
+        }
+        val result = GetNearbyOccurrencesInteractor(failing,
+            GetUserLocationInteractor(FakeLocation(location)), CalculateDistanceInteractor(),
+            restrictToUserRadius = false)().getOrThrow()
+        assertEquals(location, result.userLocation)
+        assertEquals(true, result.sourceError)
+        assertEquals(emptyList<PublicOccurrence>(), result.occurrences)
+    }
+
     private fun point(id: String, latitudeCell: Int, longitudeCell: Int) = PublicOccurrence(
         id, "dog", "high", latitudeCell, longitudeCell, 1L
     )

@@ -1,25 +1,19 @@
 package com.example.weanimals.user.lostandfound.presentation
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.WindowCompat
 import com.example.weanimals.user.map.overview.presentation.MapActivity
 
 class LostAndFoundMapActivity : AppCompatActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        configureSystemBars()
-        startActivity(Intent(this, MapActivity::class.java))
+        val focusAdId = intent.getStringExtra(EXTRA_FOCUS_AD_ID)
+        val nextIntent = MapActivity.newIntent(this, MapActivity.FILTER_LOST_FOUND, focusAdId)
+        startActivity(nextIntent)
         finish()
     }
 
-    private fun configureSystemBars() {
-        WindowCompat.setDecorFitsSystemWindows(window, true)
-        WindowCompat.getInsetsController(window, window.decorView).apply {
-            isAppearanceLightStatusBars = true
-            isAppearanceLightNavigationBars = true
-        }
+    companion object {
+        const val EXTRA_FOCUS_AD_ID = "extra_focus_ad_id"
     }
 }

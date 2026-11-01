@@ -81,6 +81,10 @@ class SightingFormActivity : AppCompatActivity() {
             return
         }
 
+        if (AdActionNavigator.redirectIfNeeded(this, currentAd!!.id, AdActionNavigator.Action.SIGHTING)) {
+            finish()
+            return
+        }
         setupHeader()
         setupStep1()
         setupStep2()
@@ -176,6 +180,10 @@ class SightingFormActivity : AppCompatActivity() {
 
         step2.btnSightingSubmit.setOnClickListener {
             val ad = currentAd ?: return@setOnClickListener
+            if (AdActionNavigator.redirectIfNeeded(this, ad.id, AdActionNavigator.Action.SIGHTING)) {
+                finish()
+                return@setOnClickListener
+            }
             val characteristics = step2.etSightingCharacteristics.text.toString().trim()
             val notes = step2.etSightingNotes.text.toString().trim()
 
@@ -207,7 +215,12 @@ class SightingFormActivity : AppCompatActivity() {
                 photoUri = photoUri?.toString()
             )
 
-            LostAndFoundRepository.saveVerificationRequest(this, req)
+            if (!LostAndFoundRepository.saveVerificationRequest(this, req,
+                    allowOwnAdForTesting = LostAndFoundRepository.canTestOwnAnnouncement(this))) {
+                AdActionNavigator.open(this, ad.id)
+                finish()
+                return@setOnClickListener
+            }
 
             Toast.makeText(this, "Relato enviado ao tutor com sucesso!", Toast.LENGTH_LONG).show()
 

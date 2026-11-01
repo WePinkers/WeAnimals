@@ -301,9 +301,10 @@ class AppContainer(context: Context) {
         GetFavoriteAnimalsInteractor(favoriteRepository, adoptionListingRepository)
     )
 
-    fun createMapPresenter() = MapPresenter(
+    fun createMapPresenter(restrictToUserRadius: Boolean = true) = MapPresenter(
         GetNearbyOccurrencesInteractor(
-            publicOccurrenceRepository, getUserLocationInteractor, calculateDistanceInteractor
+            publicOccurrenceRepository, getUserLocationInteractor, calculateDistanceInteractor,
+            restrictToUserRadius = restrictToUserRadius
         )
     )
 

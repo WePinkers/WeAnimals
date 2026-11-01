@@ -195,6 +195,17 @@
             android:background="@color/border" />
 
         <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_review_test_request"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/bg_btn_dark_green"
+            android:text="@string/review_own_request_test"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:visibility="gone" />
+
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_back_to_my_ads"
             android:layout_width="match_parent"
             android:layout_height="50dp"

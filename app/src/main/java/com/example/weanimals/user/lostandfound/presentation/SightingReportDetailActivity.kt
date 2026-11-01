@@ -125,7 +125,7 @@ class SightingReportDetailActivity : AppCompatActivity() {
                 LostAndFoundRepository.updateRequestStatus(this, req.id, "APROVADO")
                 val intent = Intent(this, LostAndFoundChatActivity::class.java).apply {
                     putExtra(LostAndFoundChatActivity.EXTRA_REQUEST_ID, req.id)
-                    putExtra(LostAndFoundChatActivity.EXTRA_VIEWER_ROLE, LostAndFoundChatActivity.ROLE_FOUNDER)
+                    putExtra(LostAndFoundChatActivity.EXTRA_VIEWER_ROLE, LostAndFoundChatActivity.ROLE_TUTOR)
                 }
                 startActivity(intent)
                 finish()

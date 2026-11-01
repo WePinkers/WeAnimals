@@ -15,6 +15,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.weanimals.core.utils.ImageThumbnailLoader
 import kotlinx.coroutines.launch
 import com.example.weanimals.R
+import com.example.weanimals.user.map.overview.presentation.PublicAnimalDetails
 import com.example.weanimals.databinding.ActivityPublicAdDetailBinding
 import com.example.weanimals.user.lostandfound.model.FoundPetAd
 import com.example.weanimals.user.lostandfound.repository.LostAndFoundRepository
@@ -64,7 +65,7 @@ class PublicAdDetailActivity : AppCompatActivity() {
         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.forLanguageTag("pt-BR"))
         val pubDateStr = dateFormat.format(Date(ad.publicationTimestamp))
         val verb = if (isLost) "desaparecido em" else "encontrado em"
-        binding.tvSubtitlePublic.text = "${ad.getDisplayLocation()} · $verb $pubDateStr"
+        binding.tvSubtitlePublic.text = "${PublicAnimalDetails.location(ad)} · $verb ${PublicAnimalDetails.date(ad)}"
 
         // Photo or Paw
         if (ad.photoUris.isNotEmpty()) {
@@ -91,7 +92,7 @@ class PublicAdDetailActivity : AppCompatActivity() {
         // Section: MARCAS QUE DIFERENCIAM
         val marks = ad.marks?.trim()
         if (!marks.isNullOrBlank()) {
-            val cleanPhysicalMarks = com.example.weanimals.user.lostandfound.service.PetMatchingService.extractPhysicalMarksOnly(marks)
+            val cleanPhysicalMarks = PublicAnimalDetails.marks(ad)
             if (cleanPhysicalMarks.isNotBlank()) {
                 binding.layoutMarksSection.visibility = View.VISIBLE
                 binding.tvMarksTextPublic.text = cleanPhysicalMarks
@@ -105,47 +106,9 @@ class PublicAdDetailActivity : AppCompatActivity() {
         // Section: LOCALIZAÇÃO DO ANIMAL
         binding.tvLocationTitlePublic.text = if (isLost) "ONDE PROCURAR" else "ONDE FOI ENCONTRADO"
 
-        val addressLines = mutableListOf<String>()
-        val streetStr = ad.street?.trim().orEmpty()
-        val numStr = ad.number?.trim().orEmpty()
-        if (streetStr.isNotBlank()) {
-            val line1 = if (numStr.isNotBlank() && !numStr.equals("Sem número", ignoreCase = true)) {
-                "$streetStr, $numStr"
-            } else {
-                streetStr
-            }
-            addressLines.add(line1)
-        }
-
-        val neighStr = ad.neighborhood?.trim().orEmpty()
-        val cityStr = ad.city?.trim().orEmpty()
-        val stateStr = ad.state?.trim().orEmpty()
-        val locParts = listOfNotNull(
-            neighStr.takeIf { it.isNotBlank() },
-            listOfNotNull(cityStr.takeIf { it.isNotBlank() }, stateStr.takeIf { it.isNotBlank() })
-                .joinToString(" - ")
-                .takeIf { it.isNotBlank() }
-        ).joinToString(" · ")
-
-        if (locParts.isNotBlank()) {
-            addressLines.add(locParts)
-        }
-
-        if (addressLines.isNotEmpty()) {
-            binding.tvLocationTextPublic.text = addressLines.joinToString("\n")
-            binding.tvLocationTextPublic.visibility = View.VISIBLE
-        } else {
-            binding.tvLocationTextPublic.text = ad.getDisplayLocation()
-            binding.tvLocationTextPublic.visibility = View.VISIBLE
-        }
-
-        val complement = ad.complement?.trim().orEmpty()
-        if (complement.isNotBlank()) {
-            binding.tvComplementTextPublic.text = complement
-            binding.tvComplementTextPublic.visibility = View.VISIBLE
-        } else {
-            binding.tvComplementTextPublic.visibility = View.GONE
-        }
+        binding.tvLocationTextPublic.text = PublicAnimalDetails.location(ad)
+        binding.tvLocationTextPublic.visibility = View.VISIBLE
+        binding.tvComplementTextPublic.visibility = View.GONE
 
         val situationSubtext = when (ad.currentSituation.lowercase().trim()) {
             "comigo" -> "Última situação informada: está com quem encontrou"
@@ -161,6 +124,22 @@ class PublicAdDetailActivity : AppCompatActivity() {
 
         // Footer Main Button Text
         binding.btnMainActionPublic.text = if (isLost) "Acho que encontrei" else "Acho que é meu"
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val ad = currentAd?.let { LostAndFoundRepository.getAdById(this, it.id) } ?: return
+        currentAd = ad
+        val action = AdActionNavigator.action(this, ad)
+        binding.btnMainActionPublic.isEnabled =
+            action != AdActionNavigator.Action.OWN_AD && action != AdActionNavigator.Action.INACTIVE
+        binding.btnMainActionPublic.setText(when (action) {
+            AdActionNavigator.Action.OWN_AD -> R.string.map_animal_own_ad
+            AdActionNavigator.Action.STATUS -> R.string.map_animal_request_status
+            AdActionNavigator.Action.CHAT -> R.string.map_animal_chat
+            else -> if (ad.category.equals("PERDIDO", true)) R.string.map_animal_sighting
+                else R.string.map_animal_verification
+        })
     }
 
     private fun renderCapsules(ad: FoundPetAd) {
@@ -225,18 +204,7 @@ class PublicAdDetailActivity : AppCompatActivity() {
         }
 
         binding.btnMainActionPublic.setOnClickListener {
-            val ad = currentAd ?: return@setOnClickListener
-            if (ad.category.equals("PERDIDO", ignoreCase = true)) {
-                val intent = Intent(this, SightingFormActivity::class.java).apply {
-                    putExtra(SightingFormActivity.EXTRA_AD_ID, ad.id)
-                }
-                startActivity(intent)
-            } else {
-                val intent = Intent(this, TutorVerificationActivity::class.java).apply {
-                    putExtra(TutorVerificationActivity.EXTRA_AD_ID, ad.id)
-                }
-                startActivity(intent)
-            }
+            currentAd?.let { AdActionNavigator.open(this, it.id) }
         }
     }
 

@@ -49,6 +49,10 @@ class TutorVerificationActivity : AppCompatActivity() {
             return
         }
 
+        if (AdActionNavigator.redirectIfNeeded(this, currentAd!!.id, AdActionNavigator.Action.VERIFICATION)) {
+            finish()
+            return
+        }
         if (savedInstanceState != null) {
             val savedUriStr = savedInstanceState.getString("KEY_SAVED_PHOTO_URI")
             if (!savedUriStr.isNullOrBlank()) {
@@ -123,6 +127,10 @@ class TutorVerificationActivity : AppCompatActivity() {
 
     private fun submitVerification() {
         val ad = currentAd ?: return
+        if (AdActionNavigator.redirectIfNeeded(this, ad.id, AdActionNavigator.Action.VERIFICATION)) {
+            finish()
+            return
+        }
         val petName = binding.etPetName.text.toString().trim()
         val specialMark = binding.etSpecialMark.text.toString().trim()
 
@@ -155,10 +163,11 @@ class TutorVerificationActivity : AppCompatActivity() {
             photoUri = selectedPhotoUri?.toString()
         )
 
-        val saved = LostAndFoundRepository.saveVerificationRequest(this, request)
+        val saved = LostAndFoundRepository.saveVerificationRequest(this, request,
+            allowOwnAdForTesting = LostAndFoundRepository.canTestOwnAnnouncement(this))
         if (!saved) {
-            Toast.makeText(this, "Você já enviou uma solicitação para este anúncio.", Toast.LENGTH_SHORT).show()
-            binding.btnSubmitVerification.isEnabled = true
+            AdActionNavigator.open(this, ad.id)
+            finish()
             return
         }
 

@@ -322,16 +322,16 @@
                     android:textStyle="bold" />
             </LinearLayout>
 
-            <!-- Button: Ver no mapa -->
+            <!-- Button: Ver animais no mapa -->
             <LinearLayout
                 android:id="@+id/btn_view_map"
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
                 android:layout_marginTop="10dp"
-                android:background="@drawable/bg_btn_outline"
+                android:background="@drawable/bg_btn_dark_green"
                 android:clickable="true"
                 android:focusable="true"
-                android:gravity="center"
+                android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:paddingHorizontal="16dp">
 
@@ -339,17 +339,25 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:contentDescription="@null"
-                    android:src="@drawable/ic_map_pin"
-                    app:tint="@color/pine800" />
+                    android:src="@drawable/ic_map"
+                    app:tint="@color/white" />
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:text="Ver relatos no mapa"
-                    android:textColor="@color/pine800"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:text="Ver animais no mapa"
+                    android:textColor="@color/white"
                     android:textSize="14sp"
                     android:textStyle="bold" />
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_chevron_right"
+                    app:tint="@color/white" />
             </LinearLayout>
 
             <!-- 5. Relatos Recentes Header & Chips -->

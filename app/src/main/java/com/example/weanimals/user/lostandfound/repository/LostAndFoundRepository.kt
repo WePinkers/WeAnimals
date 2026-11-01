@@ -8,6 +8,9 @@ import com.example.weanimals.user.lostandfound.model.FoundPetAd
 import com.example.weanimals.user.lostandfound.model.LostAndFoundChatMessage
 import com.example.weanimals.user.lostandfound.model.ReunionRequest
 import com.example.weanimals.user.lostandfound.model.TutorVerificationRequest
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -34,9 +37,11 @@ object LostAndFoundRepository {
     private val reportsList = mutableListOf<ChatReport>()
     private val announcementReportsList = mutableListOf<AnnouncementReport>()
     private var isInitialized = false
+    private var initializedPrefs: SharedPreferences? = null
 
     fun init(context: Context) {
         if (isInitialized) return
+        initializedPrefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         isInitialized = true
         loadFromPrefs(context)
         loadRequestsFromPrefs(context)
@@ -48,8 +53,20 @@ object LostAndFoundRepository {
 
     fun saveAd(context: Context, ad: FoundPetAd) {
         init(context)
+        adsList.removeAll { it.id == ad.id }
         adsList.add(0, ad)
         saveToPrefs(context)
+    }
+
+    fun observeAds(context: Context): Flow<List<FoundPetAd>> = callbackFlow {
+        init(context)
+        val prefs = getPrefs(context)
+        val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+            if (key == KEY_ADS) trySend(adsList.map { it.copy() })
+        }
+        prefs.registerOnSharedPreferenceChangeListener(listener)
+        trySend(adsList.map { it.copy() })
+        awaitClose { prefs.unregisterOnSharedPreferenceChangeListener(listener) }
     }
 
     fun getAllAds(context: Context): List<FoundPetAd> {
@@ -88,8 +105,18 @@ object LostAndFoundRepository {
         saveToPrefs(context)
     }
 
-    fun saveVerificationRequest(context: Context, request: TutorVerificationRequest): Boolean {
+    /** Local role simulation is available only in debuggable builds, never in release. */
+    fun canTestOwnAnnouncement(context: Context): Boolean =
+        context.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE != 0
+
+    fun saveVerificationRequest(context: Context, request: TutorVerificationRequest,
+        allowOwnAdForTesting: Boolean = false): Boolean {
         init(context)
+        val announcement = adsList.firstOrNull { it.id == request.adId } ?: return false
+        val testingOwnAd = allowOwnAdForTesting && canTestOwnAnnouncement(context)
+        if ((announcement.ownerUserId == request.requesterUserId && !testingOwnAd) ||
+            announcement.ownerUserId != request.ownerUserId ||
+            announcement.isEnded || announcement.isReunited || announcement.getRemainingDays() <= 0) return false
         val alreadySubmitted = requestsList.any { it.adId == request.adId && it.requesterUserId == request.requesterUserId }
         if (alreadySubmitted) return false
 
@@ -266,7 +293,7 @@ object LostAndFoundRepository {
     }
 
     private fun getPrefs(context: Context): SharedPreferences {
-        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        return initializedPrefs ?: context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
     }
 
     private fun saveToPrefs(context: Context) {
@@ -299,6 +326,8 @@ object LostAndFoundRepository {
                 put("isEnded", ad.isEnded)
                 put("isReunited", ad.isReunited)
                 put("reunitedTimestamp", ad.reunitedTimestamp ?: 0L)
+                put("latitude", ad.latitude ?: JSONObject.NULL)
+                put("longitude", ad.longitude ?: JSONObject.NULL)
             }
             array.put(obj)
         }
@@ -329,6 +358,8 @@ object LostAndFoundRepository {
                 }
 
                 val reunitedTs = obj.optLong("reunitedTimestamp", 0L)
+                val lat = obj.optDouble("latitude", Double.NaN)
+                val lng = obj.optDouble("longitude", Double.NaN)
 
                 val ad = FoundPetAd(
                     id = obj.optString("id"),
@@ -356,7 +387,9 @@ object LostAndFoundRepository {
                     possibleTutorsCount = obj.optInt("possibleTutorsCount", 0),
                     isEnded = obj.optBoolean("isEnded", false),
                     isReunited = obj.optBoolean("isReunited", false),
-                    reunitedTimestamp = if (reunitedTs > 0L) reunitedTs else null
+                    reunitedTimestamp = if (reunitedTs > 0L) reunitedTs else null,
+                    latitude = lat.takeIf { it.isFinite() && !(lat == 0.0 && lng == 0.0) },
+                    longitude = lng.takeIf { it.isFinite() && !(lat == 0.0 && lng == 0.0) }
                 )
                 adsList.add(ad)
             }

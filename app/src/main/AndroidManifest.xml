@@ -214,7 +214,7 @@
         <activity android:name=".user.profile.reports.presentation.MyReportsActivity" android:exported="false" />
         <activity android:name=".user.profile.campaigns.presentation.CampaignsActivity" android:exported="false" />
         <activity android:name=".user.profile.favorites.presentation.FavoritesActivity" android:exported="false" />
-        <activity android:name=".user.map.overview.presentation.MapActivity" android:exported="false" />
+        <activity android:name=".user.map.overview.presentation.MapActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
         <activity android:name=".user.community.feed.presentation.CommunityActivity" android:exported="false" />
         <activity
             android:name=".user.community.detail.presentation.CommunityPostDetailActivity"

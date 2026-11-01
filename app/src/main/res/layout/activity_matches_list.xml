@@ -61,6 +61,19 @@
                 android:textColor="@color/muted"
                 android:textSize="13sp" />
 
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_view_matches_map"
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_btn_dark_green"
+                android:text="Ver matches no mapa"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
             <LinearLayout
                 android:id="@+id/container_matches_list"
                 android:layout_width="match_parent"
