@@ -61,17 +61,38 @@
                 android:textSize="@dimen/text_size_card_protocol" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/report_status"
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="24dp"
-            android:fontFamily="monospace"
-            android:gravity="center"
-            android:includeFontPadding="false"
-            android:minWidth="48dp"
-            android:paddingStart="7dp"
-            android:paddingEnd="7dp"
-            android:textColor="@color/terracotta_dark"
-            android:textSize="@dimen/text_size_badge" />
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/report_status"
+                android:layout_width="wrap_content"
+                android:layout_height="24dp"
+                android:fontFamily="monospace"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:minWidth="48dp"
+                android:paddingStart="7dp"
+                android:paddingEnd="7dp"
+                android:textColor="@color/terracotta_dark"
+                android:textSize="@dimen/text_size_badge" />
+
+            <TextView
+                android:id="@+id/report_message_badge"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_marginTop="3dp"
+                android:background="@drawable/bg_status_card"
+                android:fontFamily="sans-serif"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:textColor="@color/pine800"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+        </LinearLayout>
     </LinearLayout>
 </FrameLayout>

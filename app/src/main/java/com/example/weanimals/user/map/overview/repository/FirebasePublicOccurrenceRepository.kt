@@ -22,13 +22,17 @@ class FirebasePublicOccurrenceRepository(
             val latitudeCell = document.getLong("latitudeCell")?.toInt() ?: return@mapNotNull null
             val longitudeCell = document.getLong("longitudeCell")?.toInt() ?: return@mapNotNull null
             if (latitudeCell !in -9000..8999 || longitudeCell !in -18000..17999) return@mapNotNull null
+            val exactLatitude = document.getDouble("latitude")
+            val exactLongitude = document.getDouble("longitude")
             PublicOccurrence(
                 id = document.id,
                 animalType = document.getString("animalType").orEmpty(),
                 urgency = document.getString("urgency").orEmpty(),
                 latitudeCell = latitudeCell,
                 longitudeCell = longitudeCell,
-                createdAtMillis = document.getTimestamp("createdAt")?.toDate()?.time ?: 0L
+                createdAtMillis = document.getTimestamp("createdAt")?.toDate()?.time ?: 0L,
+                exactLatitude = exactLatitude,
+                exactLongitude = exactLongitude
             )
         })
     } catch (cancelled: CancellationException) {

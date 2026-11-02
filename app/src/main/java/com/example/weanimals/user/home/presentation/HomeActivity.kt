@@ -357,6 +357,13 @@ class HomeActivity : AppCompatActivity(), HomeContract.View {
         binding.reportStatus.visibility = if (report.showStatus) View.VISIBLE else View.GONE
         binding.reportStatus.setTextColor(ContextCompat.getColor(this, report.statusTextColorRes))
         binding.reportStatus.setBackgroundResource(report.statusBackgroundRes)
+        binding.reportMessageBadge.text = if (report.teamMessageCount > 9) {
+            "9+"
+        } else {
+            report.teamMessageCount.toString()
+        }
+        binding.reportMessageBadge.visibility =
+            if (report.teamMessageCount > 0) View.VISIBLE else View.GONE
         binding.reportCard.contentDescription = getString(
             R.string.report_accessibility,
             animalName,

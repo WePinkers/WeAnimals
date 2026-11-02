@@ -7,7 +7,12 @@ service cloud.firestore {
     }
 
     function ownsReport(data) {
-      return signedIn() && data.userId == request.auth.uid;
+      return authenticatedAccount() && data.userId == request.auth.uid;
+    }
+
+    function authenticatedAccount() {
+      return signedIn()
+        && request.auth.token.firebase.sign_in_provider != 'anonymous';
     }
 
     function ownsReportById(reportId) {
@@ -29,6 +34,17 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/organization_accounts/$(request.auth.uid)).data.status == 'approved';
     }
 
+    // Temporary access for the local fake ONG account while the admin approval
+    // flow is still under construction. Remove this exception before production.
+    function isTemporaryTestOrganization() {
+      return authenticatedAccount()
+        && request.auth.token.email == 'alissanovais@gmail.com';
+    }
+
+    function canAccessOrganizationReports() {
+      return isApprovedOrganization() || isTemporaryTestOrganization();
+    }
+
     match /user_profiles/{userId} {
       allow read: if signedIn() && request.auth.uid == userId;
       allow create: if signedIn()
@@ -47,7 +63,13 @@ service cloud.firestore {
         && request.resource.data.termsAcceptedAt == request.time
         && request.resource.data.privacyAcceptedAt == request.time
         && request.resource.data.legalVersion == '2026-10-04';
-      allow update, delete: if false;
+      allow update: if signedIn()
+        && request.auth.uid == userId
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['fullName'])
+        && request.resource.data.fullName is string
+        && request.resource.data.fullName.size() > 0
+        && request.resource.data.fullName.size() <= 160;
+      allow delete: if false;
     }
 
     // Stores only a hashed CPF as the document id so CPF login can resolve the e-mail.
@@ -59,6 +81,18 @@ service cloud.firestore {
         && request.resource.data.email.size() > 0
         && request.resource.data.userId == request.auth.uid;
       allow update, delete: if false;
+    }
+
+    // Public lookup used before the institutional account is authenticated.
+    // The document contains only the e-mail associated with the CNPJ.
+    match /cnpj_mapping/{cnpj} {
+      allow read: if true;
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['email'])
+        && request.resource.data.email is string
+        && request.resource.data.email == request.auth.token.email;
+      allow update: if signedIn() && request.auth.token.admin == true;
+      allow delete: if false;
     }
 
     // CNPJ lookup for the institutional login. A pending identifier is created
@@ -166,17 +200,28 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // Organization profile read during the institutional login and dashboard.
+    match /organizations/{organizationId} {
+      allow read: if signedIn() && request.auth.uid == organizationId;
+      allow create: if signedIn()
+        && request.auth.uid == organizationId
+        && request.resource.data.email == request.auth.token.email;
+      allow update: if signedIn()
+        && (request.auth.uid == organizationId || request.auth.token.admin == true);
+      allow delete: if false;
+    }
+
     match /reports/{reportId} {
       allow create: if ownsReport(request.resource.data)
         && request.resource.data.protocolNumber is int
         && request.resource.data.status == 'new';
 
-      allow read: if ownsReport(resource.data) || isTeamMember() || isApprovedOrganization();
+      allow read: if ownsReport(resource.data) || isTeamMember() || canAccessOrganizationReports();
 
       allow update: if ownsReport(resource.data)
         && request.resource.data.userId == resource.data.userId
         && request.resource.data.protocolNumber == resource.data.protocolNumber
-        || (isApprovedOrganization()
+        || (canAccessOrganizationReports()
           && request.resource.data.userId == resource.data.userId
           && request.resource.data.protocolNumber == resource.data.protocolNumber
           && request.resource.data.status in [
@@ -184,13 +229,27 @@ service cloud.firestore {
           ]
           && request.resource.data.updatedAt == request.time
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-            'status', 'updatedAt'
-          ]));
+          'status', 'updatedAt', 'assignedOrganizationId',
+          'assignedOrganizationName', 'assignedAt'
+        ])
+        || (canAccessOrganizationReports()
+          && request.resource.data.userId == resource.data.userId
+          && request.resource.data.protocolNumber == resource.data.protocolNumber
+          && request.resource.data.assignedOrganizationId == request.auth.uid
+          && request.resource.data.assignedOrganizationName is string
+          && request.resource.data.assignedOrganizationName.size() > 0
+          && request.resource.data.assignedAt == request.time
+          && request.resource.data.lastMessageAt == request.time
+          && request.resource.data.teamMessageCount is int
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'assignedOrganizationId', 'assignedOrganizationName', 'assignedAt',
+            'teamMessageCount', 'lastMessageAt'
+          ])));
 
       allow delete: if false;
 
       match /messages/{messageId} {
-        allow read: if ownsReportById(reportId) || isTeamMember() || isApprovedOrganization();
+        allow read: if ownsReportById(reportId) || isTeamMember() || canAccessOrganizationReports();
 
         allow create: if (
           ownsReportById(reportId)
@@ -201,7 +260,7 @@ service cloud.firestore {
           && request.resource.data.text.size() > 0
           && request.resource.data.text.size() <= 1000
         ) || (
-          isTeamMember()
+          (isTeamMember() || canAccessOrganizationReports())
           && request.resource.data.reportId == reportId
           && request.resource.data.senderId == request.auth.uid
           && request.resource.data.senderRole == 'team'
@@ -221,8 +280,9 @@ service cloud.firestore {
       allow write: if false;
     }
 
-    // A public point contains only an animal category, urgency and a 0.01° grid cell.
-    // It is created atomically with its private report; exact coordinates never leave reports.
+    // A public point is created atomically with its private report. The grid
+    // fields remain for compatibility with older documents, while new records
+    // also carry the exact coordinates needed to keep the map pin accurate.
     function matchesPrivateReport(reportId) {
       let report = getAfter(/databases/$(database)/documents/reports/$(reportId)).data;
       let publicData = request.resource.data;
@@ -232,6 +292,10 @@ service cloud.firestore {
         && report.urgency == publicData.urgency
         && report.latitude is number
         && report.longitude is number
+        && publicData.latitude is number
+        && publicData.longitude is number
+        && publicData.latitude == report.latitude
+        && publicData.longitude == report.longitude
         && report.latitude >= publicData.latitudeCell / 100.0
         && report.latitude < (publicData.latitudeCell + 1) / 100.0
         && report.longitude >= publicData.longitudeCell / 100.0
@@ -243,13 +307,21 @@ service cloud.firestore {
       allow create: if signedIn()
         && existsAfter(/databases/$(database)/documents/reports/$(reportId))
         && request.resource.data.keys().hasOnly([
-          'animalType', 'urgency', 'latitudeCell', 'longitudeCell', 'createdAt'
+          'animalType', 'urgency', 'latitude', 'longitude',
+          'latitudeCell', 'longitudeCell', 'createdAt'
         ])
         && request.resource.data.keys().hasAll([
-          'animalType', 'urgency', 'latitudeCell', 'longitudeCell', 'createdAt'
+          'animalType', 'urgency', 'latitude', 'longitude',
+          'latitudeCell', 'longitudeCell', 'createdAt'
         ])
         && request.resource.data.animalType in ['dog', 'cat', 'other']
         && request.resource.data.urgency in ['low', 'medium', 'high']
+        && request.resource.data.latitude is number
+        && request.resource.data.latitude >= -90
+        && request.resource.data.latitude <= 90
+        && request.resource.data.longitude is number
+        && request.resource.data.longitude >= -180
+        && request.resource.data.longitude <= 180
         && request.resource.data.latitudeCell is int
         && request.resource.data.latitudeCell >= -9000
         && request.resource.data.latitudeCell < 9000

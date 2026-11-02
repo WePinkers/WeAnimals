@@ -31,9 +31,11 @@ class CaseChatActivity : AppCompatActivity(), ChatContract.View {
     private val isAdoption by lazy { intent.getBooleanExtra(EXTRA_ADOPTION_CHAT, false) }
     private val animalId by lazy { intent.getStringExtra(EXTRA_ANIMAL_ID).orEmpty() }
     private val animalName by lazy { intent.getStringExtra(EXTRA_ANIMAL_NAME).orEmpty() }
-    private val organizationName by lazy {
+    private val assignedOrganizationFromIntent by lazy {
         intent.getStringExtra(EXTRA_ORGANIZATION_NAME)?.takeIf(String::isNotBlank)
-            ?: getString(R.string.adoption_chat_organization_fallback)
+    }
+    private val organizationName by lazy {
+        assignedOrganizationFromIntent ?: getString(R.string.adoption_chat_organization_fallback)
     }
     private val presenter: ChatPresenter by lazy {
         val container = (application as WeAnimalsApplication).appContainer
@@ -121,8 +123,14 @@ class CaseChatActivity : AppCompatActivity(), ChatContract.View {
         }
         when (header) {
             ChatHeader.Unassigned -> {
-                binding.chatAvatar.setText(R.string.chat_unassigned_avatar)
-                binding.chatAgentName.setText(R.string.chat_unassigned_title)
+                if (!isAdoption && assignedOrganizationFromIntent != null) {
+                    binding.chatAvatar.text = assignedOrganizationFromIntent
+                        ?.firstOrNull()?.uppercaseChar()?.toString()
+                    binding.chatAgentName.text = assignedOrganizationFromIntent
+                } else {
+                    binding.chatAvatar.setText(R.string.chat_unassigned_avatar)
+                    binding.chatAgentName.setText(R.string.chat_unassigned_title)
+                }
             }
 
             is ChatHeader.Assigned -> {
@@ -195,6 +203,7 @@ class CaseChatActivity : AppCompatActivity(), ChatContract.View {
         } else {
             binding.outgoingMessageGroup.visibility = View.GONE
             binding.incomingMessageGroup.visibility = View.VISIBLE
+            binding.incomingMessageSender.text = message.senderName ?: getString(R.string.chat_team_default_name)
             binding.incomingMessageText.text = message.text
             binding.incomingMessageTime.text = time
         }
@@ -225,10 +234,18 @@ class CaseChatActivity : AppCompatActivity(), ChatContract.View {
         private const val EXTRA_ANIMAL_NAME = "extra_animal_name"
         private const val EXTRA_ORGANIZATION_NAME = "extra_organization_name"
 
-        fun newIntent(context: Context, reportId: String, protocolNumber: Int) =
+        fun newIntent(
+            context: Context,
+            reportId: String,
+            protocolNumber: Int,
+            organizationName: String? = null
+        ) =
             Intent(context, CaseChatActivity::class.java).apply {
                 putExtra(EXTRA_REPORT_ID, reportId)
                 putExtra(EXTRA_PROTOCOL_NUMBER, protocolNumber)
+                organizationName?.takeIf(String::isNotBlank)?.let {
+                    putExtra(EXTRA_ORGANIZATION_NAME, it)
+                }
             }
 
         fun newAdoptionIntent(

@@ -19,6 +19,23 @@ class GetNearbyOccurrencesInteractorTest {
     }
 
     @Test
+    fun exactCoordinatesTakePriorityOverLegacyGridCell() {
+        val occurrence = PublicOccurrence(
+            id = "report",
+            animalType = "dog",
+            urgency = "high",
+            latitudeCell = -2356,
+            longitudeCell = -4664,
+            createdAtMillis = 1L,
+            exactLatitude = -23.550512,
+            exactLongitude = -46.633327
+        )
+
+        assertEquals(-23.550512, occurrence.coordinates.latitude, 0.000001)
+        assertEquals(-46.633327, occurrence.coordinates.longitude, 0.000001)
+    }
+
+    @Test
     fun returnsOnlyNearbyPointsSortedByDistance() = runTest {
         val location = Coordinates(-23.5505, -46.6333)
         val repository = FakeRepository(listOf(

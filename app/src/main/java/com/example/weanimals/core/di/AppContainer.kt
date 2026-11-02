@@ -137,7 +137,12 @@ class AppContainer(context: Context) {
         )
     }
 
-    private val profileRepository by lazy { FirebaseProfileRepository(FirebaseAuth.getInstance()) }
+    private val profileRepository by lazy {
+        FirebaseProfileRepository(
+            auth = FirebaseAuth.getInstance(),
+            context = applicationContext,
+        )
+    }
 
     private val favoriteRepository by lazy {
         FirebaseFavoriteRepository(FirebaseAuth.getInstance(), FirebaseFirestore.getInstance())

@@ -61,8 +61,10 @@ class FirebaseChatRepository(
                 FIELD_REPORT_ID to reportId,
                 FIELD_SENDER_ID to user.uid,
                 FIELD_SENDER_ROLE to ChatMessage.SENDER_USER,
+                FIELD_SENDER_NAME to user.displayName,
                 FIELD_TEXT to normalizedText,
-                FIELD_CREATED_AT to createdAt
+                FIELD_CREATED_AT to createdAt,
+                FIELD_READ_BY_USER to true
             )
         ).await()
 
@@ -82,9 +84,9 @@ class FirebaseChatRepository(
         .collection(MESSAGES_COLLECTION)
 
     private suspend fun ensureSignedIn(): FirebaseUser {
-        auth.currentUser?.let { return it }
-        return auth.signInAnonymously().await().user
-            ?: error("Firebase user was not created.")
+        val user = auth.currentUser ?: error("Authenticated user is required.")
+        check(!user.isAnonymous) { "An authenticated account is required to use case chat." }
+        return user
     }
 
     private fun DocumentSnapshot.toChatMessageOrNull(currentUserId: String): ChatMessage? {
@@ -111,6 +113,7 @@ class FirebaseChatRepository(
         const val FIELD_SENDER_NAME = "senderName"
         const val FIELD_TEXT = "text"
         const val FIELD_CREATED_AT = "createdAt"
+        const val FIELD_READ_BY_USER = "readByUser"
         const val MAX_MESSAGE_LENGTH = 1000
     }
 }

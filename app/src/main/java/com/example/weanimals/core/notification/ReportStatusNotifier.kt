@@ -53,6 +53,7 @@ enum class ReportStatusNotificationEnum(
 object ReportStatusNotifier {
 
     private const val TAG = "DEBUG_NOTIFICACOES"
+    private const val MESSAGE_NOTIFICATION_OFFSET = 1_000_000
     private var simulationJob: Job? = null
 
     fun notifyReportCreated(
@@ -109,6 +110,31 @@ object ReportStatusNotifier {
             context = context,
             channelId = NotificationChannelManager.CHANNEL_REPORTS,
             notificationId = notificationId,
+            title = title,
+            message = message,
+            targetIntent = targetIntent
+        )
+    }
+
+    fun notifyTeamMessage(
+        context: Context,
+        reportId: String,
+        protocolNumber: Int,
+        organizationName: String?,
+        messageCount: Int,
+    ) {
+        val organization = organizationName?.takeIf(String::isNotBlank) ?: "A equipe responsável"
+        val title = "Protocolo #$protocolNumber: nova mensagem"
+        val message = "$organization enviou uma mensagem sobre sua denúncia."
+        val targetIntent = TrackingActivity.newIntent(context, reportId).apply {
+            putExtra("extra_protocol", "#$protocolNumber")
+        }
+
+        Log.d(TAG, "Nova mensagem da equipe: protocolo=#$protocolNumber, total=$messageCount")
+        NotificationDispatcher.dispatchNotification(
+            context = context,
+            channelId = NotificationChannelManager.CHANNEL_REPORTS,
+            notificationId = protocolNumber.coerceAtLeast(1) + MESSAGE_NOTIFICATION_OFFSET,
             title = title,
             message = message,
             targetIntent = targetIntent

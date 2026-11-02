@@ -106,11 +106,25 @@ class TrackingActivity : AppCompatActivity(), TrackingContract.View {
         renderTimeline(report)
         binding.detailsCard.contentDescription = getString(R.string.tracking_details_card)
         binding.updateCard.contentDescription = getString(R.string.tracking_update_card)
+        binding.chatMessageBadge.text = if (report.teamMessageCount > 9) {
+            "9+"
+        } else {
+            report.teamMessageCount.toString()
+        }
+        binding.chatMessageBadge.visibility =
+            if (report.teamMessageCount > 0) View.VISIBLE else View.GONE
         binding.detailsCard.setOnClickListener {
             startActivity(ReportDetailsActivity.newIntent(this, report.id))
         }
         binding.updateCard.setOnClickListener {
-            startActivity(CaseChatActivity.newIntent(this, report.id, report.protocolNumber))
+            startActivity(
+                CaseChatActivity.newIntent(
+                    this,
+                    report.id,
+                    report.protocolNumber,
+                    report.assignedOrganizationName,
+                )
+            )
         }
 
     }
@@ -223,10 +237,17 @@ class TrackingActivity : AppCompatActivity(), TrackingContract.View {
     }
 
     private fun currentStepIndex(status: String) = when (status) {
-        ReportStatus.UNDER_REVIEW -> 1
-        ReportStatus.IN_PROGRESS -> 2
-        ReportStatus.RESCUED -> 3
-        ReportStatus.CLOSED -> 4
+        // A denúncia já foi registrada no momento da criação. A etapa seguinte
+        // permanece atual até a ONG acionar a equipe no painel web.
+        ReportStatus.NEW,
+        ReportStatus.UNDER_REVIEW,
+        "Equipe acionada" -> 1
+        ReportStatus.IN_PROGRESS,
+        "Equipe a caminho" -> 2
+        ReportStatus.RESCUED,
+        "Resgate" -> 3
+        ReportStatus.CLOSED,
+        "Encaminhado a abrigo" -> 4
         else -> 0
     }
 

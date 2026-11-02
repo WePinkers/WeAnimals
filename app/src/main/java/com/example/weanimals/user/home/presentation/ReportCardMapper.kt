@@ -13,7 +13,8 @@ data class ReportCardUiModel(
     val statusLabelRes: Int,
     val statusBackgroundRes: Int,
     val statusTextColorRes: Int,
-    val showStatus: Boolean
+    val showStatus: Boolean,
+    val teamMessageCount: Int
 )
 
 object ReportCardMapper {
@@ -29,7 +30,8 @@ object ReportCardMapper {
             statusLabelRes = statusPresentation.labelRes,
             statusBackgroundRes = statusPresentation.backgroundRes,
             statusTextColorRes = statusPresentation.textColorRes,
-            showStatus = report.status != ReportStatus.NEW || !report.isViewed
+            showStatus = report.status != ReportStatus.NEW || !report.isViewed,
+            teamMessageCount = report.teamMessageCount
         )
     }
 
@@ -49,22 +51,26 @@ object ReportCardMapper {
     }
 
     private fun status(status: String) = when (status) {
-        ReportStatus.UNDER_REVIEW -> StatusPresentation(
+        ReportStatus.UNDER_REVIEW,
+        "Equipe acionada" -> StatusPresentation(
             R.string.status_under_review,
             R.drawable.bg_new_badge,
             R.color.terracotta_dark
         )
-        ReportStatus.IN_PROGRESS -> StatusPresentation(
+        ReportStatus.IN_PROGRESS,
+        "Equipe a caminho" -> StatusPresentation(
             R.string.in_progress_status,
             R.drawable.bg_progress_badge,
             R.color.terracotta_dark
         )
-        ReportStatus.RESCUED -> StatusPresentation(
+        ReportStatus.RESCUED,
+        "Resgate" -> StatusPresentation(
             R.string.status_rescued,
             R.color.low_urgency_light,
             R.color.low_urgency
         )
-        ReportStatus.CLOSED -> StatusPresentation(
+        ReportStatus.CLOSED,
+        "Encaminhado a abrigo" -> StatusPresentation(
             R.string.status_closed,
             R.drawable.bg_status_card,
             R.color.muted

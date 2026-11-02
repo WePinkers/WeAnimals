@@ -17,6 +17,11 @@ data class Report(
     val status: String = ReportStatus.NEW,
     val triageClassification: String? = null,
     val triageAnswers: Map<String, Boolean> = emptyMap(),
+    val assignedOrganizationId: String? = null,
+    val assignedOrganizationName: String? = null,
+    val assignedAtMillis: Long = 0L,
+    val teamMessageCount: Int = 0,
+    val lastMessageAtMillis: Long = 0L,
     val createdAtMillis: Long = 0L,
     val updatedAtMillis: Long = 0L,
     val isViewed: Boolean = false

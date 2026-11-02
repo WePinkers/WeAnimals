@@ -39,28 +39,62 @@ class FirebaseReportRepository(
     private val localSessionReports = CopyOnWriteArrayList<Report>()
 
     override fun observeCurrentUserReports(): Flow<Result<List<Report>>> = callbackFlow {
-        val user = try {
+        val currentUser = try {
             ensureSignedIn()
         } catch (exception: Exception) {
             Log.e(TAG, "Error signing in for observeCurrentUserReports", exception)
-            trySend(Result.success(getCombinedReports(emptyList())))
+            trySend(Result.success(getCombinedReports(emptyList(), null)))
             close()
             return@callbackFlow
         }
 
         val registration = firestore.collection(REPORTS_COLLECTION)
-            .whereEqualTo(FIELD_USER_ID, user.uid)
+            .whereEqualTo(FIELD_USER_ID, currentUser.uid)
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
                     Log.e(TAG, "Firestore error in observeCurrentUserReports", error)
-                    trySend(Result.success(getCombinedReports(emptyList())))
+                    trySend(Result.success(getCombinedReports(emptyList(), currentUser.uid)))
                 } else if (snapshot != null) {
                     val firestoreReports = snapshot.documents
                         .mapNotNull { document -> document.toReportOrNull() }
 
-                    trySend(Result.success(getCombinedReports(firestoreReports)))
+                    // Compatibilidade: denúncias antigas da conta autenticada
+                    // ainda não possuíam esse marcador. Elas podem ser
+                    // classificadas com segurança aqui porque a consulta já
+                    // está limitada ao UID do usuário autenticado.
+                    snapshot.documents
+                        .filter { document ->
+                            document.getString(FIELD_USER_ID) == currentUser.uid &&
+                                (!document.contains(FIELD_REPORTER_IS_ANONYMOUS) ||
+                                    (!document.contains(FIELD_REPORTER_NAME) &&
+                                        !currentUser.displayName.isNullOrBlank()))
+                        }
+                        .forEach { document ->
+                            val missingFields = mutableMapOf<String, Any>()
+                            if (!document.contains(FIELD_REPORTER_IS_ANONYMOUS)) {
+                                missingFields[FIELD_REPORTER_IS_ANONYMOUS] = false
+                            }
+                            currentUser.displayName
+                                ?.takeIf(String::isNotBlank)
+                                ?.takeIf { !document.contains(FIELD_REPORTER_NAME) }
+                                ?.let { displayName ->
+                                    missingFields[FIELD_REPORTER_NAME] = displayName
+                                }
+
+                            if (missingFields.isEmpty()) return@forEach
+                            firestore.collection(REPORTS_COLLECTION)
+                                .document(document.id)
+                                .update(missingFields)
+                                .addOnFailureListener { error ->
+                                    Log.w(TAG, "Could not backfill authenticated report metadata", error)
+                                }
+                        }
+
+                    notifyNewTeamMessages(firestoreReports)
+
+                    trySend(Result.success(getCombinedReports(firestoreReports, currentUser.uid)))
                 } else {
-                    trySend(Result.success(getCombinedReports(emptyList())))
+                    trySend(Result.success(getCombinedReports(emptyList(), currentUser.uid)))
                 }
             }
 
@@ -107,6 +141,7 @@ class FirebaseReportRepository(
                         if (report == null) {
                             trySend(Result.failure(SecurityException("Report not found.")))
                         } else {
+                            notifyNewTeamMessages(listOf(report))
                             trySend(Result.success(report))
                         }
                     }
@@ -152,14 +187,23 @@ class FirebaseReportRepository(
         savedReport
     }
 
-    private fun getCombinedReports(firestoreReports: List<Report>): List<Report> {
+    private fun getCombinedReports(
+        firestoreReports: List<Report>,
+        userId: String?
+    ): List<Report> {
         val combinedMap = mutableMapOf<String, Report>()
 
+        if (userId == null) return emptyList()
+
         // 1. Add Firestore reports
-        firestoreReports.forEach { combinedMap[it.id] = it }
+        firestoreReports
+            .filter { it.userId == userId }
+            .forEach { combinedMap[it.id] = it }
 
         // 2. Add locally created session reports
-        localSessionReports.forEach { combinedMap[it.id] = it }
+        localSessionReports
+            .filter { it.userId == userId }
+            .forEach { combinedMap[it.id] = it }
 
         val resultList = combinedMap.values.sortedByDescending { it.createdAtMillis }
 
@@ -172,9 +216,9 @@ class FirebaseReportRepository(
     }
 
     private suspend fun ensureSignedIn(): FirebaseUser {
-        auth.currentUser?.let { return it }
-        return auth.signInAnonymously().await().user
-            ?: error("Firebase user was not created.")
+        val user = auth.currentUser ?: error("Authenticated user is required.")
+        check(!user.isAnonymous) { "An authenticated account is required to report an occurrence." }
+        return user
     }
 
     private fun compressPhoto(photoUri: String): ByteArray {
@@ -281,6 +325,8 @@ class FirebaseReportRepository(
         val data = hashMapOf<String, Any?>(
             FIELD_PROTOCOL to protocolNumber,
             FIELD_USER_ID to user.uid,
+            FIELD_REPORTER_IS_ANONYMOUS to user.isAnonymous,
+            FIELD_REPORTER_NAME to user.displayName,
             FIELD_ANIMAL_TYPE to report.animalType,
             FIELD_URGENCY to report.urgency,
             FIELD_DESCRIPTION to report.description,
@@ -293,7 +339,8 @@ class FirebaseReportRepository(
             FIELD_IS_VIEWED to false,
             FIELD_CREATED_AT to now,
             FIELD_UPDATED_AT to now,
-            FIELD_ASSIGNED_TEAM_ID to null
+            FIELD_ASSIGNED_TEAM_ID to null,
+            FIELD_TEAM_MESSAGE_COUNT to 0
         )
         photoBytes?.let {
             data[FIELD_PHOTO_DATA] = Blob.fromBytes(it)
@@ -309,6 +356,8 @@ class FirebaseReportRepository(
                 mapOf(
                     "animalType" to report.animalType,
                     "urgency" to report.urgency,
+                    "latitude" to coordinates.latitude,
+                    "longitude" to coordinates.longitude,
                     "latitudeCell" to PublicOccurrence.cell(coordinates.latitude),
                     "longitudeCell" to PublicOccurrence.cell(coordinates.longitude),
                     "createdAt" to FieldValue.serverTimestamp()
@@ -333,6 +382,7 @@ class FirebaseReportRepository(
             status = ReportStatus.NEW,
             triageClassification = report.triageClassification,
             triageAnswers = report.triageAnswers,
+            teamMessageCount = 0,
             createdAtMillis = now.toDate().time,
             updatedAtMillis = now.toDate().time,
             isViewed = false
@@ -360,6 +410,11 @@ class FirebaseReportRepository(
                 status = getString(FIELD_STATUS) ?: ReportStatus.NEW,
                 triageClassification = getString(FIELD_TRIAGE_CLASSIFICATION),
                 triageAnswers = readTriageAnswers(),
+                assignedOrganizationId = getString(FIELD_ASSIGNED_ORGANIZATION_ID),
+                assignedOrganizationName = getString(FIELD_ASSIGNED_ORGANIZATION_NAME),
+                assignedAtMillis = getTimestamp(FIELD_ASSIGNED_AT)?.toDate()?.time ?: 0L,
+                teamMessageCount = getLong(FIELD_TEAM_MESSAGE_COUNT)?.toInt() ?: 0,
+                lastMessageAtMillis = getTimestamp(FIELD_LAST_MESSAGE_AT)?.toDate()?.time ?: 0L,
                 createdAtMillis = getTimestamp(FIELD_CREATED_AT)?.toDate()?.time ?: 0L,
                 updatedAtMillis = getTimestamp(FIELD_UPDATED_AT)?.toDate()?.time ?: 0L,
                 isViewed = getBoolean(FIELD_IS_VIEWED) ?: false
@@ -378,6 +433,21 @@ class FirebaseReportRepository(
             ?: emptyMap()
     }
 
+    private fun notifyNewTeamMessages(reports: List<Report>) {
+        reports.forEach { report ->
+            val previousCount = observedTeamMessageCounts.put(report.id, report.teamMessageCount)
+            if (previousCount != null && report.teamMessageCount > previousCount) {
+                ReportStatusNotifier.notifyTeamMessage(
+                    context = context,
+                    reportId = report.id,
+                    protocolNumber = report.protocolNumber,
+                    organizationName = report.assignedOrganizationName,
+                    messageCount = report.teamMessageCount,
+                )
+            }
+        }
+    }
+
     private companion object {
         const val TAG = "WeAnimalsReports"
         const val REPORTS_COLLECTION = "reports"
@@ -386,6 +456,8 @@ class FirebaseReportRepository(
         const val REPORT_COUNTER_DOCUMENT = "reports_counter"
         const val FIELD_PROTOCOL = "protocolNumber"
         const val FIELD_USER_ID = "userId"
+        const val FIELD_REPORTER_IS_ANONYMOUS = "reporterIsAnonymous"
+        const val FIELD_REPORTER_NAME = "reporterName"
         const val FIELD_ANIMAL_TYPE = "animalType"
         const val FIELD_URGENCY = "urgency"
         const val FIELD_DESCRIPTION = "description"
@@ -402,11 +474,18 @@ class FirebaseReportRepository(
         const val FIELD_CREATED_AT = "createdAt"
         const val FIELD_UPDATED_AT = "updatedAt"
         const val FIELD_ASSIGNED_TEAM_ID = "assignedTeamId"
+        const val FIELD_ASSIGNED_ORGANIZATION_ID = "assignedOrganizationId"
+        const val FIELD_ASSIGNED_ORGANIZATION_NAME = "assignedOrganizationName"
+        const val FIELD_ASSIGNED_AT = "assignedAt"
+        const val FIELD_TEAM_MESSAGE_COUNT = "teamMessageCount"
+        const val FIELD_LAST_MESSAGE_AT = "lastMessageAt"
         const val FIELD_NEXT_PROTOCOL = "nextProtocol"
         const val MAX_PHOTO_BYTES = 700 * 1024
         const val MAX_PHOTO_DIMENSION = 1280
         const val MAX_SAMPLE_SIZE = 64
         const val PHOTO_QUALITY = 75
         const val DEFAULT_PHOTO_FILE_NAME = "foto_enviada.jpg"
+
+        val observedTeamMessageCounts = mutableMapOf<String, Int>()
     }
 }

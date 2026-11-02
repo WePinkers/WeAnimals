@@ -15,6 +15,17 @@
         android:visibility="gone">
 
         <TextView
+            android:id="@+id/incoming_message_sender"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="3dp"
+            android:fontFamily="sans-serif"
+            android:includeFontPadding="false"
+            android:textColor="@color/pine800"
+            android:textSize="10sp"
+            android:textStyle="bold" />
+
+        <TextView
             android:id="@+id/incoming_message_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

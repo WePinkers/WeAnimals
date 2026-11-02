@@ -42,7 +42,10 @@ import com.example.weanimals.user.profile.reports.presentation.MyReportsActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.UserProfileChangeRequest
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import java.io.File
 import java.io.FileOutputStream
 
@@ -245,6 +248,46 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
             .putString(KEY_USER_BIO, bio ?: "")
             .apply()
         updateHeader()
+
+        lifecycleScope.launch {
+            val user = FirebaseAuth.getInstance().currentUser ?: return@launch
+            runCatching {
+                user.updateProfile(
+                    UserProfileChangeRequest.Builder()
+                        .setDisplayName(name)
+                        .build()
+                ).await()
+            }.onFailure { error ->
+                android.util.Log.e(TAG, "Não foi possível atualizar o nome da conta", error)
+            }
+
+            val firestore = FirebaseFirestore.getInstance()
+            runCatching {
+                firestore.collection("user_profiles")
+                    .document(user.uid)
+                    .update("fullName", name)
+                    .await()
+            }.onFailure { error ->
+                android.util.Log.e(TAG, "Não foi possível atualizar o perfil no Firestore", error)
+            }
+
+            runCatching {
+                // Mantém o nome exibido no site sincronizado com o perfil atual.
+                val reports = firestore.collection("reports")
+                    .whereEqualTo("userId", user.uid)
+                    .get()
+                    .await()
+                if (!reports.isEmpty) {
+                    val batch = firestore.batch()
+                    reports.documents.forEach { report ->
+                        batch.update(report.reference, "reporterName", name)
+                    }
+                    batch.commit().await()
+                }
+            }.onFailure { error ->
+                android.util.Log.e(TAG, "Não foi possível sincronizar o nome nas denúncias", error)
+            }
+        }
     }
 
     private fun updateHeader() {
@@ -450,6 +493,7 @@ class ProfileActivity : AppCompatActivity(), ProfileContract.View {
     }
 
     private companion object {
+        const val TAG = "ProfileActivity"
         const val MENU_EDIT_PROFILE = 1
         const val PROFILE_PREFS = "profile_prefs"
         const val KEY_USER_NAME = "user_name"

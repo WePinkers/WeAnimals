@@ -445,7 +445,7 @@
     <string name="sent_classification_format">⚠ %1$s · triagem automática</string>
     <string name="tracking_protocol_format">PROTOCOLO #%1$d</string>
     <string name="tracking_case_title_format">%1$s — %2$s</string>
-    <string name="tracking_received">Denúncia recebida</string>
+    <string name="tracking_received">Denúncia confirmada</string>
     <string name="tracking_assigned">Equipe acionada</string>
     <string name="tracking_on_the_way">Equipe a caminho</string>
     <string name="tracking_rescue">Resgate</string>
