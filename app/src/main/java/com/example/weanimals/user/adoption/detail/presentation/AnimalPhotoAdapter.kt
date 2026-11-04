@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.dispose
 import coil.load
 import com.example.weanimals.R
+import com.example.weanimals.core.utils.DataUrlBitmapDecoder
 import com.example.weanimals.databinding.ItemAnimalPhotoBinding
 
 class AnimalPhotoAdapter : RecyclerView.Adapter<AnimalPhotoAdapter.PhotoViewHolder>() {
@@ -67,14 +68,20 @@ class AnimalPhotoAdapter : RecyclerView.Adapter<AnimalPhotoAdapter.PhotoViewHold
             photoImage.isVisible = hasPhoto
             photoPlaceholder.isVisible = !hasPhoto
             if (hasPhoto) {
-                photoImage.load(photoUrl) {
-                    placeholder(R.drawable.bg_adoption_photo)
-                    error(R.drawable.bg_adoption_photo)
-                    crossfade(true)
-                    listener(
-                        onSuccess = { _, _ -> photoPlaceholder.isVisible = false },
-                        onError = { _, _ -> photoPlaceholder.isVisible = true }
-                    )
+                val dataUrlBitmap = DataUrlBitmapDecoder.decode(photoUrl)
+                if (dataUrlBitmap != null) {
+                    photoImage.setImageBitmap(dataUrlBitmap)
+                    photoPlaceholder.isVisible = false
+                } else {
+                    photoImage.load(photoUrl) {
+                        placeholder(R.drawable.bg_adoption_photo)
+                        error(R.drawable.bg_adoption_photo)
+                        crossfade(true)
+                        listener(
+                            onSuccess = { _, _ -> photoPlaceholder.isVisible = false },
+                            onError = { _, _ -> photoPlaceholder.isVisible = true }
+                        )
+                    }
                 }
             } else {
                 photoImage.dispose()

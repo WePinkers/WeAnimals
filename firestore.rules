@@ -45,8 +45,22 @@ service cloud.firestore {
       return isApprovedOrganization() || isTemporaryTestOrganization();
     }
 
+    // Adoption statuses can only move forward. The organization may skip a
+    // visual step when necessary, but it cannot return to an earlier status.
+    function advancesAdoptionApplicationStatus() {
+      return (resource.data.status == 'pending'
+          && request.resource.data.status in ['reviewing', 'approved', 'rejected'])
+        || (resource.data.status == 'reviewing'
+          && request.resource.data.status in ['approved', 'visit_scheduled', 'rejected'])
+        || (resource.data.status == 'approved'
+          && request.resource.data.status in ['visit_scheduled', 'adopted'])
+        || (resource.data.status == 'visit_scheduled'
+          && request.resource.data.status == 'adopted');
+    }
+
     match /user_profiles/{userId} {
-      allow read: if signedIn() && request.auth.uid == userId;
+      allow read: if (signedIn() && request.auth.uid == userId)
+        || isTemporaryTestOrganization();
       allow create: if signedIn()
         && request.auth.uid == userId
         && request.resource.data.keys().hasOnly([
@@ -273,11 +287,40 @@ service cloud.firestore {
       }
     }
 
-    // Public adoption cards contain only shelter/animal information.
-    // NGO management and its write permissions belong to the future staff flow.
+    // Public adoption cards are created by an approved organization and read
+    // by the app's adoption catalog.
     match /animais/{animalId} {
-      allow read: if signedIn() && resource.data.status == 'disponivel';
-      allow write: if false;
+      allow read: if (signedIn()
+          && resource.data.status == 'disponivel')
+        || (canAccessOrganizationReports()
+          && resource.data.ong_id == request.auth.uid);
+      allow create: if canAccessOrganizationReports()
+        && request.resource.data.keys().hasOnly([
+          'nome', 'ong_id', 'abrigo_nome', 'abrigo_endereco', 'especie',
+          'raca', 'idade_texto', 'idade_anos', 'porte', 'foto_url', 'foto_urls',
+          'caracteristicas', 'convivencia', 'vacinado', 'castrado', 'bom_com_criancas',
+          'bom_com_outros_animais', 'nivel_energia', 'independente',
+          'descricao', 'requisitos_adocao', 'chegada_ao_abrigo', 'status', 'criado_em'
+        ])
+        && request.resource.data.keys().hasAll([
+          'nome', 'ong_id', 'especie', 'porte', 'status', 'criado_em'
+        ])
+        && request.resource.data.ong_id == request.auth.uid
+        && request.resource.data.nome is string
+        && request.resource.data.nome.size() > 0
+        && request.resource.data.especie in ['cao', 'gato', 'outro']
+        && request.resource.data.status == 'disponivel'
+        && request.resource.data.criado_em == request.time;
+      allow update: if canAccessOrganizationReports()
+        && resource.data.ong_id == request.auth.uid
+        && request.resource.data.ong_id == resource.data.ong_id;
+      allow delete: if false;
+    }
+
+    // Collection-group query used by the temporary ONG test account to list
+    // adoption conversations stored under .../animals/{animalId}.
+    match /{nestedPath=**}/animals/{animalId} {
+      allow read: if isTemporaryTestOrganization();
     }
 
     // A public point is created atomically with its private report. The grid
@@ -612,7 +655,9 @@ service cloud.firestore {
 
     match /adoption_applications/{userId}/animals/{animalId} {
       allow read: if (signedIn() && request.auth.uid == userId)
-        || (isTeamMember() && request.auth.token.ngoId == resource.data.ngoId);
+        || (isTeamMember() && request.auth.token.ngoId == resource.data.ngoId)
+        || (signedIn() && request.auth.uid == resource.data.ngoId)
+        || isTemporaryTestOrganization();
       allow create: if signedIn()
         && request.auth.uid == userId
         && exists(/databases/$(database)/documents/animais/$(animalId))
@@ -620,7 +665,7 @@ service cloud.firestore {
         && request.resource.data.keys().hasOnly([
           'userId', 'animalId', 'ngoId', 'status', 'matchPercentage',
           'profile', 'submittedAt', 'animalName', 'shelterName',
-          'breed', 'ageText', 'photoUrl'
+          'breed', 'ageText', 'photoUrl', 'userName'
         ])
         && request.resource.data.userId == userId
         && request.resource.data.animalId == animalId
@@ -637,6 +682,10 @@ service cloud.firestore {
         && request.resource.data.breed is string
         && request.resource.data.ageText is string
         && request.resource.data.photoUrl is string
+        && (!request.resource.data.keys().hasAny(['userName'])
+          || (request.resource.data.userName is string
+            && request.resource.data.userName.size() > 0
+            && request.resource.data.userName.size() <= 160))
         && request.resource.data.submittedAt == request.time;
       allow update: if signedIn()
         && request.resource.data.updatedAt == request.time
@@ -658,15 +707,21 @@ service cloud.firestore {
             && request.resource.data.status == 'cancelled')
           || (isTeamMember()
             && request.auth.token.ngoId == resource.data.ngoId
-            && resource.data.status in ['pending', 'reviewing', 'approved', 'visit_scheduled']
-            && request.resource.data.status in [
-              'reviewing', 'approved', 'rejected', 'visit_scheduled', 'adopted'
-            ])
+            && advancesAdoptionApplicationStatus())
           || (isTeamMember()
             && request.auth.token.ngoId == resource.data.ngoId
             && resource.data.status == 'adopted'
             && request.resource.data.status == 'adopted'
             && !resource.data.keys().hasAny(['adoptedAt']))
+          || ((isApprovedOrganization() || isTemporaryTestOrganization())
+            && resource.data.ngoId == request.auth.uid
+            && advancesAdoptionApplicationStatus())
+          || (request.auth.uid == userId
+            && request.resource.data.diff(resource.data).affectedKeys()
+              .hasOnly(['userName', 'updatedAt'])
+            && request.resource.data.userName is string
+            && request.resource.data.userName.size() > 0
+            && request.resource.data.userName.size() <= 160)
         );
       allow delete: if false;
 
@@ -741,16 +796,22 @@ service cloud.firestore {
     // Only the adopter and members of the responsible NGO can access its messages.
     match /adoption_conversations/{userId}/animals/{animalId} {
       allow read: if (signedIn() && request.auth.uid == userId)
-        || (isTeamMember() && request.auth.token.ngoId == resource.data.ngoId);
+        || (isTeamMember() && request.auth.token.ngoId == resource.data.ngoId)
+        || (signedIn() && request.auth.uid == resource.data.ngoId)
+        || isTemporaryTestOrganization();
       allow create: if signedIn()
         && request.auth.uid == userId
         && request.resource.data.keys().hasOnly([
-          'userId', 'animalId', 'ngoId', 'createdAt'
+          'userId', 'animalId', 'ngoId', 'userName', 'createdAt'
         ])
         && request.resource.data.userId == userId
         && request.resource.data.animalId == animalId
         && request.resource.data.ngoId is string
         && request.resource.data.ngoId.size() > 0
+        && (!request.resource.data.keys().hasAny(['userName'])
+          || (request.resource.data.userName is string
+            && request.resource.data.userName.size() > 0
+            && request.resource.data.userName.size() <= 160))
         && request.resource.data.createdAt == request.time
         && (
           (exists(/databases/$(database)/documents/adoption_applications/$(userId)/animals/$(animalId))
@@ -761,14 +822,25 @@ service cloud.firestore {
             && request.resource.data.ngoId ==
               get(/databases/$(database)/documents/animais/$(animalId)).data.ong_id)
         );
-      allow update, delete: if false;
+      allow update: if (signedIn()
+          && request.auth.uid == userId
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['userName'])
+          && request.resource.data.userName is string
+          && request.resource.data.userName.size() > 0
+          && request.resource.data.userName.size() <= 160);
+      allow delete: if false;
 
       match /messages/{messageId} {
         allow read: if (signedIn() && request.auth.uid == userId)
           || (isTeamMember()
             && exists(/databases/$(database)/documents/adoption_conversations/$(userId)/animals/$(animalId))
             && request.auth.token.ngoId ==
-              get(/databases/$(database)/documents/adoption_conversations/$(userId)/animals/$(animalId)).data.ngoId);
+              get(/databases/$(database)/documents/adoption_conversations/$(userId)/animals/$(animalId)).data.ngoId)
+          || (signedIn()
+            && exists(/databases/$(database)/documents/adoption_conversations/$(userId)/animals/$(animalId))
+            && request.auth.uid ==
+              get(/databases/$(database)/documents/adoption_conversations/$(userId)/animals/$(animalId)).data.ngoId)
+          || isTemporaryTestOrganization();
         allow create: if signedIn()
           && existsAfter(/databases/$(database)/documents/adoption_conversations/$(userId)/animals/$(animalId))
           && request.resource.data.keys().hasOnly([
@@ -782,10 +854,25 @@ service cloud.firestore {
           && (
             (request.auth.uid == userId
               && request.resource.data.senderRole == 'user'
-              && !('senderName' in request.resource.data.keys()))
+              && (!request.resource.data.keys().hasAny(['senderName'])
+                || (request.resource.data.senderName is string
+                  && request.resource.data.senderName.size() > 0
+                  && request.resource.data.senderName.size() <= 160)))
             || (isTeamMember()
               && request.auth.token.ngoId ==
                 getAfter(/databases/$(database)/documents/adoption_conversations/$(userId)/animals/$(animalId)).data.ngoId
+              && request.resource.data.senderRole == 'team'
+              && request.resource.data.senderName is string
+              && request.resource.data.senderName.size() > 0
+              && request.resource.data.senderName.size() <= 100)
+            || (signedIn()
+              && request.auth.uid ==
+                getAfter(/databases/$(database)/documents/adoption_conversations/$(userId)/animals/$(animalId)).data.ngoId
+              && request.resource.data.senderRole == 'team'
+              && request.resource.data.senderName is string
+              && request.resource.data.senderName.size() > 0
+              && request.resource.data.senderName.size() <= 100)
+            || (isTemporaryTestOrganization()
               && request.resource.data.senderRole == 'team'
               && request.resource.data.senderName is string
               && request.resource.data.senderName.size() > 0

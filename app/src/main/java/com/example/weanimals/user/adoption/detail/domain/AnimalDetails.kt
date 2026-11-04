@@ -22,6 +22,18 @@ data class AnimalDetails(
 
 enum class EnergyLevel { LOW, MODERATE, HIGH }
 
+/**
+ * Requisitos gerais da plataforma para qualquer adoção.
+ * Eles não dependem do cadastro individual feito pelo abrigo.
+ */
+object AdoptionRequirements {
+    val fixed: List<String> = listOf(
+        "Maior de 18 anos, com documento de identidade",
+        "Visita prévia ao abrigo ou ao local de convivência",
+        "Assinatura do termo de responsabilidade"
+    )
+}
+
 data class Shelter(
     val id: String,
     val name: String,

@@ -76,7 +76,11 @@ class AnimalRepositoryImpl(
             ?.filterIsInstance<String>()
             ?.filter { it.isNotBlank() }
             .orEmpty()
-        val normalizedCharacteristics = characteristics.map(::normalize)
+        val compatibility = (data["convivencia"] as? List<*>)
+            ?.filterIsInstance<String>()
+            ?.filter { it.isNotBlank() }
+            .orEmpty()
+        val normalizedCharacteristics = (characteristics + compatibility).map(::normalize)
         return Animal(
             id = document.id,
             ngoId = ngoId,
@@ -90,7 +94,9 @@ class AnimalRepositoryImpl(
             size = data["porte"] as? String ?: "",
             photoUrl = photoUrl(data),
             characteristics = characteristics,
-            energyLevel = energyLevel(data["nivel_energia"] as? String),
+            energyLevel = energyLevel(data["nivel_energia"] as? String)
+                ?: compatibility.mapNotNull(::energyLevel).firstOrNull()
+                ?: AnimalEnergyLevel.MODERATE,
             independent = data["independente"] as? Boolean
                 ?: normalizedCharacteristics.takeIf {
                     it.any { value -> "independente" in value }
@@ -111,7 +117,7 @@ class AnimalRepositoryImpl(
     }
 
     private fun energyLevel(value: String?): AnimalEnergyLevel? = when (value?.let(::normalize)) {
-        "baixo", "baixa", "low" -> AnimalEnergyLevel.LOW
+        "baixo", "baixa", "low", "calmo em casa", "energia tranquila" -> AnimalEnergyLevel.LOW
         "moderado", "moderada", "medium" -> AnimalEnergyLevel.MODERATE
         "alto", "alta", "high" -> AnimalEnergyLevel.HIGH
         else -> null

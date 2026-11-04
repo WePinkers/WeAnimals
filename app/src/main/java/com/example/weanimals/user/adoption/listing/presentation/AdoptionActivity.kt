@@ -26,9 +26,12 @@ import com.example.weanimals.R
 import com.example.weanimals.WeAnimalsApplication
 import com.example.weanimals.user.adoption.detail.presentation.AnimalDetailsActivity
 import com.example.weanimals.user.adoption.compatibility.presentation.CompatibleProfileActivity
+import com.example.weanimals.user.adoption.applications.domain.MyAdoptionApplication
+import com.example.weanimals.user.adoption.applications.presentation.MyAdoptionApplicationsAdapter
 import com.example.weanimals.user.adoption.listing.domain.Animal
 import com.example.weanimals.user.adoption.listing.domain.SpeciesFilter
 import com.example.weanimals.user.adoption.listing.presenter.AdoptionContract
+import com.example.weanimals.user.adoption.tracking.presentation.AdoptionTrackingActivity
 import com.example.weanimals.core.navigation.MainNavigation
 import com.example.weanimals.databinding.ActivityAdoptionBinding
 import com.google.android.material.chip.Chip
@@ -39,9 +42,13 @@ class AdoptionActivity : AppCompatActivity(), AdoptionContract.View {
         (application as WeAnimalsApplication).appContainer.createAdoptionPresenter()
     }
     private val animalAdapter = AnimalAdapter { presenter.onPetClicked(it) }
+    private val myApplicationsAdapter = MyAdoptionApplicationsAdapter { application ->
+        startActivity(AdoptionTrackingActivity.newIntent(this, application.summary))
+    }
     private var selectedFilter = SpeciesFilter.ALL
     private var updatingFilter = false
     private var requestedPermission = false
+    private var myApplicationsExpanded = false
 
     private val settingsLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -83,6 +90,17 @@ class AdoptionActivity : AppCompatActivity(), AdoptionContract.View {
         requestedPermission = savedInstanceState?.getBoolean(STATE_PERMISSION_REQUESTED) ?: false
         binding.animalsList.adapter = animalAdapter
         binding.animalsList.addOnScrollListener(scrollListener)
+        binding.myApplicationsList.adapter = myApplicationsAdapter
+        binding.myApplicationsList.layoutManager = LinearLayoutManager(
+            this,
+            LinearLayoutManager.HORIZONTAL,
+            false,
+        )
+        binding.myApplicationsHeader.setOnClickListener {
+            myApplicationsExpanded = !myApplicationsExpanded
+            binding.myApplicationsList.isVisible = myApplicationsExpanded
+            binding.myApplicationsToggle.rotation = if (myApplicationsExpanded) 180f else 0f
+        }
         binding.filterGroup.setOnCheckedStateChangeListener { _, checkedIds ->
             if (!updatingFilter) checkedIds.firstOrNull()?.let { presenter.onFilterSelected(filterForId(it)) }
         }
@@ -112,6 +130,7 @@ class AdoptionActivity : AppCompatActivity(), AdoptionContract.View {
     override fun onDestroy() {
         binding.animalsList.removeOnScrollListener(scrollListener)
         binding.animalsList.adapter = null
+        binding.myApplicationsList.adapter = null
         presenter.destroy()
         super.onDestroy()
     }
@@ -121,6 +140,19 @@ class AdoptionActivity : AppCompatActivity(), AdoptionContract.View {
         binding.loadingState.isVisible = false
         binding.animalsList.isVisible = true
         animalAdapter.showAnimals(animals, ::checkAfterListUpdate)
+    }
+
+    override fun showMyApplications(applications: List<MyAdoptionApplication>) {
+        val hasApplications = applications.isNotEmpty()
+        binding.myApplicationsSection.isVisible = hasApplications
+        if (!hasApplications) myApplicationsExpanded = false
+        binding.myApplicationsTitle.text = getString(
+            R.string.adoption_my_applications_title,
+            applications.size,
+        )
+        binding.myApplicationsList.isVisible = hasApplications && myApplicationsExpanded
+        binding.myApplicationsToggle.rotation = if (myApplicationsExpanded) 180f else 0f
+        myApplicationsAdapter.submitList(applications)
     }
 
     override fun appendAnimals(animals: List<Animal>) {

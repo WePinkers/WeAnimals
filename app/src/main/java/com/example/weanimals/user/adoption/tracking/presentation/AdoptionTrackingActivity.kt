@@ -14,7 +14,9 @@ import coil.dispose
 import coil.load
 import com.example.weanimals.R
 import com.example.weanimals.WeAnimalsApplication
+import com.example.weanimals.core.utils.DataUrlBitmapDecoder
 import com.example.weanimals.user.adoption.listing.presentation.AdoptionActivity
+import com.example.weanimals.user.adoption.checkin.presentation.AdoptionFollowUpActivity
 import com.example.weanimals.user.adoption.sent.domain.AdoptionApplicationStatus
 import com.example.weanimals.user.adoption.sent.domain.AdoptionSentSummary
 import com.example.weanimals.user.adoption.tracking.domain.AdoptionApplication
@@ -59,6 +61,9 @@ class AdoptionTrackingActivity : AppCompatActivity(), AdoptionTrackingContract.V
         binding.withdrawApplication.paintFlags =
             binding.withdrawApplication.paintFlags or Paint.UNDERLINE_TEXT_FLAG
         binding.shelterChatCard.setOnClickListener { presenter.onChatClicked() }
+        binding.followUpCard.setOnClickListener {
+            startActivity(AdoptionFollowUpActivity.newIntent(this, summary.animalId, summary.photoUrl))
+        }
         binding.withdrawApplication.setOnClickListener { presenter.onWithdrawClicked() }
         binding.outcomeOtherAnimals.setOnClickListener { presenter.onOtherAnimalsClicked() }
     }
@@ -111,12 +116,18 @@ class AdoptionTrackingActivity : AppCompatActivity(), AdoptionTrackingContract.V
         applicationPhoto.isVisible = photoUrl != null
         applicationPhotoPlaceholder.isVisible = photoUrl == null
         if (photoUrl != null) {
-            applicationPhoto.load(photoUrl) {
-                crossfade(true)
-                listener(onError = { _, _ ->
-                    applicationPhoto.isVisible = false
-                    applicationPhotoPlaceholder.isVisible = true
-                })
+            val dataUrlBitmap = DataUrlBitmapDecoder.decode(photoUrl)
+            if (dataUrlBitmap != null) {
+                applicationPhoto.setImageBitmap(dataUrlBitmap)
+                applicationPhotoPlaceholder.isVisible = false
+            } else {
+                applicationPhoto.load(photoUrl) {
+                    crossfade(true)
+                    listener(onError = { _, _ ->
+                        applicationPhoto.isVisible = false
+                        applicationPhotoPlaceholder.isVisible = true
+                    })
+                }
             }
         }
         applicationState.isVisible = false
@@ -128,6 +139,7 @@ class AdoptionTrackingActivity : AppCompatActivity(), AdoptionTrackingContract.V
         )
         applicationOutcome.isVisible = isOutcome
         applicationActions.isVisible = !isOutcome
+        followUpCard.isVisible = application.status == AdoptionApplicationStatus.ADOPTED
         withdrawApplication.isVisible = application.status in setOf(
             AdoptionApplicationStatus.PENDING, AdoptionApplicationStatus.REVIEWING
         )

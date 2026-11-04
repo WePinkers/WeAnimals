@@ -535,6 +535,16 @@
     <string name="adoption_location_title">Encontre um amigo perto de você</string>
     <string name="adoption_location_description">Permita o acesso à localização e ative a localização do celular para ordenar os abrigos pela distância.</string>
     <string name="adoption_location_action">Usar minha localização</string>
+    <string name="adoption_my_applications_title">Minhas candidaturas (%1$d)</string>
+    <string name="adoption_my_application_match">%1$d%% de compatibilidade</string>
+    <string name="adoption_my_application_accessibility">Acompanhar candidatura para %1$s</string>
+    <string name="adoption_my_application_status_pending">Aguardando análise</string>
+    <string name="adoption_my_application_status_reviewing">Em análise pelo abrigo</string>
+    <string name="adoption_my_application_status_approved">Candidatura aprovada</string>
+    <string name="adoption_my_application_status_rejected">Não selecionado</string>
+    <string name="adoption_my_application_status_visit">Visita agendada</string>
+    <string name="adoption_my_application_status_adopted">Adoção confirmada</string>
+    <string name="adoption_my_application_status_cancelled">Candidatura encerrada</string>
 
     <!-- Animal Details Screen -->
     <string name="adoption_detail_photo">Foto do animal</string>
@@ -699,6 +709,8 @@
     <string name="adoption_tracking_step_pending">—</string>
     <string name="adoption_tracking_chat_title">Precisa falar com %1$s?</string>
     <string name="adoption_tracking_chat_hint">Envie uma mensagem pelo chat</string>
+    <string name="adoption_tracking_follow_up_title">Acompanhar adaptação</string>
+    <string name="adoption_tracking_follow_up_hint">Veja e responda os check-ins pós-adoção</string>
     <string name="adoption_tracking_withdraw">Desistir da candidatura</string>
     <string name="adoption_tracking_withdraw_confirm_title">Desistir da candidatura?</string>
     <string name="adoption_tracking_withdraw_confirm">Sua candidatura para %1$s será encerrada. Esta ação não pode ser desfeita.</string>

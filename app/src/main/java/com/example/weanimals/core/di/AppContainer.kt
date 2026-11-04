@@ -3,6 +3,8 @@ package com.example.weanimals.core.di
 import android.content.Context
 import com.example.weanimals.user.adoption.compatibility.interactor.GetAnimalRecommendationsInteractor
 import com.example.weanimals.user.adoption.chat.repository.FirebaseAdoptionChatRepository
+import com.example.weanimals.user.adoption.applications.interactor.ObserveMyAdoptionApplicationsInteractor
+import com.example.weanimals.user.adoption.applications.repository.FirebaseAdoptionApplicationsRepository
 import com.example.weanimals.user.adoption.checkin.interactor.CalculateFollowUpMilestonesInteractor
 import com.example.weanimals.user.adoption.checkin.interactor.GetAdoptionFollowUpInteractor
 import com.example.weanimals.user.adoption.checkin.interactor.GetFollowUpQuestionsInteractor
@@ -126,7 +128,8 @@ class AppContainer(context: Context) {
     private val adoptionChatRepository by lazy {
         FirebaseAdoptionChatRepository(
             auth = FirebaseAuth.getInstance(),
-            firestore = FirebaseFirestore.getInstance()
+            firestore = FirebaseFirestore.getInstance(),
+            context = applicationContext,
         )
     }
 
@@ -177,7 +180,15 @@ class AppContainer(context: Context) {
     private val adoptionApplicationRepository by lazy {
         FirebaseAdoptionApplicationRepository(
             auth = FirebaseAuth.getInstance(),
-            firestore = FirebaseFirestore.getInstance()
+            firestore = FirebaseFirestore.getInstance(),
+            context = applicationContext,
+        )
+    }
+
+    private val adoptionApplicationsRepository by lazy {
+        FirebaseAdoptionApplicationsRepository(
+            auth = FirebaseAuth.getInstance(),
+            firestore = FirebaseFirestore.getInstance(),
         )
     }
 
@@ -316,7 +327,10 @@ class AppContainer(context: Context) {
     fun createAdoptionPresenter() = AdoptionPresenter(
         getAvailableAnimals = GetAvailableAnimalsInteractor(adoptionListingRepository),
         getUserLocation = getUserLocationInteractor,
-        getAdoptionProfile = getAdoptionProfileInteractor
+        getAdoptionProfile = getAdoptionProfileInteractor,
+        observeMyApplications = ObserveMyAdoptionApplicationsInteractor(
+            adoptionApplicationsRepository,
+        ),
     )
 
     fun createAnimalDetailsPresenter(animalId: String) =

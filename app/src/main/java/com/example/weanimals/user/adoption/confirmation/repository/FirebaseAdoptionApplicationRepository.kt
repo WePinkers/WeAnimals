@@ -1,5 +1,6 @@
 package com.example.weanimals.user.adoption.confirmation.repository
 
+import android.content.Context
 import com.example.weanimals.user.adoption.confirmation.domain.AdoptionCandidate
 import com.example.weanimals.user.adoption.confirmation.domain.AlreadyAppliedException
 import com.example.weanimals.user.adoption.questionnaire.domain.AdoptionProfile
@@ -11,20 +12,32 @@ import kotlinx.coroutines.tasks.await
 
 class FirebaseAdoptionApplicationRepository(
     private val auth: FirebaseAuth,
-    private val firestore: FirebaseFirestore
+    private val firestore: FirebaseFirestore,
+    private val context: Context,
 ) : AdoptionApplicationRepository {
 
     override suspend fun submit(candidate: AdoptionCandidate): Result<Unit> = try {
         require(candidate.animal.id.isNotBlank() && candidate.animal.ngoId.isNotBlank())
         if (auth.currentUser == null) auth.signInAnonymously().await()
         val userId = requireNotNull(auth.currentUser?.uid)
+        val userName = profileName(userId)
         val animalId = candidate.animal.id
         val animalRef = firestore.collection("animais").document(animalId)
         val applicationRef = firestore.collection("adoption_applications")
             .document(userId).collection("animals").document(animalId)
 
         val alreadyApplied = firestore.runTransaction { transaction ->
-            if (transaction.get(applicationRef).exists()) {
+            val existingApplication = transaction.get(applicationRef)
+            if (existingApplication.exists()) {
+                if (userName != null && existingApplication.getString("userName").isNullOrBlank()) {
+                    transaction.update(
+                        applicationRef,
+                        mapOf(
+                            "userName" to userName,
+                            "updatedAt" to FieldValue.serverTimestamp(),
+                        ),
+                    )
+                }
                 true
             } else {
                 val animal = transaction.get(animalRef)
@@ -34,7 +47,7 @@ class FirebaseAdoptionApplicationRepository(
                 check(animal.getString("ong_id") == candidate.animal.ngoId) {
                     "Shelter has changed."
                 }
-                transaction.set(applicationRef, mapOf(
+                val applicationData = hashMapOf<String, Any>(
                     "userId" to userId,
                     "animalId" to animalId,
                     "ngoId" to candidate.animal.ngoId,
@@ -49,7 +62,9 @@ class FirebaseAdoptionApplicationRepository(
                             ?.filterIsInstance<String>()?.firstOrNull(String::isNotBlank)).orEmpty(),
                     "profile" to candidate.profile.toSnapshot(),
                     "submittedAt" to FieldValue.serverTimestamp()
-                ))
+                )
+                userName?.let { applicationData["userName"] = it }
+                transaction.set(applicationRef, applicationData)
                 false
             }
         }.await()
@@ -58,6 +73,23 @@ class FirebaseAdoptionApplicationRepository(
         throw cancelled
     } catch (error: Exception) {
         Result.failure(error)
+    }
+
+    private suspend fun profileName(userId: String): String? {
+        val firestoreName = runCatching {
+            firestore.collection("user_profiles")
+                .document(userId)
+                .get()
+                .await()
+                .getString("fullName")
+        }.getOrNull()
+            ?.trim()
+            ?.takeIf(String::isNotBlank)
+        val localName = context.getSharedPreferences(PROFILE_PREFS, Context.MODE_PRIVATE)
+            .getString(USER_NAME_KEY, null)
+            ?.trim()
+            ?.takeIf(String::isNotBlank)
+        return firestoreName ?: localName ?: auth.currentUser?.displayName?.trim()?.takeIf(String::isNotBlank)
     }
 
     private fun AdoptionProfile.toSnapshot(): Map<String, Any> = mapOf(
@@ -73,4 +105,9 @@ class FirebaseAdoptionApplicationRepository(
         "requiresGoodWithChildren" to requiresGoodWithChildren,
         "requiresGoodWithOtherAnimals" to requiresGoodWithOtherAnimals
     )
+
+    private companion object {
+        const val PROFILE_PREFS = "profile_prefs"
+        const val USER_NAME_KEY = "user_name"
+    }
 }

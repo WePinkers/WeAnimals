@@ -1,6 +1,7 @@
 package com.example.weanimals.user.adoption.detail.repository
 
 import com.example.weanimals.user.adoption.detail.domain.AnimalDetails
+import com.example.weanimals.user.adoption.detail.domain.AdoptionRequirements
 import com.example.weanimals.user.adoption.detail.domain.EnergyLevel
 import com.example.weanimals.user.adoption.detail.domain.Shelter
 import com.example.weanimals.core.location.domain.Coordinates
@@ -38,7 +39,11 @@ class FirebaseAnimalDetailsRepository(
         val characteristics = (data["caracteristicas"] as? List<*>)
             ?.filterIsInstance<String>()
             .orEmpty()
-        val normalizedCharacteristics = characteristics.map(::normalize)
+        val compatibility = (data["convivencia"] as? List<*>)
+            ?.filterIsInstance<String>()
+            ?.filter { it.isNotBlank() }
+            .orEmpty()
+        val normalizedCharacteristics = (characteristics + compatibility).map(::normalize)
 
         return AnimalDetails(
             id = document.id,
@@ -57,12 +62,11 @@ class FirebaseAnimalDetailsRepository(
                 ?: normalizedCharacteristics.takeIf {
                     it.any { value -> "outros animais" in value || "outros caes" in value }
                 }?.let { true },
-            energyLevel = energyLevel(string(data, "nivel_energia")),
+            energyLevel = energyLevel(string(data, "nivel_energia"))
+                ?: compatibility.mapNotNull(::energyLevel).firstOrNull()
+                ?: EnergyLevel.MODERATE,
             description = string(data, "descricao").orEmpty(),
-            adoptionRequirements = (data["requisitos_adocao"] as? List<*>)
-                ?.filterIsInstance<String>()
-                ?.filter(String::isNotBlank)
-                .orEmpty(),
+            adoptionRequirements = AdoptionRequirements.fixed,
             createdAtMillis = document.getTimestamp("criado_em")?.toDate()?.time ?: 0L,
             shelter = shelter(data)
         )
@@ -83,7 +87,7 @@ class FirebaseAnimalDetailsRepository(
     }
 
     private fun energyLevel(value: String?) = when (value?.let(::normalize)) {
-        "baixo", "baixa", "low" -> EnergyLevel.LOW
+        "baixo", "baixa", "low", "calmo em casa", "energia tranquila" -> EnergyLevel.LOW
         "moderado", "moderada", "medium" -> EnergyLevel.MODERATE
         "alto", "alta", "high" -> EnergyLevel.HIGH
         else -> null

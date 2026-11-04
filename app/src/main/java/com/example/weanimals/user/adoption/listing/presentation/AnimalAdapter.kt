@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.dispose
 import coil.load
 import com.example.weanimals.R
+import com.example.weanimals.core.utils.DataUrlBitmapDecoder
 import com.example.weanimals.user.adoption.listing.domain.Animal
 import com.example.weanimals.databinding.ItemAnimalBinding
 import java.text.NumberFormat
@@ -79,14 +80,20 @@ class AnimalAdapter(
                 animalPhoto.dispose()
                 animalPhoto.setImageDrawable(null)
             } else {
-                animalPhoto.load(photoUrl) {
-                    placeholder(R.drawable.adoption_photo_placeholder)
-                    error(R.drawable.adoption_photo_placeholder)
-                    crossfade(true)
-                    listener(
-                        onSuccess = { _, _ -> animalPhotoPlaceholder.isVisible = false },
-                        onError = { _, _ -> animalPhotoPlaceholder.isVisible = true }
-                    )
+                val dataUrlBitmap = DataUrlBitmapDecoder.decode(photoUrl)
+                if (dataUrlBitmap != null) {
+                    animalPhoto.setImageBitmap(dataUrlBitmap)
+                    animalPhotoPlaceholder.isVisible = false
+                } else {
+                    animalPhoto.load(photoUrl) {
+                        placeholder(R.drawable.adoption_photo_placeholder)
+                        error(R.drawable.adoption_photo_placeholder)
+                        crossfade(true)
+                        listener(
+                            onSuccess = { _, _ -> animalPhotoPlaceholder.isVisible = false },
+                            onError = { _, _ -> animalPhotoPlaceholder.isVisible = true }
+                        )
+                    }
                 }
             }
             root.contentDescription = context.getString(R.string.adoption_meet_accessibility, animal.name)

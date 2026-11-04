@@ -15,6 +15,7 @@ import coil.dispose
 import coil.load
 import com.example.weanimals.R
 import com.example.weanimals.WeAnimalsApplication
+import com.example.weanimals.core.utils.DataUrlBitmapDecoder
 import com.example.weanimals.user.adoption.checkin.domain.AdaptationRating
 import com.example.weanimals.user.adoption.checkin.domain.AdoptionFollowUp
 import com.example.weanimals.user.adoption.checkin.domain.FollowUpMilestone
@@ -109,7 +110,7 @@ class AdoptionFollowUpActivity : AppCompatActivity(), AdoptionFollowUpContract.V
             ?: followUp.adopterName?.takeIf(String::isNotBlank)
         followUpAdopter.isVisible = name != null
         if (name != null) followUpAdopter.text = getString(R.string.adoption_follow_up_adopter, name)
-        renderPhoto(followUp.photoUrl)
+        renderPhoto(followUp.photoUrl ?: intent.getStringExtra(EXTRA_PHOTO_URL))
         renderMilestones(milestones)
         val available = milestones.any { it.state == MilestoneState.AVAILABLE }
         followUpForm.isVisible = available
@@ -208,12 +209,20 @@ class AdoptionFollowUpActivity : AppCompatActivity(), AdoptionFollowUpContract.V
         followUpPhoto.dispose()
         followUpPhoto.isVisible = url != null
         followUpPhotoPlaceholder.isVisible = true
-        if (url != null) followUpPhoto.load(url) {
-            crossfade(true)
-            listener(
-                onSuccess = { _, _ -> followUpPhotoPlaceholder.isVisible = false },
-                onError = { _, _ -> followUpPhoto.isVisible = false }
-            )
+        if (url != null) {
+            val dataUrlBitmap = DataUrlBitmapDecoder.decode(url)
+            if (dataUrlBitmap != null) {
+                followUpPhoto.setImageBitmap(dataUrlBitmap)
+                followUpPhotoPlaceholder.isVisible = false
+            } else {
+                followUpPhoto.load(url) {
+                    crossfade(true)
+                    listener(
+                        onSuccess = { _, _ -> followUpPhotoPlaceholder.isVisible = false },
+                        onError = { _, _ -> followUpPhoto.isVisible = false }
+                    )
+                }
+            }
         }
     }
 
@@ -389,10 +398,17 @@ class AdoptionFollowUpActivity : AppCompatActivity(), AdoptionFollowUpContract.V
         private const val TAG = "AdoptionFollowUp"
         private const val EXTRA_ANIMAL_ID = "animal_id"
         private const val EXTRA_ADOPTER_NAME = "adopter_name"
+        private const val EXTRA_PHOTO_URL = "photo_url"
 
-        fun newIntent(context: Context, animalId: String, adopterName: String? = null) =
+        fun newIntent(
+            context: Context,
+            animalId: String,
+            photoUrl: String? = null,
+            adopterName: String? = null
+        ) =
             Intent(context, AdoptionFollowUpActivity::class.java).apply {
                 putExtra(EXTRA_ANIMAL_ID, animalId)
+                photoUrl?.let { putExtra(EXTRA_PHOTO_URL, it) }
                 adopterName?.let { putExtra(EXTRA_ADOPTER_NAME, it) }
             }
     }

@@ -3,6 +3,7 @@ package com.example.weanimals.user.adoption.listing.presenter
 import com.example.weanimals.user.adoption.listing.domain.Animal
 import com.example.weanimals.user.adoption.listing.domain.AnimalPageCursor
 import com.example.weanimals.user.adoption.listing.domain.SpeciesFilter
+import com.example.weanimals.user.adoption.applications.interactor.ObserveMyAdoptionApplicationsInteractor
 import com.example.weanimals.user.adoption.listing.interactor.GetAvailableAnimalsInteractor
 import com.example.weanimals.user.adoption.questionnaire.interactor.GetAdoptionProfileInteractor
 import com.example.weanimals.core.base.BasePresenter
@@ -10,6 +11,7 @@ import com.example.weanimals.core.location.domain.Coordinates
 import com.example.weanimals.core.location.domain.UserLocationUnavailableException
 import com.example.weanimals.core.location.interactor.GetUserLocationInteractor
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
@@ -17,7 +19,8 @@ import kotlinx.coroutines.launch
 class AdoptionPresenter(
     private val getAvailableAnimals: GetAvailableAnimalsInteractor,
     private val getUserLocation: GetUserLocationInteractor,
-    private val getAdoptionProfile: GetAdoptionProfileInteractor
+    private val getAdoptionProfile: GetAdoptionProfileInteractor,
+    private val observeMyApplications: ObserveMyAdoptionApplicationsInteractor,
 ) : BasePresenter<AdoptionContract.View>(), AdoptionContract.Presenter {
     private var started = false
     private var filter = SpeciesFilter.ALL
@@ -29,9 +32,11 @@ class AdoptionPresenter(
     private var error: Throwable? = null
     private var loadJob: Job? = null
     private var profileCheckJob: Job? = null
+    private var applicationsJob: Job? = null
     private var recommendationsAvailable = false
 
     override fun start(initialFilter: SpeciesFilter) {
+        observeApplications()
         checkRecommendationsAvailability()
         if (!started) {
             started = true
@@ -84,6 +89,20 @@ class AdoptionPresenter(
         profileCheckJob = presenterScope.launch {
             recommendationsAvailable = getAdoptionProfile().getOrNull() != null
             withView { it.showRecommendationsAvailable(recommendationsAvailable) }
+        }
+    }
+
+    private fun observeApplications() {
+        if (applicationsJob != null) return
+        applicationsJob = presenterScope.launch {
+            observeMyApplications().collectLatest { result ->
+                result.onSuccess { applications ->
+                    withView { it.showMyApplications(applications) }
+                }.onFailure { error ->
+                    // The catalog should remain usable if the optional history cannot load.
+                    withView { it.showMyApplications(emptyList()) }
+                }
+            }
         }
     }
 

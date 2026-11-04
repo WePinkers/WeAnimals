@@ -17,6 +17,7 @@ import coil.imageLoader
 import coil.request.ImageRequest
 import coil.request.SuccessResult
 import com.example.weanimals.R
+import com.example.weanimals.core.utils.DataUrlBitmapDecoder
 import com.example.weanimals.user.adoption.detail.domain.AnimalDetails
 import com.example.weanimals.user.adoption.detail.domain.AnimalShareDocument
 import com.example.weanimals.user.adoption.detail.domain.EnergyLevel
@@ -70,6 +71,7 @@ class AndroidAnimalShareRepository(context: Context) : AnimalShareRepository {
     private suspend fun loadCover(photoUrl: String?): Bitmap? {
         if (photoUrl.isNullOrBlank()) return null
         return try {
+            DataUrlBitmapDecoder.decode(photoUrl)?.let { return it }
             val request = ImageRequest.Builder(applicationContext)
                 .data(photoUrl)
                 .allowHardware(false)

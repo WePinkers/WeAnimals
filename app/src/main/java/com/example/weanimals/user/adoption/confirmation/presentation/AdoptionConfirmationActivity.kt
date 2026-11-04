@@ -12,6 +12,7 @@ import coil.dispose
 import coil.load
 import com.example.weanimals.R
 import com.example.weanimals.WeAnimalsApplication
+import com.example.weanimals.core.utils.DataUrlBitmapDecoder
 import com.example.weanimals.user.adoption.confirmation.domain.AdoptionCandidate
 import com.example.weanimals.user.adoption.confirmation.presenter.AdoptionConfirmationContract
 import com.example.weanimals.user.adoption.sent.presentation.AdoptionSentActivity
@@ -87,13 +88,19 @@ class AdoptionConfirmationActivity : AppCompatActivity(), AdoptionConfirmationCo
             candidatePhoto.dispose()
             candidatePhoto.setImageDrawable(null)
         } else {
-            candidatePhoto.load(photoUrl) {
-                placeholder(R.drawable.bg_status_card)
-                error(R.drawable.bg_status_card)
-                listener(
-                    onSuccess = { _, _ -> candidatePhotoPlaceholder.isVisible = false },
-                    onError = { _, _ -> candidatePhotoPlaceholder.isVisible = true }
-                )
+            val dataUrlBitmap = DataUrlBitmapDecoder.decode(photoUrl)
+            if (dataUrlBitmap != null) {
+                candidatePhoto.setImageBitmap(dataUrlBitmap)
+                candidatePhotoPlaceholder.isVisible = false
+            } else {
+                candidatePhoto.load(photoUrl) {
+                    placeholder(R.drawable.bg_status_card)
+                    error(R.drawable.bg_status_card)
+                    listener(
+                        onSuccess = { _, _ -> candidatePhotoPlaceholder.isVisible = false },
+                        onError = { _, _ -> candidatePhotoPlaceholder.isVisible = true }
+                    )
+                }
             }
         }
         reviewStepBody.text = getString(

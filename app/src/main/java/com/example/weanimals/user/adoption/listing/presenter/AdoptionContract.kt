@@ -2,6 +2,7 @@ package com.example.weanimals.user.adoption.listing.presenter
 
 import com.example.weanimals.user.adoption.listing.domain.Animal
 import com.example.weanimals.user.adoption.listing.domain.SpeciesFilter
+import com.example.weanimals.user.adoption.applications.domain.MyAdoptionApplication
 
 interface AdoptionContract {
     interface View {
@@ -15,6 +16,7 @@ interface AdoptionContract {
         fun showLocationRequired()
         fun requestLocationPermission()
         fun openAnimalDetails(animalId: String)
+        fun showMyApplications(applications: List<MyAdoptionApplication>)
         fun showRecommendationsAvailable(available: Boolean)
         fun openCompatibleProfile()
     }

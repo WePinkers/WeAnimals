@@ -1,5 +1,6 @@
 package com.example.weanimals.user.adoption.chat.repository
 
+import android.content.Context
 import com.example.weanimals.user.reporting.chat.domain.ChatMessage
 import com.example.weanimals.user.reporting.chat.repository.ChatRepository
 import com.google.firebase.auth.FirebaseAuth
@@ -17,7 +18,8 @@ import kotlinx.coroutines.tasks.await
 /** One conversation per user and animal, shared by the animal detail and application tracking. */
 class FirebaseAdoptionChatRepository(
     private val auth: FirebaseAuth,
-    private val firestore: FirebaseFirestore
+    private val firestore: FirebaseFirestore,
+    private val context: Context,
 ) : ChatRepository {
 
     override fun observeMessages(reportId: String): Flow<Result<List<ChatMessage>>> = callbackFlow {
@@ -48,6 +50,7 @@ class FirebaseAdoptionChatRepository(
         require(normalized.isNotEmpty()) { "Message cannot be empty." }
         require(normalized.length <= MAX_MESSAGE_LENGTH) { "Message is too long." }
         val user = ensureSignedIn()
+        val senderName = profileName(user)
         val conversation = conversation(user.uid, reportId)
         val message = conversation.collection("messages").document()
         val application = firestore.collection("adoption_applications")
@@ -55,7 +58,8 @@ class FirebaseAdoptionChatRepository(
         val animal = firestore.collection("animais").document(reportId)
 
         firestore.runTransaction { transaction ->
-            if (!transaction.get(conversation).exists()) {
+            val conversationDocument = transaction.get(conversation)
+            if (!conversationDocument.exists()) {
                 val applicationDocument = transaction.get(application)
                 val ngoId = if (applicationDocument.exists()) {
                     applicationDocument.getString("ngoId")
@@ -67,19 +71,25 @@ class FirebaseAdoptionChatRepository(
                     animalDocument.getString("ong_id")
                 }
                 check(!ngoId.isNullOrBlank()) { "Animal has no responsible organization." }
-                transaction.set(conversation, mapOf(
+                val conversationData = hashMapOf<String, Any>(
                     "userId" to user.uid,
                     "animalId" to reportId,
                     "ngoId" to ngoId,
                     "createdAt" to FieldValue.serverTimestamp()
-                ))
+                )
+                senderName?.let { conversationData["userName"] = it }
+                transaction.set(conversation, conversationData)
+            } else if (senderName != null && conversationDocument.getString("userName").isNullOrBlank()) {
+                transaction.update(conversation, "userName", senderName)
             }
-            transaction.set(message, mapOf(
+            val messageData = hashMapOf<String, Any>(
                 "senderId" to user.uid,
                 "senderRole" to ChatMessage.SENDER_USER,
                 "text" to normalized,
                 "createdAt" to FieldValue.serverTimestamp()
-            ))
+            )
+            senderName?.let { messageData["senderName"] = it }
+            transaction.set(message, messageData)
         }.await()
         Result.success(ChatMessage(
             id = message.id,
@@ -105,6 +115,21 @@ class FirebaseAdoptionChatRepository(
             ?: error("Firebase user was not created.")
     }
 
+    private suspend fun profileName(user: FirebaseUser): String? {
+        val firestoreName = firestore.collection("user_profiles")
+            .document(user.uid)
+            .get()
+            .await()
+            .getString("fullName")
+            ?.trim()
+            ?.takeIf(String::isNotBlank)
+        val localName = context.getSharedPreferences(PROFILE_PREFS, Context.MODE_PRIVATE)
+            .getString(USER_NAME_KEY, null)
+            ?.trim()
+            ?.takeIf(String::isNotBlank)
+        return firestoreName ?: localName ?: user.displayName?.trim()?.takeIf(String::isNotBlank)
+    }
+
     private fun DocumentSnapshot.toChatMessageOrNull(userId: String): ChatMessage? {
         val senderId = getString("senderId") ?: return null
         val text = getString("text")?.trim()?.takeIf(String::isNotEmpty) ?: return null
@@ -122,5 +147,7 @@ class FirebaseAdoptionChatRepository(
 
     private companion object {
         const val MAX_MESSAGE_LENGTH = 1000
+        const val PROFILE_PREFS = "profile_prefs"
+        const val USER_NAME_KEY = "user_name"
     }
 }
