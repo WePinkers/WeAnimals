@@ -8,6 +8,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import kotlinx.coroutines.tasks.await
 
 class FirebaseCommunityPostEngagementRepository(
@@ -37,6 +38,32 @@ class FirebaseCommunityPostEngagementRepository(
             .await()
             .documents
             .mapNotNull { it.toCommentOrNull() }
+    }
+
+    override fun observeComments(
+        postId: String,
+        onResult: (Result<List<CommunityComment>>) -> Unit,
+    ): ListenerRegistration {
+        require(postId.isNotBlank()) { "Post id is required." }
+        if (auth.currentUser == null) {
+            onResult(Result.failure(IllegalStateException("User is not signed in.")))
+            return ListenerRegistration { }
+        }
+
+        return commentsReference(postId)
+            .orderBy(FIELD_CREATED_AT)
+            .limit(MAX_COMMENTS)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    onResult(Result.failure(error))
+                    return@addSnapshotListener
+                }
+                onResult(
+                    Result.success(
+                        snapshot?.documents.orEmpty().mapNotNull { it.toCommentOrNull() },
+                    ),
+                )
+            }
     }
 
     override suspend fun toggleLike(

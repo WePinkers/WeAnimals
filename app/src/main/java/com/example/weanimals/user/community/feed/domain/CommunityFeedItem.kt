@@ -50,6 +50,7 @@ sealed interface CommunityFeedItem {
         val donationRaisedCents: Long? = null,
         val donationNeeds: List<String> = emptyList(),
         val pixKey: String = "",
+        val photoData: ByteArray? = null,
         val locationLatitude: Double? = null,
         val locationLongitude: Double? = null,
         val distanceKm: Double? = null,

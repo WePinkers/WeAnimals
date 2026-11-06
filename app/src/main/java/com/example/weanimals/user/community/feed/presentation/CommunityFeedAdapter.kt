@@ -62,6 +62,11 @@ class CommunityFeedAdapter(
             binding.campaignLabel.text = context.getString(
                 R.string.community_campaign_label, category.uppercase(), item.organization.uppercase()
             )
+            val bitmap = item.photoData?.let { bytes ->
+                BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+            }
+            binding.campaignPhoto.setImageBitmap(bitmap)
+            binding.campaignPhoto.isVisible = bitmap != null
             binding.campaignTitle.text = item.title
             binding.campaignDate.text = item.dateText
             binding.campaignLocation.text = item.locationText

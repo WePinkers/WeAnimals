@@ -48,6 +48,17 @@
                 tools:text="CASTRAÇÃO · ABRIGO ESPERANÇA" />
         </LinearLayout>
 
+        <ImageView
+            android:id="@+id/campaign_photo"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_marginTop="10dp"
+            android:background="@color/sand50"
+            android:contentDescription="@null"
+            android:scaleType="centerCrop"
+            android:visibility="gone"
+            tools:src="@tools:sample/backgrounds/scenic" />
+
         <TextView
             android:id="@+id/campaign_title"
             android:layout_width="match_parent"

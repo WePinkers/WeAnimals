@@ -41,6 +41,19 @@ service cloud.firestore {
         && request.auth.token.email == 'alissanovais@gmail.com';
     }
 
+    function managesCommunityCampaign(campaignId) {
+      return signedIn()
+        && exists(/databases/$(database)/documents/community_campaigns/$(campaignId))
+        && (
+          (isTeamMember()
+            && get(/databases/$(database)/documents/community_campaigns/$(campaignId)).data.organizationId
+              == request.auth.token.ngoId)
+          || ((isApprovedOrganization() || isTemporaryTestOrganization())
+            && get(/databases/$(database)/documents/community_campaigns/$(campaignId)).data.organizationId
+              == request.auth.uid)
+        );
+    }
+
     function canAccessOrganizationReports() {
       return isApprovedOrganization() || isTemporaryTestOrganization();
     }
@@ -393,7 +406,12 @@ service cloud.firestore {
     match /community_campaigns/{campaignId} {
       allow read: if signedIn();
       allow create: if signedIn()
-        && isTeamMember()
+        && (
+          (isTeamMember()
+            && request.resource.data.organizationId == request.auth.token.ngoId)
+          || ((isApprovedOrganization() || isTemporaryTestOrganization())
+            && request.resource.data.organizationId == request.auth.uid)
+        )
         && request.resource.data.keys().hasAll([
           'organizationId', 'organizationName', 'createdBy', 'category',
           'title', 'dateText', 'locationText', 'locationLabel',
@@ -404,11 +422,10 @@ service cloud.firestore {
           'organizationId', 'organizationName', 'createdBy', 'category',
           'title', 'dateText', 'locationText', 'locationLabel',
           'availabilityText', 'audienceText', 'description', 'highlightText',
-          'createdAt', 'totalSlots', 'filledSlots', 'donationGoalCents',
+          'createdAt', 'startsAt', 'endsAt', 'totalSlots', 'filledSlots', 'donationGoalCents',
           'donationRaisedCents', 'donationNeeds', 'pixKey',
-          'locationLatitude', 'locationLongitude'
+          'locationLatitude', 'locationLongitude', 'photoData'
         ])
-        && request.resource.data.organizationId == request.auth.token.ngoId
         && request.resource.data.organizationName is string
         && request.resource.data.organizationName.size() > 0
         && request.resource.data.organizationName.size() <= 100
@@ -437,6 +454,17 @@ service cloud.firestore {
         && request.resource.data.description.size() <= 1200
         && request.resource.data.highlightText is string
         && request.resource.data.highlightText.size() <= 240
+        && (!request.resource.data.keys().hasAny(['startsAt'])
+          || (request.resource.data.startsAt is string
+            && request.resource.data.startsAt.size() > 0
+            && request.resource.data.startsAt.size() <= 40))
+        && (!request.resource.data.keys().hasAny(['endsAt'])
+          || (request.resource.data.endsAt is string
+            && request.resource.data.endsAt.size() > 0
+            && request.resource.data.endsAt.size() <= 40))
+        && (!request.resource.data.keys().hasAny(['photoData'])
+          || (request.resource.data.photoData is bytes
+            && request.resource.data.photoData.size() <= 200000))
         && (!request.resource.data.keys().hasAny(['totalSlots'])
           || (request.resource.data.totalSlots is int
             && request.resource.data.totalSlots > 0
@@ -485,16 +513,39 @@ service cloud.firestore {
         && request.resource.data.donationRaisedCents > resource.data.get('donationRaisedCents', 0)
         && (!resource.data.keys().hasAny(['donationGoalCents'])
           || request.resource.data.donationRaisedCents <= resource.data.donationGoalCents);
-      allow delete: if false;
+      // An organization may edit only the campaign fields it owns. Counters
+      // such as filledSlots and donationRaisedCents remain protected by the
+      // dedicated update rules above.
+      allow update: if signedIn()
+        && (isApprovedOrganization() || isTemporaryTestOrganization())
+        && resource.data.organizationId == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'category', 'title', 'dateText', 'startsAt', 'endsAt',
+          'locationText', 'locationLabel', 'availabilityText', 'audienceText',
+          'description', 'highlightText', 'totalSlots',
+          'donationGoalCents', 'donationNeeds', 'pixKey', 'photoData'
+        ]);
+      allow delete: if signedIn()
+        && (
+          (isTeamMember()
+            && resource.data.organizationId == request.auth.token.ngoId)
+          || ((isApprovedOrganization() || isTemporaryTestOrganization())
+            && resource.data.organizationId == request.auth.uid)
+        );
     }
 
     match /community_campaigns/{campaignId}/animals/{animalId} {
       allow read: if signedIn();
       allow create: if signedIn()
-        && isTeamMember()
         && existsAfter(/databases/$(database)/documents/community_campaigns/$(campaignId))
-        && getAfter(/databases/$(database)/documents/community_campaigns/$(campaignId)).data.organizationId
-          == request.auth.token.ngoId
+        && (
+          (isTeamMember()
+            && getAfter(/databases/$(database)/documents/community_campaigns/$(campaignId)).data.organizationId
+              == request.auth.token.ngoId)
+          || ((isApprovedOrganization() || isTemporaryTestOrganization())
+            && getAfter(/databases/$(database)/documents/community_campaigns/$(campaignId)).data.organizationId
+              == request.auth.uid)
+        )
         && getAfter(/databases/$(database)/documents/community_campaigns/$(campaignId)).data.category == 'ADOPTION'
         && request.resource.data.keys().hasAll([
           'name', 'breed', 'ageText', 'createdAt'
@@ -513,7 +564,22 @@ service cloud.firestore {
           || (request.resource.data.photoData is bytes
             && request.resource.data.photoData.size() <= 200000))
         && request.resource.data.createdAt == request.time;
-      allow update, delete: if false;
+      allow update: if managesCommunityCampaign(campaignId)
+        && request.resource.data.keys().hasOnly([
+          'name', 'breed', 'ageText', 'photoData', 'createdAt'
+        ])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 80
+        && request.resource.data.breed is string
+        && request.resource.data.breed.size() <= 80
+        && request.resource.data.ageText is string
+        && request.resource.data.ageText.size() <= 80
+        && (!request.resource.data.keys().hasAny(['photoData'])
+          || (request.resource.data.photoData is bytes
+            && request.resource.data.photoData.size() <= 200000))
+        && request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if managesCommunityCampaign(campaignId);
     }
 
     match /community_campaigns/{campaignId}/participants/{userId} {
@@ -564,7 +630,8 @@ service cloud.firestore {
     }
 
     // Public community posts reveal a broad region, never exact coordinates or street address.
-    // Only authenticated users may create their own posts. Campaign writes remain blocked.
+    // Authenticated users may create posts; approved organizations may also
+    // moderate public posts when necessary.
     match /community_posts/{postId} {
       allow read: if signedIn();
         allow create: if signedIn()
@@ -609,7 +676,29 @@ service cloud.firestore {
             request.resource.data.likesCount != resource.data.get('likesCount', 0)
             || request.resource.data.commentsCount != resource.data.get('commentsCount', 0)
           );
-        allow delete: if false;
+        // An organization may edit only its own community post content.
+        // Editing another user's post remains blocked; moderation is delete-only.
+        allow update: if signedIn()
+          && resource.data.authorId == request.auth.uid
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'category', 'body', 'locationLabel', 'photoData'
+          ])
+          && request.resource.data.category in ['FOUND', 'QUESTION', 'NOTICE', 'OTHER']
+          && request.resource.data.body is string
+          && request.resource.data.body.size() > 0
+          && request.resource.data.body.size() <= 1000
+          && request.resource.data.locationLabel is string
+          && request.resource.data.locationLabel.size() > 0
+          && request.resource.data.locationLabel.size() <= 80
+          && (!request.resource.data.keys().hasAny(['photoData'])
+            || (request.resource.data.photoData is bytes
+              && request.resource.data.photoData.size() <= 200000));
+        allow delete: if signedIn()
+          && (
+            isTeamMember()
+            || isApprovedOrganization()
+            || isTemporaryTestOrganization()
+          );
 
         match /comments/{commentId} {
           allow read: if signedIn();
@@ -647,6 +736,34 @@ service cloud.firestore {
           allow update: if false;
         }
       }
+
+    match /community_notifications/{notificationId} {
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly([
+          'recipientId', 'actorId', 'actorName', 'postId', 'commentId',
+          'type', 'message', 'read', 'createdAt'
+        ])
+        && request.resource.data.recipientId is string
+        && request.resource.data.recipientId != request.auth.uid
+        && request.resource.data.actorId == request.auth.uid
+        && request.resource.data.actorName is string
+        && request.resource.data.actorName.size() > 0
+        && request.resource.data.actorName.size() <= 160
+        && request.resource.data.postId is string
+        && request.resource.data.commentId is string
+        && request.resource.data.type == 'community_mention'
+        && request.resource.data.message is string
+        && request.resource.data.message.size() > 0
+        && request.resource.data.message.size() <= 240
+        && request.resource.data.read == false
+        && request.resource.data.createdAt == request.time;
+      allow read: if signedIn() && resource.data.recipientId == request.auth.uid;
+      allow update: if signedIn()
+        && resource.data.recipientId == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read'])
+        && request.resource.data.read == true;
+      allow delete: if signedIn() && resource.data.recipientId == request.auth.uid;
+    }
 
     match /adoption_profiles/{userId} {
       allow read, create, update: if signedIn() && request.auth.uid == userId;

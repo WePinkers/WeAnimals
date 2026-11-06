@@ -129,6 +129,7 @@ class FirebaseCommunityRepository(
                     ?.filter(String::isNotBlank)
                     .orEmpty(),
                 pixKey = document.getString("pixKey").orEmpty(),
+                photoData = (document.get("photoData") as? Blob)?.toBytes(),
                 locationLatitude = document.getDouble("locationLatitude"),
                 locationLongitude = document.getDouble("locationLongitude"),
                 participatingByCurrentUser = participatingByCurrentUser,

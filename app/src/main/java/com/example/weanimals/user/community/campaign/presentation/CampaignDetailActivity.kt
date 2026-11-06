@@ -2,6 +2,7 @@ package com.example.weanimals.user.community.campaign.presentation
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Bundle
 import android.text.InputType
@@ -46,6 +47,7 @@ class CampaignDetailActivity : AppCompatActivity() {
     private val audienceText by lazy { intent.getStringExtra(EXTRA_AUDIENCE).orEmpty() }
     private val description by lazy { intent.getStringExtra(EXTRA_DESCRIPTION).orEmpty() }
     private val highlightText by lazy { intent.getStringExtra(EXTRA_HIGHLIGHT).orEmpty() }
+    private val photoData by lazy { intent.getByteArrayExtra(EXTRA_PHOTO) }
     private val totalSlots by lazy { intent.getIntExtra(EXTRA_TOTAL_SLOTS, -1).takeIf { it > 0 } }
     private var currentFilledSlots: Int? = null
     private val donationGoalCents by lazy {
@@ -104,6 +106,10 @@ class CampaignDetailActivity : AppCompatActivity() {
         val context = root.context
         val categoryName = categoryLabel(category)
         campaignHero.setBackgroundColor(ContextCompat.getColor(context, heroColor(category)))
+        val photo = photoData?.let { bytes -> BitmapFactory.decodeByteArray(bytes, 0, bytes.size) }
+        campaignPhoto.setImageBitmap(photo)
+        campaignPhoto.isVisible = photo != null
+        heroIcon.isVisible = photo == null
         heroIcon.setImageResource(heroIcon(category))
         heroIcon.imageTintList = android.content.res.ColorStateList.valueOf(Color.WHITE)
 
@@ -467,6 +473,7 @@ class CampaignDetailActivity : AppCompatActivity() {
         private const val EXTRA_AUDIENCE = "campaign_audience"
         private const val EXTRA_DESCRIPTION = "campaign_description"
         private const val EXTRA_HIGHLIGHT = "campaign_highlight"
+        private const val EXTRA_PHOTO = "campaign_photo"
         private const val EXTRA_TOTAL_SLOTS = "campaign_total_slots"
         private const val EXTRA_FILLED_SLOTS = "campaign_filled_slots"
         private const val EXTRA_DONATION_GOAL_CENTS = "campaign_donation_goal_cents"
@@ -491,6 +498,7 @@ class CampaignDetailActivity : AppCompatActivity() {
                 putExtra(EXTRA_AUDIENCE, item.audienceText)
                 putExtra(EXTRA_DESCRIPTION, item.description)
                 putExtra(EXTRA_HIGHLIGHT, item.highlightText)
+                item.photoData?.let { putExtra(EXTRA_PHOTO, it) }
                 item.totalSlots?.let { putExtra(EXTRA_TOTAL_SLOTS, it) }
                 item.filledSlots?.let { putExtra(EXTRA_FILLED_SLOTS, it) }
                 item.donationGoalCents?.let { putExtra(EXTRA_DONATION_GOAL_CENTS, it) }

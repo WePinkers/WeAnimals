@@ -33,6 +33,14 @@
                     android:layout_height="150dp"
                     android:background="@color/clay600">
 
+                    <ImageView
+                        android:id="@+id/campaign_photo"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:contentDescription="@null"
+                        android:scaleType="centerCrop"
+                        android:visibility="gone" />
+
                     <ImageButton
                         android:id="@+id/back_button"
                         android:layout_width="38dp"

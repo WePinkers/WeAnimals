@@ -16,6 +16,7 @@ import com.example.weanimals.WeAnimalsApplication
 import com.example.weanimals.user.community.detail.domain.CommunityComment
 import com.example.weanimals.databinding.ActivityCommunityPostDetailBinding
 import com.example.weanimals.databinding.ItemCommunityCommentBinding
+import com.google.firebase.firestore.ListenerRegistration
 import kotlinx.coroutines.launch
 
 class CommunityPostDetailActivity : AppCompatActivity() {
@@ -32,6 +33,7 @@ class CommunityPostDetailActivity : AppCompatActivity() {
     private var liked = false
     private var comments = emptyList<CommunityComment>()
     private var replyingToCommentId: String? = null
+    private var commentsRegistration: ListenerRegistration? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,6 +51,12 @@ class CommunityPostDetailActivity : AppCompatActivity() {
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() = finishWithResult()
         })
+    }
+
+    override fun onDestroy() {
+        commentsRegistration?.remove()
+        commentsRegistration = null
+        super.onDestroy()
     }
 
     private fun bindPost() {
@@ -90,12 +98,19 @@ class CommunityPostDetailActivity : AppCompatActivity() {
                 liked = engagement.likedByCurrentUser
                 renderEngagement()
             }
-            engagementRepository.getComments(postId).onSuccess { loadedComments ->
-                comments = loadedComments
-                showComments()
-            }.onFailure {
-                binding.commentsState.isVisible = true
-                binding.commentsState.setText(R.string.community_comments_error)
+        }
+
+        commentsRegistration?.remove()
+        commentsRegistration = engagementRepository.observeComments(postId) { result ->
+            runOnUiThread {
+                result.onSuccess { loadedComments ->
+                    comments = loadedComments
+                    commentsCount = maxOf(commentsCount, loadedComments.size)
+                    showComments()
+                }.onFailure {
+                    binding.commentsState.isVisible = true
+                    binding.commentsState.setText(R.string.community_comments_error)
+                }
             }
         }
     }
