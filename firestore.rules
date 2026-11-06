@@ -639,7 +639,8 @@ service cloud.firestore {
             'authorId', 'authorName', 'category', 'body', 'locationLabel', 'createdAt'
           ])
         && request.resource.data.keys().hasOnly([
-            'authorId', 'authorName', 'category', 'body', 'locationLabel', 'createdAt', 'photoData'
+            'authorId', 'authorName', 'category', 'body', 'locationLabel',
+            'createdAt', 'photoData', 'likesCount', 'commentsCount'
           ])
         && request.resource.data.authorId == request.auth.uid
         && request.resource.data.authorName is string
@@ -653,6 +654,12 @@ service cloud.firestore {
         && request.resource.data.locationLabel.size() > 0
         && request.resource.data.locationLabel.size() <= 80
         && request.resource.data.createdAt == request.time
+        && (!request.resource.data.keys().hasAny(['likesCount'])
+          || (request.resource.data.likesCount is int
+            && request.resource.data.likesCount == 0))
+        && (!request.resource.data.keys().hasAny(['commentsCount'])
+          || (request.resource.data.commentsCount is int
+            && request.resource.data.commentsCount == 0))
         && (!request.resource.data.keys().hasAny(['photoData'])
           || (request.resource.data.photoData is bytes
             && request.resource.data.photoData.size() <= 200000));
@@ -847,6 +854,10 @@ service cloud.firestore {
           || (isTeamMember()
             && exists(/databases/$(database)/documents/adoption_applications/$(userId)/animals/$(animalId))
             && request.auth.token.ngoId ==
+              get(/databases/$(database)/documents/adoption_applications/$(userId)/animals/$(animalId)).data.ngoId)
+          || ((isApprovedOrganization() || isTemporaryTestOrganization())
+            && exists(/databases/$(database)/documents/adoption_applications/$(userId)/animals/$(animalId))
+            && request.auth.uid ==
               get(/databases/$(database)/documents/adoption_applications/$(userId)/animals/$(animalId)).data.ngoId);
         allow create: if signedIn()
           && request.auth.uid == userId

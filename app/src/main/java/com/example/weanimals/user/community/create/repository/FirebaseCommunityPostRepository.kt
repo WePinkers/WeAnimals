@@ -42,6 +42,8 @@ class FirebaseCommunityPostRepository(
             "body" to body,
             "locationLabel" to (draft.location.publicLocationLabel()
                 ?: applicationContext.getString(R.string.community_location_region_unknown)),
+            "likesCount" to 0L,
+            "commentsCount" to 0L,
             "createdAt" to FieldValue.serverTimestamp()
         )
         if (photoBytes != null) data["photoData"] = Blob.fromBytes(photoBytes)

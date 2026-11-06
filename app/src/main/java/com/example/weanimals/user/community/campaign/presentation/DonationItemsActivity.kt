@@ -90,7 +90,9 @@ class DonationItemsActivity : AppCompatActivity() {
             setTextColor(ContextCompat.getColor(this@DonationItemsActivity, R.color.ink))
             textSize = 12f
         }
-        row.addView(checkBox, LinearLayout.LayoutParams(dp(28), dp(48)))
+        row.addView(checkBox, LinearLayout.LayoutParams(dp(28), dp(48)).apply {
+            marginEnd = dp(8)
+        })
         row.addView(labelView)
         if (urgent) {
             row.addView(TextView(this).apply {

@@ -33,12 +33,6 @@
             android:src="@drawable/ic_adoption_heart"
             app:tint="@color/clay600" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="58dp"
-            android:layout_gravity="bottom"
-            android:background="@drawable/bg_campaign_animal_overlay" />
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -91,6 +85,10 @@
                 android:textColor="@color/white"
                 android:textSize="@dimen/text_size_card_title"
                 android:textStyle="bold"
+                android:shadowColor="#99000000"
+                android:shadowDx="0"
+                android:shadowDy="1"
+                android:shadowRadius="3"
                 tools:text="Canela" />
         </LinearLayout>
     </FrameLayout>
