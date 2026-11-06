@@ -8,6 +8,9 @@ import com.example.weanimals.user.adoption.listing.domain.Animal
 import com.example.weanimals.user.adoption.listing.domain.AnimalPage
 import com.example.weanimals.user.adoption.listing.domain.SpeciesFilter
 import com.example.weanimals.user.adoption.listing.interactor.GetAvailableAnimalsInteractor
+import com.example.weanimals.user.adoption.applications.domain.MyAdoptionApplication
+import com.example.weanimals.user.adoption.applications.interactor.ObserveMyAdoptionApplicationsInteractor
+import com.example.weanimals.user.adoption.applications.repository.AdoptionApplicationsRepository
 import com.example.weanimals.user.adoption.questionnaire.domain.AdoptionProfile
 import com.example.weanimals.user.adoption.questionnaire.domain.AdoptionQuestionnaireAnswers
 import com.example.weanimals.user.adoption.questionnaire.domain.AvailableSpaceOption
@@ -30,6 +33,8 @@ import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
@@ -39,6 +44,7 @@ import org.junit.Test
 class AdoptionPresenterTest {
     private val repository = FakeAnimalRepository()
     private val profileRepository = FakeProfileRepository()
+    private val applicationsRepository = FakeApplicationsRepository()
     private val view = RecordingView()
     private lateinit var presenter: AdoptionPresenter
 
@@ -47,7 +53,8 @@ class AdoptionPresenterTest {
         presenter = AdoptionPresenter(
             GetAvailableAnimalsInteractor(repository),
             GetUserLocationInteractor(FakeUserLocationRepository()),
-            GetAdoptionProfileInteractor(profileRepository)
+            GetAdoptionProfileInteractor(profileRepository),
+            ObserveMyAdoptionApplicationsInteractor(applicationsRepository),
         )
         presenter.attachView(view)
     }
@@ -217,8 +224,14 @@ class AdoptionPresenterTest {
         override suspend fun saveProfile(profile: AdoptionProfile): Result<Unit> = Result.success(Unit)
     }
 
+    private class FakeApplicationsRepository : AdoptionApplicationsRepository {
+        override fun observe(): Flow<Result<List<MyAdoptionApplication>>> =
+            flowOf(Result.success(emptyList()))
+    }
+
     private class RecordingView : AdoptionContract.View {
         var animals = emptyList<Animal>()
+        var applications = emptyList<MyAdoptionApplication>()
         var filter: SpeciesFilter? = null
         var emptyFilter: SpeciesFilter? = null
         var lastError: Throwable? = null
@@ -242,6 +255,9 @@ class AdoptionPresenterTest {
         override fun requestLocationPermission() { permissionRequested = true }
         override fun openAnimalDetails(animalId: String) {
             selectedAnimal = animalId
+        }
+        override fun showMyApplications(applications: List<MyAdoptionApplication>) {
+            this.applications = applications
         }
         override fun showRecommendationsAvailable(available: Boolean) {
             recommendationsAvailable = available
